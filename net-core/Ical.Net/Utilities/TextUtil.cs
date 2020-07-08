@@ -4,7 +4,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Ical.Net.Serialization;
 
-namespace Ical.Net.Utility
+namespace Ical.Net.Utilities
 {
     internal static class TextUtil
     {

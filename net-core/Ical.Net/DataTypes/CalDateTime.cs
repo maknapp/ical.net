@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using Ical.Net.Serialization.DataTypes;
-using Ical.Net.Utility;
+using Ical.Net.Utilities;
 using NodaTime;
 
 namespace Ical.Net.DataTypes

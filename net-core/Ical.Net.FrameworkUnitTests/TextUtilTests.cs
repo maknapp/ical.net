@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using Ical.Net.Utility;
+using Ical.Net.Utilities;
+using Ical.Net.Utilities;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 

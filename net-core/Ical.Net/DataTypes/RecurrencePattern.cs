@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Ical.Net.Evaluation;
 using Ical.Net.Serialization.DataTypes;
-using Ical.Net.Utility;
+using Ical.Net.Utilities;
 
 namespace Ical.Net.DataTypes
 {

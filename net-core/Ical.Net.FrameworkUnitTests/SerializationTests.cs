@@ -9,7 +9,8 @@ using Ical.Net.CalendarComponents;
 using Ical.Net.DataTypes;
 using Ical.Net.Serialization;
 using Ical.Net.Serialization.DataTypes;
-using Ical.Net.Utility;
+using Ical.Net.Utilities;
+using Ical.Net.Utilities;
 using NUnit.Framework;
 
 namespace Ical.Net.FrameworkUnitTests

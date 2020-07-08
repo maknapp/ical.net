@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using Ical.Net.DataTypes;
 using Ical.Net.Evaluation;
-using Ical.Net.Utility;
+using Ical.Net.Utilities;
 
 namespace Ical.Net.CalendarComponents
 {

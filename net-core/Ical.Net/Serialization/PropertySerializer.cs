@@ -3,7 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Ical.Net.DataTypes;
-using Ical.Net.Utility;
+using Ical.Net.Utilities;
+using Ical.Net.Utilities;
 
 namespace Ical.Net.Serialization
 {

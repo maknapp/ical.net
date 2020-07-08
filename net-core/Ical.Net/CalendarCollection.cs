@@ -6,7 +6,7 @@ using System.Text;
 using Ical.Net.CalendarComponents;
 using Ical.Net.DataTypes;
 using Ical.Net.Serialization;
-using Ical.Net.Utility;
+using Ical.Net.Utilities;
 
 namespace Ical.Net
 {
