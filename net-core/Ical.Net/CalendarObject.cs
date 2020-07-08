@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 using Ical.Net.Collections;
+using Ical.Net.Extensions;
 
 namespace Ical.Net
 {
@@ -9,7 +10,6 @@ namespace Ical.Net
     /// </summary>
     public class CalendarObject : CalendarObjectBase, ICalendarObject
     {
-        private ICalendarObjectList<ICalendarObject> _children;
         private ServiceProvider _serviceProvider;
 
         internal CalendarObject()
@@ -30,12 +30,12 @@ namespace Ical.Net
 
         private void Initialize()
         {
-            //ToDo: I'm fairly certain this is ONLY used for null checking. If so, maybe it can just be a bool? CalendarObjectList is an empty object, and
-            //ToDo: its constructor parameter is ignored
-            _children = new CalendarObjectList(this);
+            // TODO: I'm fairly certain this is ONLY used for null checking. If so, maybe it can just be a bool? CalendarObjectList is an empty object, and
+            // TODO: its constructor parameter is ignored
+            Children = new CalendarObjectList();
             _serviceProvider = new ServiceProvider();
 
-            _children.ItemAdded += Children_ItemAdded;
+            Children.ItemAdded += Children_ItemAdded;
         }
 
         [OnDeserializing]
@@ -61,23 +61,23 @@ namespace Ical.Net
 
         public override int GetHashCode() => Name?.GetHashCode() ?? 0;
 
-        public override void CopyFrom(ICopyable c)
+        public override void CopyFrom(ICopyable copyable)
         {
-            var obj = c as ICalendarObject;
-            if (obj == null)
+            var calendarObject = copyable as ICalendarObject;
+            if (calendarObject == null)
             {
                 return;
             }
 
             // Copy the name and basic information
-            Name = obj.Name;
-            Parent = obj.Parent;
-            Line = obj.Line;
-            Column = obj.Column;
+            Name = calendarObject.Name;
+            Parent = calendarObject.Parent;
+            Line = calendarObject.Line;
+            Column = calendarObject.Column;
 
             // Add each child
             Children.Clear();
-            foreach (var child in obj.Children)
+            foreach (var child in calendarObject.Children)
             {
                 this.AddChild(child);
             }
@@ -91,7 +91,7 @@ namespace Ical.Net
         /// <summary>
         /// A collection of iCalObjects that are children of the current object.
         /// </summary>
-        public ICalendarObjectList<ICalendarObject> Children => _children;
+        public ICalendarObjectList<ICalendarObject> Children { get; private set; }
 
         /// <summary>
         /// Gets or sets the name of the iCalObject.  For iCalendar components, this is the RFC 5545 name of the component.
@@ -113,7 +113,6 @@ namespace Ical.Net
 
                 return obj as Calendar;
             }
-            protected set { }
         }
 
         public int Line { get; set; }

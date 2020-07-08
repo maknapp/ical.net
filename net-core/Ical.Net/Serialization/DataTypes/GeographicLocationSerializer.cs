@@ -5,7 +5,7 @@ using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public class GeographicLocationSerializer : EncodableDataTypeSerializer
+    public sealed class GeographicLocationSerializer : EncodableDataTypeSerializer
     {
         public GeographicLocationSerializer() { }
 
@@ -48,10 +48,8 @@ namespace Ical.Net.Serialization.DataTypes
                 return null;
             }
 
-            double lat;
-            double lon;
-            double.TryParse(values[0], NumberStyles.Any, CultureInfo.InvariantCulture, out lat);
-            double.TryParse(values[1], NumberStyles.Any, CultureInfo.InvariantCulture, out lon);
+            double.TryParse(values[0], NumberStyles.Any, CultureInfo.InvariantCulture, out var lat);
+            double.TryParse(values[1], NumberStyles.Any, CultureInfo.InvariantCulture, out var lon);
             g.Latitude = lat;
             g.Longitude = lon;
 

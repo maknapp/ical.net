@@ -1,11 +1,9 @@
-using System.Runtime.Serialization;
-
 namespace Ical.Net.CalendarComponents
 {
     /// <summary>
     /// A class that represents an RFC 5545 VJOURNAL component.
     /// </summary>
-    public class Journal : RecurringComponent
+    public sealed class Journal : RecurringComponent
     {
         public string Status
         {
@@ -23,13 +21,8 @@ namespace Ical.Net.CalendarComponents
         }
         
         protected override bool EvaluationIncludesReferenceDate => true;
-        
-        protected override void OnDeserializing(StreamingContext context)
-        {
-            base.OnDeserializing(context);
-        }
 
-        protected bool Equals(Journal other) => Start.Equals(other.Start) && Equals(other as RecurringComponent);
+        public bool Equals(Journal other) => Start.Equals(other.Start) && Equals(other as RecurringComponent);
 
         public override bool Equals(object obj)
         {

@@ -13,7 +13,7 @@ namespace Ical.Net.DataTypes
         private ParameterCollectionProxy _proxy;
         private ServiceProvider _serviceProvider;
 
-        protected ICalendarObject _AssociatedObject;
+        private ICalendarObject _associatedObject;
 
         protected CalendarDataType()
         {
@@ -49,44 +49,42 @@ namespace Ical.Net.DataTypes
         public Type GetValueType()
         {
             // See RFC 5545 Section 3.2.20.
-            if (_proxy != null && _proxy.ContainsKey("VALUE"))
+            if (_proxy == null || !_proxy.ContainsKey("VALUE")) return null;
+
+            switch (_proxy.Get("VALUE"))
             {
-                switch (_proxy.Get("VALUE"))
-                {
-                    case "BINARY":
-                        return typeof (byte[]);
-                    case "BOOLEAN":
-                        return typeof (bool);
-                    case "CAL-ADDRESS":
-                        return typeof (Uri);
-                    case "DATE":
-                        return typeof (IDateTime);
-                    case "DATE-TIME":
-                        return typeof (IDateTime);
-                    case "DURATION":
-                        return typeof (TimeSpan);
-                    case "FLOAT":
-                        return typeof (double);
-                    case "INTEGER":
-                        return typeof (int);
-                    case "PERIOD":
-                        return typeof (Period);
-                    case "RECUR":
-                        return typeof (RecurrencePattern);
-                    case "TEXT":
-                        return typeof (string);
-                    case "TIME":
-                        // FIXME: implement ISO.8601.2004
-                        throw new NotImplementedException();
-                    case "URI":
-                        return typeof (Uri);
-                    case "UTC-OFFSET":
-                        return typeof (UtcOffset);
-                    default:
-                        return null;
-                }
+                case "BINARY":
+                    return typeof (byte[]);
+                case "BOOLEAN":
+                    return typeof (bool);
+                case "CAL-ADDRESS":
+                    return typeof (Uri);
+                case "DATE":
+                    return typeof (IDateTime);
+                case "DATE-TIME":
+                    return typeof (IDateTime);
+                case "DURATION":
+                    return typeof (TimeSpan);
+                case "FLOAT":
+                    return typeof (double);
+                case "INTEGER":
+                    return typeof (int);
+                case "PERIOD":
+                    return typeof (Period);
+                case "RECUR":
+                    return typeof (RecurrencePattern);
+                case "TEXT":
+                    return typeof (string);
+                case "TIME":
+                    // FIXME: implement ISO.8601.2004
+                    throw new NotImplementedException();
+                case "URI":
+                    return typeof (Uri);
+                case "UTC-OFFSET":
+                    return typeof (UtcOffset);
+                default:
+                    return null;
             }
-            return null;
         }
 
         public void SetValueType(string type)
@@ -96,21 +94,21 @@ namespace Ical.Net.DataTypes
 
         public virtual ICalendarObject AssociatedObject
         {
-            get => _AssociatedObject;
+            get => _associatedObject;
             set
             {
-                if (Equals(_AssociatedObject, value))
+                if (Equals(_associatedObject, value))
                 {
                     return;
                 }
 
-                _AssociatedObject = value;
-                if (_AssociatedObject != null)
+                _associatedObject = value;
+                if (_associatedObject != null)
                 {
-                    _proxy.SetParent(_AssociatedObject);
-                    if (_AssociatedObject is ICalendarParameterCollectionContainer)
+                    _proxy.SetParent(_associatedObject);
+                    if (_associatedObject is ICalendarParameterCollectionContainer)
                     {
-                        _proxy.SetProxiedObject(((ICalendarParameterCollectionContainer) _AssociatedObject).Parameters);
+                        _proxy.SetProxiedObject(((ICalendarParameterCollectionContainer) _associatedObject).Parameters);
                     }
                 }
                 else
@@ -121,7 +119,7 @@ namespace Ical.Net.DataTypes
             }
         }
 
-        public Calendar Calendar => _AssociatedObject?.Calendar;
+        public Calendar Calendar => _associatedObject?.Calendar;
 
         public string Language
         {
@@ -141,8 +139,8 @@ namespace Ical.Net.DataTypes
             }
 
             var dt = (ICalendarDataType) obj;
-            _AssociatedObject = dt.AssociatedObject;
-            _proxy.SetParent(_AssociatedObject);
+            _associatedObject = dt.AssociatedObject;
+            _proxy.SetParent(_associatedObject);
             _proxy.SetProxiedObject(dt.Parameters);
         }
 

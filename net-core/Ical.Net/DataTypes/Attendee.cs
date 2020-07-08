@@ -5,7 +5,7 @@ using Ical.Net.Utilities;
 
 namespace Ical.Net.DataTypes
 {
-    public class Attendee : EncodableDataType
+    public sealed class Attendee : EncodableDataType
     {
         private Uri _sentBy;
         /// <summary> SENT-BY, to indicate who is acting on behalf of the ATTENDEE </summary>
@@ -245,17 +245,20 @@ namespace Ical.Net.DataTypes
         //ToDo: See if this can be deleted
         public override void CopyFrom(ICopyable obj) {}
 
-        protected bool Equals(Attendee other) => Equals(SentBy, other.SentBy)
-            && string.Equals(CommonName, other.CommonName, StringComparison.OrdinalIgnoreCase)
-            && Equals(DirectoryEntry, other.DirectoryEntry)
-            && string.Equals(Type, other.Type, StringComparison.OrdinalIgnoreCase)
-            && string.Equals(Role, other.Role)
-            && string.Equals(ParticipationStatus, other.ParticipationStatus, StringComparison.OrdinalIgnoreCase)
-            && Rsvp == other.Rsvp
-            && Equals(Value, other.Value)
-            && Members.SequenceEqual(other.Members)
-            && DelegatedTo.SequenceEqual(other.DelegatedTo)
-            && DelegatedFrom.SequenceEqual(other.DelegatedFrom);
+        public bool Equals(Attendee other)
+        {
+            return Equals(SentBy, other.SentBy)
+                   && string.Equals(CommonName, other.CommonName, StringComparison.OrdinalIgnoreCase)
+                   && Equals(DirectoryEntry, other.DirectoryEntry)
+                   && string.Equals(Type, other.Type, StringComparison.OrdinalIgnoreCase)
+                   && string.Equals(Role, other.Role)
+                   && string.Equals(ParticipationStatus, other.ParticipationStatus, StringComparison.OrdinalIgnoreCase)
+                   && Rsvp == other.Rsvp
+                   && Equals(Value, other.Value)
+                   && Members.SequenceEqual(other.Members)
+                   && DelegatedTo.SequenceEqual(other.DelegatedTo)
+                   && DelegatedFrom.SequenceEqual(other.DelegatedFrom);
+        }
 
         public override bool Equals(object obj)
         {

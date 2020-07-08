@@ -4,7 +4,7 @@ using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public class OrganizerSerializer : StringSerializer
+    public sealed class OrganizerSerializer : StringSerializer
     {
         public OrganizerSerializer() { }
 
@@ -48,7 +48,10 @@ namespace Ical.Net.Serialization.DataTypes
                     o.Value = new Uri(uriString);
                 }
             }
-            catch {}
+            catch
+            {
+                // TODO: Ignore exceptions selectively
+            }
 
             return o;
         }

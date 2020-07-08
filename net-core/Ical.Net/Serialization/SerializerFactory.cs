@@ -6,13 +6,13 @@ using Ical.Net.Serialization.DataTypes;
 
 namespace Ical.Net.Serialization
 {
-    public class SerializerFactory : ISerializerFactory
+    public sealed class SerializerFactory : ISerializerFactory
     {
-        private readonly ISerializerFactory _mDataTypeSerializerFactory;
+        private readonly ISerializerFactory _serializerFactory;
 
         public SerializerFactory()
         {
-            _mDataTypeSerializerFactory = new DataTypeSerializerFactory();
+            _serializerFactory = new DataTypeSerializerFactory();
         }
 
         /// <summary>
@@ -30,58 +30,62 @@ namespace Ical.Net.Serialization
             {
                 return null;
             }
-            ISerializer s;
 
             if (typeof (Calendar).IsAssignableFrom(objectType))
             {
-                s = new CalendarSerializer(ctx);
+                return new CalendarSerializer(ctx);
             }
-            else if (typeof (ICalendarComponent).IsAssignableFrom(objectType))
+
+            if (typeof (ICalendarComponent).IsAssignableFrom(objectType))
             {
-                s = typeof (CalendarEvent).IsAssignableFrom(objectType)
+                return typeof (CalendarEvent).IsAssignableFrom(objectType)
                     ? new EventSerializer(ctx)
                     : new ComponentSerializer(ctx);
             }
-            else if (typeof (ICalendarProperty).IsAssignableFrom(objectType))
+
+            if (typeof (ICalendarProperty).IsAssignableFrom(objectType))
             {
-                s = new PropertySerializer(ctx);
-            }
-            else if (typeof (CalendarParameter).IsAssignableFrom(objectType))
-            {
-                s = new ParameterSerializer(ctx);
-            }
-            else if (typeof (string).IsAssignableFrom(objectType))
-            {
-                s = new StringSerializer(ctx);
-            }
-            else if (objectType.GetTypeInfo().IsEnum)
-            {
-                s = new EnumSerializer(objectType, ctx);
-            }
-            else if (typeof (TimeSpan).IsAssignableFrom(objectType))
-            {
-                s = new TimeSpanSerializer(ctx);
-            }
-            else if (typeof (int).IsAssignableFrom(objectType))
-            {
-                s = new IntegerSerializer(ctx);
-            }
-            else if (typeof (Uri).IsAssignableFrom(objectType))
-            {
-                s = new UriSerializer(ctx);
-            }
-            else if (typeof (ICalendarDataType).IsAssignableFrom(objectType))
-            {
-                s = _mDataTypeSerializerFactory.Build(objectType, ctx);
-            }
-            // Default to a string serializer, which simply calls
-            // ToString() on the value to serialize it.
-            else
-            {
-                s = new StringSerializer(ctx);
+                return new PropertySerializer(ctx);
             }
 
-            return s;
+            if (typeof (CalendarParameter).IsAssignableFrom(objectType))
+            {
+                return new ParameterSerializer(ctx);
+            }
+
+            if (typeof (string).IsAssignableFrom(objectType))
+            {
+                return new StringSerializer(ctx);
+            }
+
+            if (objectType.GetTypeInfo().IsEnum)
+            {
+                return new EnumSerializer(objectType, ctx);
+            }
+
+            if (typeof (TimeSpan).IsAssignableFrom(objectType))
+            {
+                return new TimeSpanSerializer(ctx);
+            }
+
+            if (typeof (int).IsAssignableFrom(objectType))
+            {
+                return new IntegerSerializer(ctx);
+            }
+
+            if (typeof (Uri).IsAssignableFrom(objectType))
+            {
+                return new UriSerializer(ctx);
+            }
+
+            if (typeof (ICalendarDataType).IsAssignableFrom(objectType))
+            {
+                return _serializerFactory.Build(objectType, ctx);
+            }
+
+            // Default to a string serializer, which simply calls
+            // ToString() on the value to serialize it.
+            return new StringSerializer(ctx);
         }
     }
 }

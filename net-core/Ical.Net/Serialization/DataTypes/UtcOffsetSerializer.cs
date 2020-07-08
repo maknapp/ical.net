@@ -6,7 +6,7 @@ using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public class UtcOffsetSerializer : EncodableDataTypeSerializer
+    public sealed class UtcOffsetSerializer : EncodableDataTypeSerializer
     {
         public UtcOffsetSerializer() { }
 
@@ -44,8 +44,8 @@ namespace Ical.Net.Serialization.DataTypes
                 rawOffset = rawOffset.Substring(0, rawOffset.Length - 2);
             }
 
-            DateTimeOffset temp;
-            if (DateTimeOffset.TryParse("2016-01-01 00:00:00 " + rawOffset, out temp))
+            // TODO: What is this hard-coded date/time?
+            if (DateTimeOffset.TryParse("2016-01-01 00:00:00 " + rawOffset, out var temp))
             {
                 return temp.Offset;
             }

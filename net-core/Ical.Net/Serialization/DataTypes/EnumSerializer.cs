@@ -4,21 +4,19 @@ using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public class EnumSerializer : EncodableDataTypeSerializer
+    public sealed class EnumSerializer : EncodableDataTypeSerializer
     {
-        private readonly Type _mEnumType;
-
         public EnumSerializer(Type enumType)
         {
-            _mEnumType = enumType;
+            TargetType = enumType;
         }
 
         public EnumSerializer(Type enumType, SerializationContext ctx) : base(ctx)
         {
-            _mEnumType = enumType;
+            TargetType = enumType;
         }
 
-        public override Type TargetType => _mEnumType;
+        public override Type TargetType { get; }
 
         public override string SerializeToString(object enumValue)
         {
@@ -60,9 +58,12 @@ namespace Ical.Net.Serialization.DataTypes
                 }
 
                 // Remove "-" characters while parsing Enum values.
-                return Enum.Parse(_mEnumType, value.Replace("-", ""), true);
+                return Enum.Parse(TargetType, value.Replace("-", ""), true);
             }
-            catch {}
+            catch
+            {
+                // TODO: Ignore exceptions selectively
+            }
 
             return value;
         }

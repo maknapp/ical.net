@@ -8,19 +8,18 @@ namespace Ical.Net.DataTypes
     /// A class that is used to specify exactly when an <see cref="Components.Alarm"/> component will trigger.
     /// Usually this date/time is relative to the component to which the Alarm is associated.
     /// </summary>    
-    public class Trigger : EncodableDataType
+    public sealed class Trigger : EncodableDataType
     {
-        private IDateTime _mDateTime;
-        private TimeSpan? _mDuration;
-        private string _mRelated = TriggerRelation.Start;
+        private IDateTime _dateTime;
+        private TimeSpan? _duration;
 
         public IDateTime DateTime
         {
-            get => _mDateTime;
+            get => _dateTime;
             set
             {
-                _mDateTime = value;
-                if (_mDateTime == null)
+                _dateTime = value;
+                if (_dateTime == null)
                 {
                     return;
                 }
@@ -32,17 +31,17 @@ namespace Ical.Net.DataTypes
                 Duration = null;
 
                 // Do not allow timeless date/time values
-                _mDateTime.HasTime = true;
+                _dateTime.HasTime = true;
             }
         }
 
         public TimeSpan? Duration
         {
-            get => _mDuration;
+            get => _duration;
             set
             {
-                _mDuration = value;
-                if (_mDuration != null)
+                _duration = value;
+                if (_duration != null)
                 {
                     // NOTE: see above.
 
@@ -52,13 +51,9 @@ namespace Ical.Net.DataTypes
             }
         }
 
-        public string Related
-        {
-            get => _mRelated;
-            set => _mRelated = value;
-        }
+        public string Related { get; set; } = TriggerRelation.Start;
 
-        public bool IsRelative => _mDuration != null;
+        public bool IsRelative => _duration != null;
 
         public Trigger() {}
 
@@ -87,7 +82,7 @@ namespace Ical.Net.DataTypes
             Related = t.Related;
         }
 
-        protected bool Equals(Trigger other) => Equals(_mDateTime, other._mDateTime) && _mDuration.Equals(other._mDuration) && _mRelated == other._mRelated;
+        public bool Equals(Trigger other) => Equals(_dateTime, other._dateTime) && _duration.Equals(other._duration) && Related == other.Related;
 
         public override bool Equals(object obj)
         {
@@ -110,9 +105,9 @@ namespace Ical.Net.DataTypes
         {
             unchecked
             {
-                var hashCode = _mDateTime?.GetHashCode() ?? 0;
-                hashCode = (hashCode * 397) ^ _mDuration.GetHashCode();
-                hashCode = (hashCode * 397) ^ _mRelated?.GetHashCode() ?? 0;
+                var hashCode = _dateTime?.GetHashCode() ?? 0;
+                hashCode = (hashCode * 397) ^ _duration.GetHashCode();
+                hashCode = (hashCode * 397) ^ Related?.GetHashCode() ?? 0;
                 return hashCode;
             }
         }

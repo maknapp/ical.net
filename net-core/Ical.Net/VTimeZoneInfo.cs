@@ -9,8 +9,7 @@ namespace Ical.Net
 {
     public class VTimeZoneInfo : CalendarComponent, IRecurrable
     {
-        TimeZoneInfoEvaluator _evaluator;
-        DateTime _end;
+        private TimeZoneInfoEvaluator _evaluator;
 
         public VTimeZoneInfo()
         {
@@ -21,12 +20,13 @@ namespace Ical.Net
 
             Initialize();
         }
+
         public VTimeZoneInfo(string name) : this()
         {
             Name = name;
         }
 
-        void Initialize()
+        private void Initialize()
         {
             _evaluator = new TimeZoneInfoEvaluator(this);
             SetService(_evaluator);
@@ -41,23 +41,20 @@ namespace Ical.Net
 
         public override bool Equals(object obj)
         {
-            var tzi = obj as VTimeZoneInfo;
-            if (tzi != null)
+            if (obj is VTimeZoneInfo tzi)
             {
                 return Equals(TimeZoneName, tzi.TimeZoneName) &&
                        Equals(OffsetFrom, tzi.OffsetFrom) &&
                        Equals(OffsetTo, tzi.OffsetTo);
             }
+
             return base.Equals(obj);
         }
 
-        public string TzId
-        {
-            get =>
-                !(Parent is VTimeZone tz)
-                    ? null
-                    : tz.TzId;
-        }
+        public string TzId =>
+            !(Parent is VTimeZone tz)
+                ? null
+                : tz.TzId;
 
         /// <summary>
         /// Returns the name of the current Time Zone.
@@ -83,7 +80,7 @@ namespace Ical.Net
             }
         }
 
-        public UtcOffset TZOffsetFrom
+        public UtcOffset TzOffsetFrom
         {
             get => OffsetFrom;
             set => OffsetFrom = value;
@@ -101,7 +98,7 @@ namespace Ical.Net
             set => Properties.Set("TZOFFSETTO", value);
         }
 
-        public UtcOffset TZOffsetTo
+        public UtcOffset TzOffsetTo
         {
             get => OffsetTo;
             set => OffsetTo = value;

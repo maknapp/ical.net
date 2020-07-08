@@ -14,17 +14,18 @@ namespace Ical.Net.Evaluation
         {
             Recurrable = obj;
 
-            // We're not sure if the object is a calendar object
-            // or a calendar data type, so we need to assign
-            // the associated object manually
-            if (obj is ICalendarObject)
+            switch (obj)
             {
-                AssociatedObject = (ICalendarObject) obj;
-            }
-            if (obj is ICalendarDataType)
-            {
-                var dt = (ICalendarDataType) obj;
-                AssociatedObject = dt.AssociatedObject;
+                // We're not sure if the object is a calendar object
+                // or a calendar data type, so we need to assign
+                // the associated object manually
+                case ICalendarObject calendarObject:
+                    AssociatedObject = calendarObject;
+                    break;
+
+                case ICalendarDataType calendarDataType:
+                    AssociatedObject = calendarDataType.AssociatedObject;
+                    break;
             }
         }
 

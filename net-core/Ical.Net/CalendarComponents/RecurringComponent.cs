@@ -17,7 +17,7 @@ namespace Ical.Net.CalendarComponents
     /// RRULEs, RDATE, EXRULEs, and EXDATEs, as well as the DTSTART
     /// for the recurring item (all recurring items must have a DTSTART).
     /// </remarks>
-    public class RecurringComponent : UniqueComponent, IRecurringComponent
+    public abstract class RecurringComponent : UniqueComponent, IRecurringComponent
     {
         public static IEnumerable<IRecurringComponent> SortByDate(IEnumerable<IRecurringComponent> list) => SortByDate<IRecurringComponent>(list);
 

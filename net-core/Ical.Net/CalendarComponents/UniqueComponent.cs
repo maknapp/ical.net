@@ -10,7 +10,7 @@ namespace Ical.Net.CalendarComponents
     /// Represents a unique component, a component with a unique UID,
     /// which can be used to uniquely identify the component.    
     /// </summary>
-    public class UniqueComponent : CalendarComponent, IUniqueComponent, IComparable<UniqueComponent>
+    public abstract class UniqueComponent : CalendarComponent, IUniqueComponent, IComparable<UniqueComponent>
     {
         // TODO: Add AddRelationship() public method.
         // This method will add the UID of a related component
@@ -18,12 +18,12 @@ namespace Ical.Net.CalendarComponents
         // parameter ("PARENT", "CHILD", "SIBLING", or other)
         // TODO: Add RemoveRelationship() public method.        
 
-        public UniqueComponent()
+        protected UniqueComponent() 
         {
             EnsureProperties();
         }
 
-        public UniqueComponent(string name) : base(name)
+        protected UniqueComponent(string name) : base(name)
         {
             EnsureProperties();
         }

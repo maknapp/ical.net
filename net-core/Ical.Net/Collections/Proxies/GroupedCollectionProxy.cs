@@ -8,14 +8,14 @@ namespace Ical.Net.Collections.Proxies
     /// <summary>
     /// A proxy for a keyed list.
     /// </summary>
-    public class GroupedCollectionProxy<TGroup, TOriginal, TNew> :
+    public abstract class GroupedCollectionProxy<TGroup, TOriginal, TNew> :
         IGroupedCollection<TGroup, TNew>
         where TOriginal : class, IGroupedObject<TGroup>
         where TNew : class, TOriginal
     {
         private readonly Func<TNew, bool> _predicate;
 
-        public GroupedCollectionProxy(IGroupedCollection<TGroup, TOriginal> realObject, Func<TNew, bool> predicate = null)
+        protected GroupedCollectionProxy(IGroupedCollection<TGroup, TOriginal> realObject, Func<TNew, bool> predicate = null)
         {
             _predicate = predicate ?? (o => true);
             SetProxiedObject(realObject);

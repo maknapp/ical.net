@@ -3,10 +3,10 @@ using Ical.Net.CalendarComponents;
 
 namespace Ical.Net.DataTypes
 {
-    public class Occurrence : IComparable<Occurrence>
+    public sealed class Occurrence : IComparable<Occurrence>
     {
-        public Period Period { get; set; }
-        public IRecurrable Source { get; set; }
+        public Period Period { get; }
+        public IRecurrable Source { get; }
 
         public Occurrence(Occurrence ao)
         {

@@ -22,10 +22,8 @@ namespace Ical.Net.CalendarComponents
     ///         <item>Create a TextCollection DataType for 'text' items separated by commas</item>
     ///     </list>
     /// </note>
-    public class CalendarEvent : RecurringComponent, IAlarmContainer, IComparable<CalendarEvent>
+    public sealed class CalendarEvent : RecurringComponent, IAlarmContainer, IComparable<CalendarEvent>
     {
-        internal const string ComponentName = "VEVENT";
-
         /// <summary>
         /// The start date/time of the event.
         /// <note>
@@ -277,7 +275,7 @@ namespace Ical.Net.CalendarComponents
             }
         }
 
-        protected bool Equals(CalendarEvent other)
+        public bool Equals(CalendarEvent other)
         {
             var resourcesSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             resourcesSet.UnionWith(Resources);

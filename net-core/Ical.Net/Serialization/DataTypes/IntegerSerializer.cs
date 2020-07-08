@@ -53,13 +53,15 @@ namespace Ical.Net.Serialization.DataTypes
                     value = Decode(dt, value);
                 }
 
-                int i;
-                if (Int32.TryParse(value, out i))
+                if (int.TryParse(value, out var i))
                 {
                     return i;
                 }
             }
-            catch {}
+            catch
+            {
+                // TODO: Ignore exceptions selectively
+            }
 
             return value;
         }

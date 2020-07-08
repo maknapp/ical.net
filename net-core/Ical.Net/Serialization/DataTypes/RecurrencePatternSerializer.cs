@@ -8,7 +8,7 @@ using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public class RecurrencePatternSerializer : EncodableDataTypeSerializer
+    public sealed class RecurrencePatternSerializer : EncodableDataTypeSerializer
     {
         public RecurrencePatternSerializer() { }
 
@@ -36,7 +36,7 @@ namespace Ical.Net.Serialization.DataTypes
             throw new ArgumentException(value + " is not a valid iCal day-of-week indicator.");
         }
 
-        protected static void AddInt32Values(IList<int> list, string value)
+        private static void AddInt32Values(IList<int> list, string value)
         {
             var values = value.Split(',');
             foreach (var v in values)
@@ -93,7 +93,7 @@ namespace Ical.Net.Serialization.DataTypes
             throw new ArgumentException("Both " + name1 + " and " + name2 + " cannot be supplied together; they are mutually exclusive.");
         }
 
-        private void SerializeByValue(List<string> aggregate, IList<int> byValue, string name)
+        private static void SerializeByValue(List<string> aggregate, IList<int> byValue, string name)
         {
             if (byValue.Any())
             {
@@ -313,8 +313,7 @@ namespace Ical.Net.Serialization.DataTypes
             {
                 if (match.Groups["Interval"].Success)
                 {
-                    int interval;
-                    r.Interval = !int.TryParse(match.Groups["Interval"].Value, out interval)
+                    r.Interval = !int.TryParse(match.Groups["Interval"].Value, out int interval)
                         ? 2
                         : interval;
                 }

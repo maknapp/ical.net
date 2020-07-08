@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using Ical.Net.CalendarComponents;
 using Ical.Net.DataTypes;
+using Ical.Net.Extensions;
 using Ical.Net.Proxies;
 using Ical.Net.Serialization;
 using Ical.Net.Utilities;
@@ -37,13 +38,6 @@ namespace Ical.Net
         public static IList<T> Load<T>(string ical)
             => Load<T>(new StringReader(ical));
 
-        private IUniqueComponentList<IUniqueComponent> _mUniqueComponents;
-        private IUniqueComponentList<CalendarEvent> _mEvents;
-        private IUniqueComponentList<Todo> _mTodos;
-        private ICalendarObjectList<Journal> _mJournals;
-        private IUniqueComponentList<FreeBusy> _mFreeBusy;
-        private ICalendarObjectList<VTimeZone> _mTimeZones;
-
         /// <summary>
         /// To load an existing an iCalendar object, use one of the provided LoadFromXXX methods.
         /// <example>
@@ -61,12 +55,12 @@ namespace Ical.Net
 
         private void Initialize()
         {
-            _mUniqueComponents = new UniqueComponentListProxy<IUniqueComponent>(Children);
-            _mEvents = new UniqueComponentListProxy<CalendarEvent>(Children);
-            _mTodos = new UniqueComponentListProxy<Todo>(Children);
-            _mJournals = new CalendarObjectListProxy<Journal>(Children);
-            _mFreeBusy = new UniqueComponentListProxy<FreeBusy>(Children);
-            _mTimeZones = new CalendarObjectListProxy<VTimeZone>(Children);
+            UniqueComponents = new UniqueComponentListProxy<IUniqueComponent>(Children);
+            Events = new UniqueComponentListProxy<CalendarEvent>(Children);
+            Todos = new UniqueComponentListProxy<Todo>(Children);
+            Journals = new CalendarObjectListProxy<Journal>(Children);
+            FreeBusy = new UniqueComponentListProxy<FreeBusy>(Children);
+            TimeZones = new CalendarObjectListProxy<VTimeZone>(Children);
         }
 
         protected override void OnDeserializing(StreamingContext context)
@@ -113,34 +107,34 @@ namespace Ical.Net
             }
         }
 
-        public IUniqueComponentList<IUniqueComponent> UniqueComponents => _mUniqueComponents;
+        public IUniqueComponentList<IUniqueComponent> UniqueComponents { get; private set; }
 
         public IEnumerable<IRecurrable> RecurringItems => Children.OfType<IRecurrable>();
 
         /// <summary>
         /// A collection of <see cref="Components.Event"/> components in the iCalendar.
         /// </summary>
-        public IUniqueComponentList<CalendarEvent> Events => _mEvents;
+        public IUniqueComponentList<CalendarEvent> Events { get; private set; }
 
         /// <summary>
         /// A collection of <see cref="CalendarComponents.FreeBusy"/> components in the iCalendar.
         /// </summary>
-        public IUniqueComponentList<FreeBusy> FreeBusy => _mFreeBusy;
+        public IUniqueComponentList<FreeBusy> FreeBusy { get; private set; }
 
         /// <summary>
         /// A collection of <see cref="Journal"/> components in the iCalendar.
         /// </summary>
-        public ICalendarObjectList<Journal> Journals => _mJournals;
+        public ICalendarObjectList<Journal> Journals { get; private set; }
 
         /// <summary>
         /// A collection of VTimeZone components in the iCalendar.
         /// </summary>
-        public ICalendarObjectList<VTimeZone> TimeZones => _mTimeZones;
+        public ICalendarObjectList<VTimeZone> TimeZones { get; private set; }
 
         /// <summary>
         /// A collection of <see cref="Todo"/> components in the iCalendar.
         /// </summary>
-        public IUniqueComponentList<Todo> Todos => _mTodos;
+        public IUniqueComponentList<Todo> Todos { get; private set; }
 
         public string Version
         {
@@ -188,35 +182,6 @@ namespace Ical.Net
         {
             this.AddChild(tz);
             return tz;
-        }
-
-        /// <summary>
-        /// Evaluates component recurrences for the given range of time.
-        /// <example>
-        ///     For example, if you are displaying a month-view for January 2007,
-        ///     you would want to evaluate recurrences for Jan. 1, 2007 to Jan. 31, 2007
-        ///     to display relevant information for those dates.
-        /// </example>
-        /// </summary>
-        /// <param name="fromDate">The beginning date/time of the range to test.</param>
-        /// <param name="toDate">The end date/time of the range to test.</param>
-        [Obsolete("This method is no longer supported.  Use GetOccurrences() instead.")]
-        public void Evaluate(IDateTime fromDate, IDateTime toDate)
-        {
-            throw new NotSupportedException("Evaluate() is no longer supported as a public method.  Use GetOccurrences() instead.");
-        }
-
-        /// <summary>
-        /// Evaluates component recurrences for the given range of time, for
-        /// the type of recurring component specified.
-        /// </summary>
-        /// <typeparam name="T">The type of component to be evaluated for recurrences.</typeparam>
-        /// <param name="fromDate">The beginning date/time of the range to test.</param>
-        /// <param name="toDate">The end date/time of the range to test.</param>
-        [Obsolete("This method is no longer supported.  Use GetOccurrences() instead.")]
-        public void Evaluate<T>(IDateTime fromDate, IDateTime toDate)
-        {
-            throw new NotSupportedException("Evaluate() is no longer supported as a public method.  Use GetOccurrences() instead.");
         }
 
         /// <summary>
@@ -334,30 +299,30 @@ namespace Ical.Net
             Children.Clear();
         }
 
-        public void MergeWith(IMergeable obj)
+        public void MergeWith(IMergeable mergeable)
         {
-            var c = obj as Calendar;
-            if (c == null)
+            var calendar = mergeable as Calendar;
+            if (calendar == null)
             {
                 return;
             }
 
             if (Name == null)
             {
-                Name = c.Name;
+                Name = calendar.Name;
             }
 
-            Method = c.Method;
-            Version = c.Version;
-            ProductId = c.ProductId;
-            Scale = c.Scale;
+            Method = calendar.Method;
+            Version = calendar.Version;
+            ProductId = calendar.ProductId;
+            Scale = calendar.Scale;
 
-            foreach (var p in c.Properties.Where(p => !Properties.ContainsKey(p.Name)))
+            foreach (var p in calendar.Properties.Where(p => !Properties.ContainsKey(p.Name)))
             {
                 Properties.Add(p);
             }
 
-            foreach (var child in c.Children)
+            foreach (var child in calendar.Children)
             {
                 if (child is IUniqueComponent)
                 {

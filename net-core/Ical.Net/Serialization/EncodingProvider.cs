@@ -3,20 +3,20 @@ using System.Text;
 
 namespace Ical.Net.Serialization
 {
-    internal class EncodingProvider : IEncodingProvider
+    internal sealed class EncodingProvider : IEncodingProvider
     {
         public delegate string EncoderDelegate(byte[] data);
 
         public delegate byte[] DecoderDelegate(string value);
 
-        private readonly SerializationContext _mSerializationContext;
+        private readonly SerializationContext _serializationContext;
 
         public EncodingProvider(SerializationContext ctx)
         {
-            _mSerializationContext = ctx;
+            _serializationContext = ctx;
         }
 
-        protected byte[] Decode7Bit(string value)
+        private static byte[] Decode7Bit(string value)
         {
             try
             {
@@ -29,7 +29,7 @@ namespace Ical.Net.Serialization
             }
         }
 
-        protected byte[] Decode8Bit(string value)
+        private static byte[] Decode8Bit(string value)
         {
             try
             {
@@ -42,7 +42,7 @@ namespace Ical.Net.Serialization
             }
         }
 
-        protected byte[] DecodeBase64(string value)
+        private static byte[] DecodeBase64(string value)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace Ical.Net.Serialization
             }
         }
 
-        protected DecoderDelegate GetDecoderFor(string encoding)
+        private static DecoderDelegate GetDecoderFor(string encoding)
         {
             if (encoding == null)
             {
@@ -74,7 +74,7 @@ namespace Ical.Net.Serialization
             }
         }
 
-        protected string Encode7Bit(byte[] data)
+        private static string Encode7Bit(byte[] data)
         {
             try
             {
@@ -87,7 +87,7 @@ namespace Ical.Net.Serialization
             }
         }
 
-        protected string Encode8Bit(byte[] data)
+        private static string Encode8Bit(byte[] data)
         {
             try
             {
@@ -100,7 +100,7 @@ namespace Ical.Net.Serialization
             }
         }
 
-        protected string EncodeBase64(byte[] data)
+        private static string EncodeBase64(byte[] data)
         {
             try
             {
@@ -112,7 +112,7 @@ namespace Ical.Net.Serialization
             }
         }
 
-        protected EncoderDelegate GetEncoderFor(string encoding)
+        private EncoderDelegate GetEncoderFor(string encoding)
         {
             if (encoding == null)
             {
@@ -159,7 +159,7 @@ namespace Ical.Net.Serialization
             }
 
             // Decode the string into the current encoding
-            var encodingStack = _mSerializationContext.GetService(typeof (EncodingStack)) as EncodingStack;
+            var encodingStack = _serializationContext.GetService(typeof (EncodingStack)) as EncodingStack;
             return encodingStack.Current.GetString(data);
         }
 

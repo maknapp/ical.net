@@ -2,13 +2,12 @@
 
 namespace Ical.Net.Collections
 {
-    public class ObjectEventArgs<T, TU> :
-        EventArgs
+    public sealed class ObjectEventArgs<TFirst, TSecond> : EventArgs
     {
-        public T First { get; set; }
-        public TU Second { get; set; }
+        public TFirst First { get; }
+        public TSecond Second { get; }
 
-        public ObjectEventArgs(T first, TU second)
+        public ObjectEventArgs(TFirst first, TSecond second)
         {
             First = first;
             Second = second;

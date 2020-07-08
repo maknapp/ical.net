@@ -56,22 +56,22 @@ namespace Ical.Net
         /// <summary>
         /// Adds a parameter to the iCalendar object.
         /// </summary>
-        public void AddParameter(CalendarParameter p)
+        public void AddParameter(CalendarParameter parameter)
         {
-            Parameters.Add(p);
+            Parameters.Add(parameter);
         }
 
         public override void CopyFrom(ICopyable obj)
         {
             base.CopyFrom(obj);
 
-            var p = obj as ICalendarProperty;
-            if (p == null)
+            var property = obj as ICalendarProperty;
+            if (property == null)
             {
                 return;
             }
 
-            SetValue(p.Values);
+            SetValue(property.Values);
         }
 
         public IEnumerable<object> Values => _values;

@@ -4,7 +4,7 @@ using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public class AttendeeSerializer : StringSerializer
+    public sealed class AttendeeSerializer : StringSerializer
     {
         public AttendeeSerializer() { }
 

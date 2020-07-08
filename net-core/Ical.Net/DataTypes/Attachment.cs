@@ -11,9 +11,9 @@ namespace Ical.Net.DataTypes
     /// 1) A string representing a URI which is typically human-readable, OR
     /// 2) A base64-encoded string that can represent anything
     /// </summary>
-    public class Attachment : EncodableDataType
+    public sealed class Attachment : EncodableDataType
     {
-        public Uri Uri { get; set; }
+        public Uri Uri { get; internal set; }
         public byte[] Data { get; }
 
         private Encoding _valueEncoding = System.Text.Encoding.UTF8;
@@ -74,7 +74,7 @@ namespace Ical.Net.DataTypes
         //ToDo: See if this can be deleted
         public override void CopyFrom(ICopyable obj) { }
 
-        protected bool Equals(Attachment other)
+        public bool Equals(Attachment other)
         {
             var firstPart = Equals(Uri, other.Uri) && ValueEncoding.Equals(other.ValueEncoding);
             return Data == null

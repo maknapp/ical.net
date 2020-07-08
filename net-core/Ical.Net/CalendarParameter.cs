@@ -80,7 +80,7 @@ namespace Ical.Net
             _values.UnionWith(values.Where(IsValidValue));
         }
 
-        private bool IsValidValue(string value) => !string.IsNullOrWhiteSpace(value);
+        private static bool IsValidValue(string value) => !string.IsNullOrWhiteSpace(value);
 
         public void AddValue(string value)
         {

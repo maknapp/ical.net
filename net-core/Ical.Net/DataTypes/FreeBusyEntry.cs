@@ -1,6 +1,6 @@
 ﻿namespace Ical.Net.DataTypes
 {
-    public class FreeBusyEntry : Period
+    public sealed class FreeBusyEntry : Period
     {
         public FreeBusyStatus Status { get; set; }
 

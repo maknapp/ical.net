@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using Ical.Net.DataTypes;
 using Ical.Net.Utilities;
-using Ical.Net.Utilities;
 
 namespace Ical.Net.Serialization
 {
-    public class PropertySerializer : SerializerBase
+    public sealed class PropertySerializer : SerializerBase
     {
         public PropertySerializer() {}
 

@@ -7,6 +7,5 @@ namespace Ical.Net
     /// </summary>
     public class CalendarObjectList : GroupedList<string, ICalendarObject>, ICalendarObjectList<ICalendarObject>
     {
-        public CalendarObjectList(ICalendarObject parent) {}
     }
 }

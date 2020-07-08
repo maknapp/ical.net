@@ -6,7 +6,7 @@ using Ical.Net.Collections;
 
 namespace Ical.Net.Proxies
 {
-    public class UniqueComponentListProxy<TComponentType> :
+    public sealed class UniqueComponentListProxy<TComponentType> :
         CalendarObjectListProxy<TComponentType>,
         IUniqueComponentList<TComponentType>
         where TComponentType : class, IUniqueComponent

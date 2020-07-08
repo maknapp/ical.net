@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.Serialization;
 using Ical.Net.DataTypes;
 using Ical.Net.Evaluation;
 
@@ -12,9 +11,9 @@ namespace Ical.Net.CalendarComponents
     /// A class that represents an RFC 5545 VTODO component.
     /// </summary> 
     [DebuggerDisplay("{Summary} - {Status}")]
-    public class Todo : RecurringComponent, IAlarmContainer
+    public sealed class Todo : RecurringComponent, IAlarmContainer
     {
-        private readonly TodoEvaluator _mEvaluator;
+        private readonly TodoEvaluator _evaluator;
 
         /// <summary>
         /// The date/time the todo was completed.
@@ -130,8 +129,8 @@ namespace Ical.Net.CalendarComponents
         {
             Name = TodoStatus.Name;
 
-            _mEvaluator = new TodoEvaluator(this);
-            SetService(_mEvaluator);
+            _evaluator = new TodoEvaluator(this);
+            SetService(_evaluator);
         }
 
         /// <summary>
@@ -155,9 +154,9 @@ namespace Ical.Net.CalendarComponents
                 }
 
                 // Evaluate to the previous occurrence.
-                _mEvaluator.EvaluateToPreviousOccurrence(Completed, currDt);
+                _evaluator.EvaluateToPreviousOccurrence(Completed, currDt);
 
-                return _mEvaluator.Periods.Cast<Period>().All(p => !p.StartTime.GreaterThan(Completed) || !currDt.GreaterThanOrEqual(p.StartTime));
+                return _evaluator.Periods.Cast<Period>().All(p => !p.StartTime.GreaterThan(Completed) || !currDt.GreaterThanOrEqual(p.StartTime));
             }
             return false;
         }
@@ -179,12 +178,6 @@ namespace Ical.Net.CalendarComponents
         public bool IsCancelled => string.Equals(Status, TodoStatus.Cancelled, TodoStatus.Comparison);
 
         protected override bool EvaluationIncludesReferenceDate => true;
-
-        protected override void OnDeserializing(StreamingContext context)
-        {
-            //ToDo: a necessary evil, for now
-            base.OnDeserializing(context);
-        }
 
         private void ExtrapolateTimes()
         {

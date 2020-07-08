@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public class TimeSpanSerializer : SerializerBase
+    public sealed class TimeSpanSerializer : SerializerBase
     {
         public TimeSpanSerializer() { }
 

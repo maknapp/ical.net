@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 
 namespace Ical.Net.Serialization
 {
-    internal class SerializationUtil
+    internal sealed class SerializationUtil
     {
         public static void OnDeserializing(object obj)
         {
@@ -28,7 +28,7 @@ namespace Ical.Net.Serialization
         private const BindingFlags _bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
 
         private static readonly ConcurrentDictionary<Type, List<MethodInfo>> _onDeserializingMethods = new ConcurrentDictionary<Type, List<MethodInfo>>();
-        private static List<MethodInfo> GetDeserializingMethods(Type targetType)
+        private static IEnumerable<MethodInfo> GetDeserializingMethods(Type targetType)
         {
             if (targetType == null)
             {
@@ -47,15 +47,15 @@ namespace Ical.Net.Serialization
                 .ToList());
         }
 
-        private static ConcurrentDictionary<Type, List<MethodInfo>> _onDeserializedMethods = new ConcurrentDictionary<Type, List<MethodInfo>>();
-        private static List<MethodInfo> GetDeserializedMethods(Type targetType)
+        private static readonly ConcurrentDictionary<Type, List<MethodInfo>> _onDeserializedMethods = new ConcurrentDictionary<Type, List<MethodInfo>>();
+        private static IEnumerable<MethodInfo> GetDeserializedMethods(Type targetType)
         {
             if (targetType == null)
             {
-                return new List<MethodInfo>();
+                return Array.Empty<MethodInfo>();
             }
-            List<MethodInfo> methodInfos;
-            if (_onDeserializedMethods.TryGetValue(targetType, out methodInfos))
+
+            if (_onDeserializedMethods.TryGetValue(targetType, out List<MethodInfo> methodInfos))
             {
                 return methodInfos;
             }

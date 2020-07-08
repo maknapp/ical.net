@@ -5,13 +5,9 @@ using Ical.Net.DataTypes;
 
 namespace Ical.Net.Evaluation
 {
-    public class TimeZoneInfoEvaluator : RecurringEvaluator
+    public sealed class TimeZoneInfoEvaluator : RecurringEvaluator
     {
-        protected VTimeZoneInfo TimeZoneInfo
-        {
-            get => Recurrable as VTimeZoneInfo;
-            set => Recurrable = value;
-        }
+        private VTimeZoneInfo TimeZoneInfo => Recurrable as VTimeZoneInfo;
 
         public TimeZoneInfoEvaluator(IRecurrable tzi) : base(tzi) { }
 

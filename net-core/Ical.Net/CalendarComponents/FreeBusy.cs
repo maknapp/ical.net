@@ -6,7 +6,7 @@ using Ical.Net.Utilities;
 
 namespace Ical.Net.CalendarComponents
 {
-    public class FreeBusy : UniqueComponent, IMergeable
+    public sealed class FreeBusy : UniqueComponent, IMergeable
     {
         public static FreeBusy Create(ICalendarObject obj, FreeBusy freeBusyRequest)
         {

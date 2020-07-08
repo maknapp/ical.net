@@ -41,16 +41,16 @@ namespace Ical.Net.CalendarComponents
         {
             base.CopyFrom(obj);
 
-            var c = obj as ICalendarComponent;
-            if (c == null)
+            var calendarComponent = obj as ICalendarComponent;
+            if (calendarComponent == null)
             {
                 return;
             }
 
             Properties.Clear();
-            foreach (var p in c.Properties)
+            foreach (var property in calendarComponent.Properties)
             {
-                Properties.Add(p);
+                Properties.Add(property);
             }
         }
 
@@ -59,17 +59,16 @@ namespace Ical.Net.CalendarComponents
         /// </summary>
         public void AddProperty(string name, string value)
         {
-            var p = new CalendarProperty(name, value);
-            AddProperty(p);
+            AddProperty(new CalendarProperty(name, value));
         }
 
         /// <summary>
         /// Adds a property to this component.
         /// </summary>
-        public void AddProperty(ICalendarProperty p)
+        public void AddProperty(ICalendarProperty property)
         {
-            p.Parent = this;
-            Properties.Set(p.Name, p.Value);
+            property.Parent = this;
+            Properties.Set(property.Name, property.Value);
         }
     }
 }

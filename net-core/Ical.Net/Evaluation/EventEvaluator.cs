@@ -6,9 +6,9 @@ using Ical.Net.DataTypes;
 
 namespace Ical.Net.Evaluation
 {
-    public class EventEvaluator : RecurringEvaluator
+    public sealed class EventEvaluator : RecurringEvaluator
     {
-        protected CalendarEvent CalendarEvent
+        private CalendarEvent CalendarEvent
         {
             get => Recurrable as CalendarEvent;
             set => Recurrable = value;
