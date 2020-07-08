@@ -10,7 +10,7 @@ namespace Ical.Net.Collections
         /// <summary>
         /// Fired after an item is added to the collection.
         /// </summary>
-        event EventHandler<ObjectEventArgs<TItem, int>> ItemAdded;
+        event EventHandler<ItemAddedEventArgs<TItem>> ItemAdded;
 
         /// <summary>
         /// Removes all items with the matching group from the collection.
