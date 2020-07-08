@@ -16,7 +16,7 @@ namespace Ical.Net.Serialization.DataTypes
 
         internal static readonly Regex SingleBackslashMatch = new Regex(@"(?<!\\)\\(?!\\)", RegexOptions.Compiled);
 
-        protected virtual string Unescape(string value)
+        protected string Unescape(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
             {
@@ -38,7 +38,7 @@ namespace Ical.Net.Serialization.DataTypes
             return value;
         }
 
-        protected virtual string Escape(string value)
+        protected string Escape(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
             {

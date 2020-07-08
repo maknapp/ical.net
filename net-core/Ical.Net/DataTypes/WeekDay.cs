@@ -9,9 +9,9 @@ namespace Ical.Net.DataTypes
     /// </summary>
     public class WeekDay : EncodableDataType
     {
-        public virtual int Offset { get; set; } = int.MinValue;
+        public int Offset { get; set; } = int.MinValue;
 
-        public virtual DayOfWeek DayOfWeek { get; set; }
+        public DayOfWeek DayOfWeek { get; set; }
 
         public WeekDay()
         {
