@@ -6,15 +6,15 @@ namespace Ical.Net.Collections
     public sealed class GroupedListEnumerator<TType> :
         IEnumerator<TType>
     {
-        private readonly IList<IMultiLinkedList<TType>> _lists;
-        private IEnumerator<IMultiLinkedList<TType>> _listsEnumerator;
+        private readonly IList<IList<TType>> _lists;
+        private IEnumerator<IList<TType>> _listsEnumerator;
         private IEnumerator<TType> _listEnumerator;
 
-        public GroupedListEnumerator(IList<IMultiLinkedList<TType>> lists) => _lists = lists;
+        public GroupedListEnumerator(IList<IList<TType>> lists) => _lists = lists;
 
         public TType Current
             => _listEnumerator == null
-                ? default(TType)
+                ? default
                 : _listEnumerator.Current;
 
         public void Dispose()
@@ -34,7 +34,7 @@ namespace Ical.Net.Collections
 
         object IEnumerator.Current
             => _listEnumerator == null
-                ? default(TType)
+                ? default
                 : _listEnumerator.Current;
 
         private bool MoveNextList()
