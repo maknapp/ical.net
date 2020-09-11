@@ -43,7 +43,7 @@ namespace Ical.Net.Serialization
             SetService(new CalendarComponentFactory());
             SetService(new DataTypeMapper());
             SetService(new EncodingStack());
-            SetService(new EncodingProvider(this));
+            SetService(new EncodingProvider());
         }
 
         public void Push(object item)

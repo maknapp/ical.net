@@ -50,7 +50,7 @@ namespace Ical.Net.Serialization.DataTypes
                 return value;
             }
 
-            var data = DecodeData(dt, value);
+            byte[] data = DecodeData(dt, value);
             if (data == null)
             {
                 return null;
