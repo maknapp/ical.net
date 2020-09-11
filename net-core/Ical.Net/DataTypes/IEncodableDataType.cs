@@ -2,6 +2,6 @@
 {
     public interface IEncodableDataType
     {
-        string Encoding { get; set; }
+        string Encoding { get; }
     }
 }

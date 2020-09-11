@@ -2,7 +2,7 @@
 
 namespace Ical.Net.Serialization
 {
-    internal sealed class EncodingProvider : IEncodingProvider
+    internal sealed class EncodingProvider
     {
         public string Encode(string encoding, byte[] data)
         {
