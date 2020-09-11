@@ -39,8 +39,7 @@ namespace Ical.Net.Serialization.DataTypes
                 return encodingStack.Current.GetString(data);
             }
 
-            var encodingProvider = GetService<EncodingProvider>();
-            return encodingProvider?.Encode(dt.Encoding, data);
+            return EncodingProvider.Encode(dt.Encoding, data);
         }
 
         protected string Decode(IEncodableDataType dt, string value)
@@ -75,8 +74,7 @@ namespace Ical.Net.Serialization.DataTypes
                 return encodingStack.Current.GetBytes(value);
             }
 
-            var encodingProvider = GetService<EncodingProvider>();
-            return encodingProvider?.DecodeData(dt.Encoding, value);
+            return EncodingProvider.DecodeData(dt.Encoding, value);
         }
     }
 }

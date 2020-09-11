@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace Ical.Net.FrameworkUnitTests
 {
-    public class ComponentTest
+    public class ComponentTests
     {
         [Test, Category("Components")]
         public void UniqueComponent1()

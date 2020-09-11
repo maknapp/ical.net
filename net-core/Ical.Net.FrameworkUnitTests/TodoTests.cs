@@ -3,11 +3,12 @@ using System.Linq;
 using Ical.Net.DataTypes;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using static Ical.Net.FrameworkUnitTests.Support.AssertUtilities;
 
 namespace Ical.Net.FrameworkUnitTests
 {
     [TestFixture]
-    public class TodoTest
+    public class TodoTests
     {
         private const string _tzid = "US-Eastern";
 
@@ -15,7 +16,7 @@ namespace Ical.Net.FrameworkUnitTests
         public void ActiveTodo_Tests(string calendarString, IList<KeyValuePair<CalDateTime, bool>> incoming)
         {
             var iCal = Calendar.Load(calendarString);
-            ProgramTest.TestCal(iCal);
+            AssertCalendar(iCal);
             var todo = iCal.Todos;
 
             foreach (var calDateTime in incoming)
@@ -165,7 +166,7 @@ namespace Ical.Net.FrameworkUnitTests
         public void CompletedTodo_Tests(string calendarString, IList<KeyValuePair<CalDateTime, bool>> incoming)
         {
             var iCal = Calendar.Load(calendarString);
-            ProgramTest.TestCal(iCal);
+            AssertCalendar(iCal);
             var todo = iCal.Todos;
 
             foreach (var calDateTime in incoming)

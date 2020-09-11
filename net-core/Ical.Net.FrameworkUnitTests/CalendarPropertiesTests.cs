@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace Ical.Net.FrameworkUnitTests
 {
     [TestFixture]
-    public class CalendarPropertiesTest
+    public class CalendarPropertiesTests
     {
         [Test]
         public void AddPropertyShouldNotIncludePropertyNameInValue()

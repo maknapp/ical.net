@@ -56,34 +56,35 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AlarmTest.cs" />
-    <Compile Include="AttendeeTest.cs" />
+    <Compile Include="AlarmTests.cs" />
+    <Compile Include="AttendeeTests.cs" />
     <Compile Include="CalDateTimeTests.cs" />
     <Compile Include="CalendarEventTest.cs" />
-    <Compile Include="CalendarPropertiesTest.cs" />
+    <Compile Include="CalendarPropertiesTests.cs" />
     <Compile Include="CollectionHelpersTests.cs" />
-    <Compile Include="ComponentTest.cs" />
+    <Compile Include="ComponentTests.cs" />
     <Compile Include="ConcurrentDeserializationTests.cs" />
-    <Compile Include="CopyTest.cs" />
-    <Compile Include="DataTypeTest.cs" />
+    <Compile Include="CopyTests.cs" />
+    <Compile Include="DataTypeTests.cs" />
     <Compile Include="DateTimeSerializerTests.cs" />
     <Compile Include="DeserializationTests.cs" />
     <Compile Include="DocumentationExamples.cs" />
     <Compile Include="EqualityAndHashingTests.cs" />
-    <Compile Include="FreeBusyTest.cs" />
+    <Compile Include="FreeBusyTests.cs" />
     <Compile Include="GetOccurrenceTests.cs" />
     <Compile Include="IcsFiles.cs" />
-    <Compile Include="JournalTest.cs" />
-    <Compile Include="ProgramTest.cs" />
+    <Compile Include="JournalTests.cs" />
+    <Compile Include="ProgramTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RecurrenceTests.cs" />
-    <Compile Include="SerializationHelpers.cs" />
+    <Compile Include="Support\SerializationUtilities.cs" />
     <Compile Include="SerializationTests.cs" />
     <Compile Include="SimpleDeserializationTests.cs" />
+    <Compile Include="Support\AssertUtilities.cs" />
     <Compile Include="SymmetricSerializationTests.cs" />
     <Compile Include="TextUtilTests.cs" />
-    <Compile Include="TodoTest.cs" />
-    <Compile Include="VTimeZoneTest.cs" />
+    <Compile Include="TodoTests.cs" />
+    <Compile Include="VTimeZoneTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Calendars\Alarm\ALARM1.ics" />

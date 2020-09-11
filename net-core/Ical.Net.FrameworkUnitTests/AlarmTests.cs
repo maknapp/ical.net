@@ -3,34 +3,36 @@ using System.Collections.Generic;
 using System.Linq;
 using Ical.Net.DataTypes;
 using NUnit.Framework;
+using static Ical.Net.FrameworkUnitTests.Support.AssertUtilities;
 
 namespace Ical.Net.FrameworkUnitTests
 {
     [TestFixture]
-    public class AlarmTest
+    [Category("Alarm")]
+    public class AlarmTests
     {
         private const string _tzid = "US-Eastern";
 
-        public void TestAlarm(string calendarString, List<IDateTime> dates, CalDateTime start, CalDateTime end)
+        private static void TestAlarm(string calendarString, ICollection<IDateTime> dates, CalDateTime start, CalDateTime end)
         {
-            var iCal = Calendar.Load(calendarString);
-            ProgramTest.TestCal(iCal);
-            var evt = iCal.Events.First();
+            var calendar = Calendar.Load(calendarString);
+            AssertCalendar(calendar);
+            var evt = calendar.Events.First();
 
             // Poll all alarms that occurred between Start and End
             var alarms = evt.PollAlarms(start, end);
 
             var utcDates = new HashSet<DateTime>(dates.Select(d => d.AsUtc));
 
-            //Only compare the UTC values here, since we care about the time coordinate when the alarm fires, and nothing else
+            // Only compare the UTC values here, since we care about the time coordinate when the alarm fires, and nothing else.
             foreach (var alarm in alarms.Select(a => a.DateTime.AsUtc))
             {
-                Assert.IsTrue(utcDates.Contains(alarm), "Alarm triggers at " + alarm + ", but it should not.");
+                Assert.IsTrue(utcDates.Contains(alarm), $"Alarm triggers at {alarm}, but it should not.");
             }
-            Assert.IsTrue(dates.Count == alarms.Count, "There were " + alarms.Count + " alarm occurrences; there should have been " + dates.Count + ".");
+            Assert.IsTrue(dates.Count == alarms.Count, $"There were {alarms.Count} alarm occurrences; there should have been {dates.Count}.");
         }
 
-        [Test, Category("Alarm")]
+        [Test]
         public void Alarm1()
         {
             var dateTimes = new List<IDateTime>();
@@ -43,7 +45,7 @@ namespace Ical.Net.FrameworkUnitTests
             TestAlarm(content, dateTimes, new CalDateTime(2006, 7, 1, _tzid), new CalDateTime(2006, 9, 1, _tzid));
         }
 
-        [Test, Category("Alarm")]
+        [Test]
         public void Alarm2()
         {
             var dateTimes = new List<IDateTime>();
@@ -65,7 +67,7 @@ namespace Ical.Net.FrameworkUnitTests
             TestAlarm(content, dateTimes, new CalDateTime(2006, 7, 1, _tzid), new CalDateTime(2006, 9, 1, _tzid));
         }
 
-        [Test, Category("Alarm")]
+        [Test]
         public void Alarm3()
         {
             var dateTimes = new List<IDateTime>();
@@ -82,7 +84,7 @@ namespace Ical.Net.FrameworkUnitTests
             TestAlarm(content, dateTimes, new CalDateTime(1997, 1, 1, _tzid), new CalDateTime(2000, 12, 31, _tzid));
         }
 
-        [Test, Category("Alarm")]
+        [Test]
         public void Alarm4()
         {
             var dateTimes = new List<IDateTime>();
@@ -114,7 +116,7 @@ namespace Ical.Net.FrameworkUnitTests
             TestAlarm(content, dateTimes, new CalDateTime(1997, 1, 1, _tzid), new CalDateTime(2000, 12, 31, _tzid));
         }
 
-        [Test, Category("Alarm")]
+        [Test]
         public void Alarm5()
         {
             var dateTimes = new List<IDateTime>();
@@ -127,7 +129,7 @@ namespace Ical.Net.FrameworkUnitTests
             TestAlarm(content, dateTimes, new CalDateTime(1997, 7, 1, _tzid), new CalDateTime(2000, 12, 31, _tzid));
         }
 
-        [Test, Category("Alarm")]
+        [Test]
         public void Alarm6()
         {
             var dateTimes = new List<IDateTime>();
@@ -145,7 +147,7 @@ namespace Ical.Net.FrameworkUnitTests
             TestAlarm(content, dateTimes, new CalDateTime(1997, 7, 1, _tzid), new CalDateTime(2000, 12, 31, _tzid));
         }
 
-        [Test, Category("Alarm")]
+        [Test]
         public void Alarm7()
         {
             var dateTimes = new List<IDateTime>();

@@ -4,7 +4,7 @@ namespace Ical.Net.Serialization
 {
     internal sealed class EncodingProvider
     {
-        public string Encode(string encoding, byte[] data)
+        public static string Encode(string encoding, byte[] data)
         {
             if (encoding == null || data == null)
             {
@@ -24,7 +24,7 @@ namespace Ical.Net.Serialization
             }
         }
 
-        public byte[] DecodeData(string encoding, string value)
+        public static byte[] DecodeData(string encoding, string value)
         {
             if (encoding == null || value == null)
             {

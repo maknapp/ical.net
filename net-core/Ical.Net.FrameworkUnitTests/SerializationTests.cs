@@ -311,7 +311,7 @@ namespace Ical.Net.FrameworkUnitTests
                 Version = "2.0"
             };
 
-            var evt = AttendeeTest.VEventFactory();
+            var evt = AttendeeTests.VEventFactory();
             cal.Events.Add(evt);
             const string org = "MAILTO:james@example.com";
             evt.Organizer = new Organizer(org);

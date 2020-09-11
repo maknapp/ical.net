@@ -9,6 +9,7 @@ using Ical.Net.DataTypes;
 using Ical.Net.Serialization;
 using Ical.Net.Serialization.DataTypes;
 using NUnit.Framework;
+using static Ical.Net.FrameworkUnitTests.Support.AssertUtilities;
 
 namespace Ical.Net.FrameworkUnitTests
 {
@@ -139,7 +140,7 @@ namespace Ical.Net.FrameworkUnitTests
         public void Categories1_2()
         {
             var iCal = SimpleDeserializer.Default.Deserialize(new StringReader(IcsFiles.Categories1)).Cast<Calendar>().Single();
-            ProgramTest.TestCal(iCal);
+            AssertCalendar(iCal);
             var evt = iCal.Events.First();
 
             var items = new List<string>();
@@ -201,7 +202,7 @@ namespace Ical.Net.FrameworkUnitTests
         public void Encoding2()
         {
             var iCal = SimpleDeserializer.Default.Deserialize(new StringReader(IcsFiles.Encoding2)).Cast<Calendar>().Single();
-            ProgramTest.TestCal(iCal);
+            AssertCalendar(iCal);
             var evt = iCal.Events.First();
 
             Assert.AreEqual(
@@ -225,7 +226,7 @@ namespace Ical.Net.FrameworkUnitTests
         public void Encoding3()
         {
             var iCal = SimpleDeserializer.Default.Deserialize(new StringReader(IcsFiles.Encoding3)).Cast<Calendar>().Single();
-            ProgramTest.TestCal(iCal);
+            AssertCalendar(iCal);
             var evt = iCal.Events.First();
 
             Assert.AreEqual("uuid1153170430406", evt.Uid, "UID should be 'uuid1153170430406'; it is " + evt.Uid);
@@ -275,7 +276,7 @@ END:VCALENDAR
         public void GeographicLocation1_2()
         {
             var iCal = SimpleDeserializer.Default.Deserialize(new StringReader(IcsFiles.GeographicLocation1)).Cast<Calendar>().Single();
-            ProgramTest.TestCal(iCal);
+            AssertCalendar(iCal);
             var evt = iCal.Events.First();
 
             Assert.AreEqual(37.386013, evt.GeographicLocation.Latitude, "Latitude should be 37.386013; it is not.");

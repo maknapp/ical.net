@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace Ical.Net.FrameworkUnitTests
 {
     [TestFixture]
-    public class AttendeeTest
+    public class AttendeeTests
     {
         internal static CalendarEvent VEventFactory() => new CalendarEvent
         {

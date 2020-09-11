@@ -19,16 +19,7 @@ namespace Ical.Net.CoreUnitTests
         }
 
         private const string _tzid = "US-Eastern";
-
-        public static void TestCal(Calendar cal)
-        {
-            Assert.IsNotNull(cal, "The iCalendar was not loaded");
-            if (cal.Events.Count > 0)
-                Assert.IsTrue(cal.Events.Count == 1, "Calendar should contain 1 event; however, the iCalendar loaded " + cal.Events.Count + " events");
-            else if (cal.Todos.Count > 0)
-                Assert.IsTrue(cal.Todos.Count == 1, "Calendar should contain 1 todo; however, the iCalendar loaded " + cal.Todos.Count + " todos");
-        }
-
+        
         /// <summary>
         /// The following test is an aggregate of MonthlyCountByMonthDay3() and MonthlyByDay1() in the
         /// </summary>

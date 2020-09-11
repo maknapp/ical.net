@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace Ical.Net.FrameworkUnitTests
 {
-    public class VTimeZoneTest
+    public class VTimeZoneTests
     {
         [Test, Category("VTimeZone")]
         public void InvalidTzIdShouldThrowException()

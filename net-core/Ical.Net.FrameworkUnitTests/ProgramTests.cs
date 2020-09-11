@@ -7,8 +7,10 @@ using NUnit.Framework;
 namespace Ical.Net.FrameworkUnitTests
 {
     [TestFixture]
-    public class ProgramTest
+    public class ProgramTests
     {
+        private const string _tzid = "US-Eastern";
+
         [Test]
         public void LoadAndDisplayCalendar()
         {
@@ -16,17 +18,6 @@ namespace Ical.Net.FrameworkUnitTests
             // with US Holidays for 2006.
             var iCal = Calendar.Load(IcsFiles.UsHolidays);
             Assert.IsNotNull(iCal, "iCalendar did not load.");
-        }
-
-        private const string _tzid = "US-Eastern";
-
-        public static void TestCal(Calendar cal)
-        {
-            Assert.IsNotNull(cal, "The iCalendar was not loaded");
-            if (cal.Events.Count > 0)
-                Assert.IsTrue(cal.Events.Count == 1, "Calendar should contain 1 event; however, the iCalendar loaded " + cal.Events.Count + " events");
-            else if (cal.Todos.Count > 0)
-                Assert.IsTrue(cal.Todos.Count == 1, "Calendar should contain 1 todo; however, the iCalendar loaded " + cal.Todos.Count + " todos");
         }
 
         /// <summary>
@@ -129,7 +120,7 @@ namespace Ical.Net.FrameworkUnitTests
                 "US-Eastern",
                 "US-Eastern",
                 "US-Eastern",
-                "US-Eastern",                
+                "US-Eastern",
                 "US-Eastern",
                 "US-Eastern",
                 "US-Eastern",
@@ -164,15 +155,15 @@ namespace Ical.Net.FrameworkUnitTests
             // system time zones on the machine and ensure they
             // are properly translated.
             var zones = TimeZoneInfo.GetSystemTimeZones();
-            foreach (var zone in zones)
+            foreach (TimeZoneInfo zone in zones)
             {
                 try
                 {
-                    TimeZoneInfo.FindSystemTimeZoneById(zone.Id);                    
+                    TimeZoneInfo.FindSystemTimeZoneById(zone.Id);
                 }
                 catch (Exception)
                 {
-                    Assert.Fail("Not found: " + zone.StandardName);                    
+                    Assert.Fail($"Timezone '{zone.StandardName}' not found.");
                 }
             }
         }

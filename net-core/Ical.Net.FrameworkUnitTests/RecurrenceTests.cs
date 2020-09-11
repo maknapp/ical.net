@@ -13,6 +13,8 @@ using Ical.Net.Serialization.DataTypes;
 using Ical.Net.Utilities;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using static Ical.Net.FrameworkUnitTests.Support.AssertUtilities;
+using static Ical.Net.FrameworkUnitTests.Support.SerializationUtilities;
 
 namespace Ical.Net.FrameworkUnitTests
 {
@@ -78,7 +80,7 @@ namespace Ical.Net.FrameworkUnitTests
         public void YearlyComplex1()
         {
             var iCal = Calendar.Load(IcsFiles.YearlyComplex1);
-            ProgramTest.TestCal(iCal);
+            AssertCalendar(iCal);
             var evt = iCal.Events.First();
             var occurrences = evt.GetOccurrences(
                 new CalDateTime(2006, 1, 1, _tzid),
@@ -139,7 +141,7 @@ namespace Ical.Net.FrameworkUnitTests
         public void DailyUntil1()
         {
             var iCal = Calendar.Load(IcsFiles.DailyUntil1);
-            ProgramTest.TestCal(iCal);
+            AssertCalendar(iCal);
             var evt = iCal.Events.First();
 
             var occurrences = evt.GetOccurrences(
@@ -309,7 +311,7 @@ namespace Ical.Net.FrameworkUnitTests
         public void ByMonth1()
         {
             var iCal = Calendar.Load(IcsFiles.ByMonth1);
-            ProgramTest.TestCal(iCal);
+            AssertCalendar(iCal);
             var evt = iCal.Events.First();
 
             var occurrences = evt.GetOccurrences(
@@ -345,8 +347,8 @@ namespace Ical.Net.FrameworkUnitTests
         {
             var iCal1 = Calendar.Load(IcsFiles.ByMonth1);
             var iCal2 = Calendar.Load(IcsFiles.ByMonth2);
-            ProgramTest.TestCal(iCal1);
-            ProgramTest.TestCal(iCal2);
+            AssertCalendar(iCal1);
+            AssertCalendar(iCal2);
             var evt1 = iCal1.Events.First();
             var evt2 = iCal2.Events.First();
 
@@ -529,8 +531,8 @@ namespace Ical.Net.FrameworkUnitTests
         {
             var iCal1 = Calendar.Load(IcsFiles.WeeklyUntilWkst1);
             var iCal2 = Calendar.Load(IcsFiles.WeeklyCountWkst1);
-            ProgramTest.TestCal(iCal1);
-            ProgramTest.TestCal(iCal2);
+            AssertCalendar(iCal1);
+            AssertCalendar(iCal2);
             var evt1 = iCal1.Events.First();
             var evt2 = iCal2.Events.First();
 
@@ -1757,8 +1759,8 @@ namespace Ical.Net.FrameworkUnitTests
         {
             var iCal1 = Calendar.Load(IcsFiles.DailyByHourMinute1);
             var iCal2 = Calendar.Load(IcsFiles.MinutelyByHour1);
-            ProgramTest.TestCal(iCal1);
-            ProgramTest.TestCal(iCal2);
+            AssertCalendar(iCal1);
+            AssertCalendar(iCal2);
             var evt1 = iCal1.Events.First();
             var evt2 = iCal2.Events.First();
 
@@ -3148,12 +3150,12 @@ END:VCALENDAR";
 
             var firstExclusion = new CalDateTime(start.AddDays(4));
             e.ExceptionDates = new List<PeriodList> { new PeriodList { new Period(firstExclusion) } };
-            var serialized = SerializationHelpers.SerializeToString(e);
+            var serialized = SerializeEventToString(e);
             Assert.AreEqual(1, Regex.Matches(serialized, "EXDATE:").Count);
 
             var secondExclusion = new CalDateTime(start.AddDays(5));
             e.ExceptionDates.First().Add(new Period(secondExclusion));
-            serialized = SerializationHelpers.SerializeToString(e);
+            serialized = SerializeEventToString(e);
             Assert.AreEqual(1, Regex.Matches(serialized, "EXDATE:").Count);
         }
 
@@ -3176,12 +3178,12 @@ END:VCALENDAR";
             exceptionDateList.Add(new Period(new CalDateTime(_now.AddDays(1))));
             e.ExceptionDates.Add(exceptionDateList);
 
-            var serialized = SerializationHelpers.SerializeToString(e);
+            var serialized = SerializeEventToString(e);
             const string expected = "TZID=Europe/Stockholm";
             Assert.AreEqual(3, Regex.Matches(serialized, expected).Count);
 
             e.ExceptionDates.First().Add(new Period(new CalDateTime(_now.AddDays(2))));
-            serialized = SerializationHelpers.SerializeToString(e);
+            serialized = SerializeEventToString(e);
             Assert.AreEqual(3, Regex.Matches(serialized, expected).Count);
         }
 
