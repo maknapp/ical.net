@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Ical.Net.CalendarComponents;
 using Ical.Net.DataTypes;
-using Ical.Net.Extensions;
 using Ical.Net.Serialization;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
@@ -55,7 +54,7 @@ namespace Ical.Net.FrameworkUnitTests
             Assert.AreEqual(1, cal.Children.Count);
             Assert.AreSame(evt, cal.Children[0]);
 
-            cal.RemoveChild(evt);
+            cal.Children.Remove(evt);
             Assert.AreEqual(0, cal.Children.Count);
             Assert.AreEqual(0, cal.Events.Count);
         }

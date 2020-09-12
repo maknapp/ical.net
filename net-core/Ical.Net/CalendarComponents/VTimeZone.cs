@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Ical.Net.DataTypes;
-using Ical.Net.Extensions;
 using Ical.Net.Utilities;
 using NodaTime;
 using NodaTime.TimeZones;
@@ -63,7 +62,7 @@ namespace Ical.Net.CalendarComponents
                     savings: Offset.Zero);
                 intervals.Add(interval);
                 var zoneInfo = CreateTimeZoneInfo(intervals, new List<ZoneInterval>(), true, true);
-                vTimeZone.AddChild(zoneInfo);
+                vTimeZone.Children.Add(zoneInfo);
             }
             else
             {
@@ -73,7 +72,7 @@ namespace Ical.Net.CalendarComponents
                 var latestStandardInterval = standardIntervals.OrderByDescending(x => x.Start).FirstOrDefault();
                 matchingStandardIntervals = GetMatchingIntervals(standardIntervals, latestStandardInterval, true);
                 var latestStandardTimeZoneInfo = CreateTimeZoneInfo(matchingStandardIntervals, intervals);
-                vTimeZone.AddChild(latestStandardTimeZoneInfo);
+                vTimeZone.Children.Add(latestStandardTimeZoneInfo);
 
                 // check to see if there is no active, future daylight savings (ie, America/Phoenix)
                 if (latestStandardInterval != null && (latestStandardInterval.HasEnd ? latestStandardInterval.End : Instant.MaxValue) != Instant.MaxValue)
@@ -86,7 +85,7 @@ namespace Ical.Net.CalendarComponents
                         var latestDaylightInterval = daylightIntervals.OrderByDescending(x => x.Start).FirstOrDefault();
                         matchingDaylightIntervals = GetMatchingIntervals(daylightIntervals, latestDaylightInterval, true);
                         var latestDaylightTimeZoneInfo = CreateTimeZoneInfo(matchingDaylightIntervals, intervals);
-                        vTimeZone.AddChild(latestDaylightTimeZoneInfo);
+                        vTimeZone.Children.Add(latestDaylightTimeZoneInfo);
                     }
                 }
             }
@@ -110,7 +109,7 @@ namespace Ical.Net.CalendarComponents
 
                 var matchedIntervals = GetMatchingIntervals(historicIntervals, interval);
                 var timeZoneInfo = CreateTimeZoneInfo(matchedIntervals, intervals, false);
-                vTimeZone.AddChild(timeZoneInfo);
+                vTimeZone.Children.Add(timeZoneInfo);
                 historicIntervals = historicIntervals.Where(x => !matchedIntervals.Contains(x)).ToList();
             }
 

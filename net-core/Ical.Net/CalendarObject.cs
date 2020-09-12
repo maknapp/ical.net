@@ -1,7 +1,6 @@
 using System;
 using System.Runtime.Serialization;
 using Ical.Net.Collections;
-using Ical.Net.Extensions;
 
 namespace Ical.Net
 {
@@ -79,7 +78,7 @@ namespace Ical.Net
             Children.Clear();
             foreach (var child in calendarObject.Children)
             {
-                this.AddChild(child);
+                Children.Add(child);
             }
         }
 

@@ -6,7 +6,6 @@ using System.Runtime.Serialization;
 using System.Text;
 using Ical.Net.CalendarComponents;
 using Ical.Net.DataTypes;
-using Ical.Net.Extensions;
 using Ical.Net.Proxies;
 using Ical.Net.Serialization;
 using Ical.Net.Utilities;
@@ -180,7 +179,7 @@ namespace Ical.Net
         /// <returns>The time zone added to the calendar.</returns>
         public VTimeZone AddTimeZone(VTimeZone tz)
         {
-            this.AddChild(tz);
+            Children.Add(tz);
             return tz;
         }
 
@@ -288,7 +287,7 @@ namespace Ical.Net
             var obj = Activator.CreateInstance(typeof (T)) as ICalendarObject;
             if (obj is T)
             {
-                this.AddChild(obj);
+                Children.Add(obj);
                 return (T) obj;
             }
             return default(T);
@@ -328,12 +327,12 @@ namespace Ical.Net
                 {
                     if (!UniqueComponents.ContainsKey(((IUniqueComponent) child).Uid))
                     {
-                        this.AddChild(child);
+                        Children.Add(child);
                     }
                 }
                 else
                 {
-                    this.AddChild(child);
+                    Children.Add(child);
                 }
             }
         }
@@ -356,35 +355,35 @@ namespace Ical.Net
         public VTimeZone AddTimeZone(TimeZoneInfo tzi)
         {
             var tz = VTimeZone.FromSystemTimeZone(tzi);
-            this.AddChild(tz);
+            Children.Add(tz);
             return tz;
         }
 
         public VTimeZone AddTimeZone(TimeZoneInfo tzi, DateTime earliestDateTimeToSupport, bool includeHistoricalData)
         {
             var tz = VTimeZone.FromSystemTimeZone(tzi, earliestDateTimeToSupport, includeHistoricalData);
-            this.AddChild(tz);
+            Children.Add(tz);
             return tz;
         }
 
         public VTimeZone AddTimeZone(string tzId)
         {
             var tz = VTimeZone.FromDateTimeZone(tzId);
-            this.AddChild(tz);
+            Children.Add(tz);
             return tz;
         }
 
         public VTimeZone AddTimeZone(string tzId, DateTime earliestDateTimeToSupport, bool includeHistoricalData)
         {
             var tz = VTimeZone.FromDateTimeZone(tzId, earliestDateTimeToSupport, includeHistoricalData);
-            this.AddChild(tz);
+            Children.Add(tz);
             return tz;
         }
 
         public VTimeZone AddLocalTimeZone(DateTime earliestDateTimeToSupport, bool includeHistoricalData)
         {
             var tz = VTimeZone.FromLocalTimeZone(earliestDateTimeToSupport, includeHistoricalData);
-            this.AddChild(tz);
+            Children.Add(tz);
             return tz;
         }
     }
