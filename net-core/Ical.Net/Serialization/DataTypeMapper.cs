@@ -1,70 +1,59 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using Ical.Net.CalendarComponents;
 using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization
 {
-    public delegate Type TypeResolverDelegate(object context);
-
-    internal class DataTypeMapper
+    internal sealed class DataTypeMapper
     {
-        private class PropertyMapping
-        {
-            public Type ObjectType { get; set; }
-            public TypeResolverDelegate Resolver { get; set; }
-            public bool AllowsMultipleValuesPerProperty { get; set; }
-        }
-        
-        private readonly IDictionary<string, PropertyMapping> _propertyMap;
+        private delegate Type TypeResolverDelegate(object context);
 
-        public DataTypeMapper()
+        private readonly IDictionary<string, PropertyMapping> _propertyMap = new Dictionary<string, PropertyMapping>(StringComparer.OrdinalIgnoreCase)
         {
-            _propertyMap = new Dictionary<string, PropertyMapping>(StringComparer.OrdinalIgnoreCase);
+            { AlarmAction.Name, new PropertyMapping(typeof(AlarmAction), false) },
+            { "ATTACH", new PropertyMapping(typeof(Attachment), false) },
+            { "ATTENDEE", new PropertyMapping(typeof(Attendee), false) },
+            { "CATEGORIES", new PropertyMapping(typeof(string), true) },
+            { "COMMENT", new PropertyMapping(typeof(string), false) },
+            { "COMPLETED", new PropertyMapping(typeof(IDateTime), false) },
+            { "CONTACT", new PropertyMapping(typeof(string), false) },
+            { "CREATED", new PropertyMapping(typeof(IDateTime), false) },
+            { "DTEND", new PropertyMapping(typeof(IDateTime), false) },
+            { "DTSTAMP", new PropertyMapping(typeof(IDateTime), false) },
+            { "DTSTART", new PropertyMapping(typeof(IDateTime), false) },
+            { "DUE", new PropertyMapping(typeof(IDateTime), false) },
+            { "DURATION", new PropertyMapping(typeof(TimeSpan), false) },
+            { "EXDATE", new PropertyMapping(typeof(PeriodList), false) },
+            { "EXRULE", new PropertyMapping(typeof(RecurrencePattern), false) },
+            { "FREEBUSY", new PropertyMapping(typeof(FreeBusyEntry), true) },
+            { "GEO", new PropertyMapping(typeof(GeographicLocation), false) },
+            { "LAST-MODIFIED", new PropertyMapping(typeof(IDateTime), false) },
+            { "ORGANIZER", new PropertyMapping(typeof(Organizer), false) },
+            { "PERCENT-COMPLETE", new PropertyMapping(typeof(int), false) },
+            { "PRIORITY", new PropertyMapping(typeof(int), false) },
+            { "RDATE", new PropertyMapping(typeof(PeriodList), false) },
+            { "RECURRENCE-ID", new PropertyMapping(typeof(IDateTime), false) },
+            { "RELATED-TO", new PropertyMapping(typeof(string), false) },
+            { "REQUEST-STATUS", new PropertyMapping(typeof(RequestStatus), false) },
+            { "REPEAT", new PropertyMapping(typeof(int), false) },
+            { "RESOURCES", new PropertyMapping(typeof(string), true) },
+            { "RRULE", new PropertyMapping(typeof(RecurrencePattern), false) },
+            { "SEQUENCE", new PropertyMapping(typeof(int), false) },
+            { "STATUS", new PropertyMapping(ResolveStatusProperty, false) },
+            { "TRANSP", new PropertyMapping(typeof(TransparencyType), false) },
+            { TriggerRelation.Name, new PropertyMapping(typeof(Trigger), false) },
+            { "TZNAME", new PropertyMapping(typeof(string), false) },
+            { "TZOFFSETFROM", new PropertyMapping(typeof(UtcOffset), false) },
+            { "TZOFFSETTO", new PropertyMapping(typeof(UtcOffset), false) },
+            { "TZURL", new PropertyMapping(typeof(Uri), false) },
+            { "URL", new PropertyMapping(typeof(Uri), false) }
+        };
 
-            AddPropertyMapping(AlarmAction.Name, typeof (AlarmAction), false);
-            AddPropertyMapping("ATTACH", typeof (Attachment), false);
-            AddPropertyMapping("ATTENDEE", typeof (Attendee), false);
-            AddPropertyMapping("CATEGORIES", typeof (string), true);
-            AddPropertyMapping("COMMENT", typeof (string), false);
-            AddPropertyMapping("COMPLETED", typeof (IDateTime), false);
-            AddPropertyMapping("CONTACT", typeof (string), false);
-            AddPropertyMapping("CREATED", typeof (IDateTime), false);
-            AddPropertyMapping("DTEND", typeof (IDateTime), false);
-            AddPropertyMapping("DTSTAMP", typeof (IDateTime), false);
-            AddPropertyMapping("DTSTART", typeof (IDateTime), false);
-            AddPropertyMapping("DUE", typeof (IDateTime), false);
-            AddPropertyMapping("DURATION", typeof (TimeSpan), false);
-            AddPropertyMapping("EXDATE", typeof (PeriodList), false);
-            AddPropertyMapping("EXRULE", typeof (RecurrencePattern), false);
-            AddPropertyMapping("FREEBUSY", typeof (FreeBusyEntry), true);
-            AddPropertyMapping("GEO", typeof (GeographicLocation), false);
-            AddPropertyMapping("LAST-MODIFIED", typeof (IDateTime), false);
-            AddPropertyMapping("ORGANIZER", typeof (Organizer), false);
-            AddPropertyMapping("PERCENT-COMPLETE", typeof (int), false);
-            AddPropertyMapping("PRIORITY", typeof (int), false);
-            AddPropertyMapping("RDATE", typeof (PeriodList), false);
-            AddPropertyMapping("RECURRENCE-ID", typeof (IDateTime), false);
-            AddPropertyMapping("RELATED-TO", typeof (string), false);
-            AddPropertyMapping("REQUEST-STATUS", typeof (RequestStatus), false);
-            AddPropertyMapping("REPEAT", typeof (int), false);
-            AddPropertyMapping("RESOURCES", typeof (string), true);
-            AddPropertyMapping("RRULE", typeof (RecurrencePattern), false);
-            AddPropertyMapping("SEQUENCE", typeof (int), false);
-            AddPropertyMapping("STATUS", ResolveStatusProperty, false);
-            AddPropertyMapping("TRANSP", typeof (TransparencyType), false);
-            AddPropertyMapping(TriggerRelation.Name, typeof (Trigger), false);
-            AddPropertyMapping("TZNAME", typeof (string), false);
-            AddPropertyMapping("TZOFFSETFROM", typeof (UtcOffset), false);
-            AddPropertyMapping("TZOFFSETTO", typeof (UtcOffset), false);
-            AddPropertyMapping("TZURL", typeof (Uri), false);
-            AddPropertyMapping("URL", typeof (Uri), false);
-        }
-
-        protected Type ResolveStatusProperty(object context)
+        private static Type ResolveStatusProperty(object context)
         {
-            if (!(context is ICalendarObject obj))
+            var obj = context as ICalendarObject;
+            if (obj == null)
             {
                 return null;
             }
@@ -82,70 +71,55 @@ namespace Ical.Net.Serialization
             return null;
         }
 
-        public void AddPropertyMapping(string name, Type objectType, bool allowsMultipleValues)
+        public bool IsPropertyAllowMultipleValues(object obj)
         {
-            if (name == null || objectType == null)
+            var property = obj as ICalendarProperty;
+            if (string.IsNullOrWhiteSpace(property?.Name))
             {
-                return;
+                return false;
             }
 
-            var m = new PropertyMapping
-            {
-                ObjectType = objectType,
-                AllowsMultipleValuesPerProperty = allowsMultipleValues
-            };
-
-            _propertyMap[name] = m;
-        }
-
-        public void AddPropertyMapping(string name, TypeResolverDelegate resolver, bool allowsMultipleValues)
-        {
-            if (name == null || resolver == null)
-            {
-                return;
-            }
-
-            var m = new PropertyMapping
-            {
-                Resolver = resolver,
-                AllowsMultipleValuesPerProperty = allowsMultipleValues
-            };
-
-            _propertyMap[name] = m;
-        }
-
-        public void RemovePropertyMapping(string name)
-        {
-            if (name != null && _propertyMap.ContainsKey(name))
-            {
-                _propertyMap.Remove(name);
-            }
-        }
-
-        public bool GetPropertyAllowsMultipleValues(object obj)
-        {
-            var p = obj as ICalendarProperty;
-            return !string.IsNullOrWhiteSpace(p?.Name)
-                && _propertyMap.TryGetValue(p.Name, out var m)
-                && m.AllowsMultipleValuesPerProperty;
+            _propertyMap.TryGetValue(property.Name, out var propertyMapping);
+            return propertyMapping?.AllowsMultipleValues ?? false;
         }
 
         public Type GetPropertyMapping(object obj)
         {
-            var p = obj as ICalendarProperty;
-            if (p?.Name == null)
+            var property = obj as ICalendarProperty;
+            if (property?.Name == null)
             {
                 return null;
             }
 
-            if (!_propertyMap.TryGetValue(p.Name, out var m))
+            if (!_propertyMap.TryGetValue(property.Name, out var propertyMapping))
             {
                 return null;
             }
 
-            return m.Resolver == null
-                ? m.ObjectType
-                : m.Resolver(p);
+            return propertyMapping.Resolver == null
+                ? propertyMapping.ObjectType
+                : propertyMapping.Resolver(property);
+        }
+
+        private sealed class PropertyMapping
+        {
+            public PropertyMapping(Type objectType, bool allowsMultipleValues)
+            {
+                ObjectType = objectType;
+                Resolver = null;
+                AllowsMultipleValues = allowsMultipleValues;
+            }
+
+            public PropertyMapping(TypeResolverDelegate resolver, bool allowsMultipleValues)
+            {
+                ObjectType = null;
+                Resolver = resolver;
+                AllowsMultipleValues = allowsMultipleValues;
+            }
+
+            public Type ObjectType { get; }
+            public TypeResolverDelegate Resolver { get; }
+            public bool AllowsMultipleValues { get; }
         }
     }
 }
