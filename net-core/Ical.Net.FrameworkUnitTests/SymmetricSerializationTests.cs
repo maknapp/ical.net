@@ -8,27 +8,24 @@ using Ical.Net.DataTypes;
 using Ical.Net.Serialization;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using static Ical.Net.FrameworkUnitTests.Support.SerializationUtilities;
 
 namespace Ical.Net.FrameworkUnitTests
 {
     public class SymmetricSerializationTests
     {
-        private const string _ldapUri = "ldap://example.com:6666/o=eDABC Industries,c=3DUS??(cn=3DBMary Accepted)";
+        private const string LdapUri = "ldap://example.com:6666/o=eDABC Industries,c=3DUS??(cn=3DBMary Accepted)";
 
-        private static readonly DateTime _nowTime = DateTime.Now;
-        private static readonly DateTime _later = _nowTime.AddHours(1);
-        private static CalendarSerializer GetNewSerializer() => new CalendarSerializer();
-        private static string SerializeToString(Calendar c) => GetNewSerializer().SerializeToString(c);
-        private static CalendarEvent GetSimpleEvent() => new CalendarEvent {DtStart = new CalDateTime(_nowTime), DtEnd = new CalDateTime(_later), Duration = _later - _nowTime};
-        private static Calendar UnserializeCalendar(string s) => Calendar.Load(s);
-
+        private static readonly DateTime Now = new DateTime(2010, 11, 12, 05, 06, 07);
+        private static readonly DateTime Later = Now.AddHours(1);
+        
         [Test, TestCaseSource(nameof(Event_TestCases))]
         public void Event_Tests(Calendar iCalendar)
         {
             var originalEvent = iCalendar.Events.Single();
 
-            var serializedCalendar = SerializeToString(iCalendar);
-            var unserializedCalendar = UnserializeCalendar(serializedCalendar);
+            var serializedCalendar = SerializeCalenderToString(iCalendar);
+            var unserializedCalendar = Calendar.Load(serializedCalendar);
 
             var onlyEvent = unserializedCalendar.Events.Single();
 
@@ -42,8 +39,8 @@ namespace Ical.Net.FrameworkUnitTests
             var rrule = new RecurrencePattern(FrequencyType.Daily, 1) { Count = 5 };
             var e = new CalendarEvent
             {
-                DtStart = new CalDateTime(_nowTime),
-                DtEnd = new CalDateTime(_later),
+                DtStart = new CalDateTime(Now),
+                DtEnd = new CalDateTime(Later),
                 Duration = TimeSpan.FromHours(1),
                 RecurrenceRules = new List<RecurrencePattern> { rrule },
             };
@@ -52,7 +49,7 @@ namespace Ical.Net.FrameworkUnitTests
             calendar.Events.Add(e);
             yield return new TestCaseData(calendar).SetName("readme.md example");
 
-            e = GetSimpleEvent();
+            e = CreateValidEvent();
             e.Description = "This is an event description that is really rather long. Hopefully the line breaks work now, and it's serialized properly.";
             calendar = new Calendar();
             calendar.Events.Add(e);
@@ -82,12 +79,12 @@ namespace Ical.Net.FrameworkUnitTests
         {
             var calendar = new Calendar();
             calendar.AddTimeZone(new VTimeZone("America/Los_Angeles"));
-            var someEvent = GetSimpleEvent();
+            var someEvent = CreateValidEvent();
             someEvent.Attendees = new List<Attendee> {attendee};
             calendar.Events.Add(someEvent);
 
-            var serialized = SerializeToString(calendar);
-            var unserialized = UnserializeCalendar(serialized);
+            var serialized = SerializeCalenderToString(calendar);
+            var unserialized = Calendar.Load(serialized);
 
             Assert.AreEqual(calendar.GetHashCode(), unserialized.GetHashCode());
             Assert.IsTrue(calendar.Events.SequenceEqual(unserialized.Events));
@@ -102,7 +99,7 @@ namespace Ical.Net.FrameworkUnitTests
                 Rsvp = true,
                 ParticipationStatus = EventParticipationStatus.Accepted,
                 SentBy = new Uri("mailto:someone@example.com"),
-                DirectoryEntry = new Uri(_ldapUri),
+                DirectoryEntry = new Uri(LdapUri),
                 Type = "CuType",
                 Members = new List<string> { "Group A", "Group B" },
                 Role = ParticipationRole.Chair,
@@ -128,12 +125,12 @@ namespace Ical.Net.FrameworkUnitTests
             var binaryAttachment = new Attachment(asBytes);
 
             var calendar = new Calendar();
-            var vEvent = GetSimpleEvent();
+            var vEvent = CreateValidEvent();
             vEvent.Attachments = new List<Attachment> { binaryAttachment };
             calendar.Events.Add(vEvent);
 
-            var serialized = SerializeToString(calendar);
-            var unserialized = UnserializeCalendar(serialized);
+            var serialized = SerializeCalenderToString(calendar);
+            var unserialized = Calendar.Load(serialized);
             var unserializedAttachment = unserialized
                 .Events
                 .First()
@@ -171,12 +168,12 @@ namespace Ical.Net.FrameworkUnitTests
             var attachment = new Attachment(uri);
 
             var calendar = new Calendar();
-            var vEvent = GetSimpleEvent();
+            var vEvent = CreateValidEvent();
             vEvent.Attachments = new List<Attachment> { attachment };
             calendar.Events.Add(vEvent);
 
-            var serialized = SerializeToString(calendar);
-            var unserialized = UnserializeCalendar(serialized);
+            var serialized = SerializeCalenderToString(calendar);
+            var unserialized = Calendar.Load(serialized);
             var unserializedUri = unserialized
                 .Events
                 .First()
@@ -193,25 +190,35 @@ namespace Ical.Net.FrameworkUnitTests
         {
             yield return new TestCaseData("http://www.google.com", new Uri("http://www.google.com")).SetName("HTTP URL");
             yield return new TestCaseData("mailto:rstockbower@gmail.com", new Uri("mailto:rstockbower@gmail.com")).SetName("mailto: URL");
-            yield return new TestCaseData(_ldapUri, new Uri(_ldapUri)).SetName("ldap URL");
+            yield return new TestCaseData(LdapUri, new Uri(LdapUri)).SetName("ldap URL");
             yield return new TestCaseData("C:\\path\\to\\file.txt", new Uri("C:\\path\\to\\file.txt")).SetName("Local file path URL");
-            yield return new TestCaseData("\\\\uncPath\\to\\resource.txt", new Uri("\\\\uncPath\\to\\resource.txt")).SetName("UNC path URL");
+            yield return new TestCaseData(@"\\uncPath\to\resource.txt", new Uri(@"\\uncPath\to\resource.txt")).SetName("UNC path URL");
         }
 
         [Test, Ignore("TODO: Fix CATEGORIES multiple serializations")]
         public void CategoriesTest()
         {
-            var vEvent = GetSimpleEvent();
+            var vEvent = CreateValidEvent();
             vEvent.Categories = new List<string> { "Foo", "Bar", "Baz" };
             var c = new Calendar();
             c.Events.Add(vEvent);
 
-            var serialized = SerializeToString(c);
+            var serialized = SerializeCalenderToString(c);
             var categoriesCount = Regex.Matches(serialized, "CATEGORIES").Count;
             Assert.AreEqual(1, categoriesCount);
 
-            var deserialized = UnserializeCalendar(serialized);
+            var deserialized = Calendar.Load(serialized);
             Assert.AreEqual(vEvent, deserialized);
+        }
+
+        private static CalendarEvent CreateValidEvent()
+        {
+            return new CalendarEvent
+            {
+                DtStart = new CalDateTime(Now),
+                DtEnd = new CalDateTime(Later),
+                Duration = Later - Now
+            };
         }
     }
 }

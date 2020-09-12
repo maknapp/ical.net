@@ -4,21 +4,21 @@ using System.IO;
 
 namespace Ical.Net.Serialization
 {
-    public class CalendarSerializer : ComponentSerializer
+    public sealed class CalendarSerializer : ComponentSerializer
     {
         private readonly Calendar _calendar;
 
         public CalendarSerializer()
             :this(new SerializationContext()) { }
 
-        public CalendarSerializer(Calendar cal)
+        public CalendarSerializer(Calendar calendar)
         {
-            _calendar = cal;
+            _calendar = calendar;
         }
 
         public CalendarSerializer(SerializationContext ctx) : base(ctx) {}
 
-        public virtual string SerializeToString() => SerializeToString(_calendar);
+        public string SerializeToString() => SerializeToString(_calendar);
 
         protected override IComparer<ICalendarProperty> PropertySorter => new CalendarPropertySorter();
 

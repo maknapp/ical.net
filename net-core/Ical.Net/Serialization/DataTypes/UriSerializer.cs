@@ -4,7 +4,7 @@ using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public class UriSerializer : EncodableDataTypeSerializer
+    public sealed class UriSerializer : EncodableDataTypeSerializer
     {
         public UriSerializer() {}
 

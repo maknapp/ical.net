@@ -9,7 +9,7 @@ namespace Ical.Net.FrameworkUnitTests
     public class DateTimeSerializerTests
     {
         [Test, Category("Deserialization")]
-        public void TZIDPropertyShouldBeAppliedForLocalTimezones()
+        public void TZID_PropertyShouldBeAppliedForLocalTimezones()
         {
             // see http://www.ietf.org/rfc/rfc2445.txt p.36
             var result = new DateTimeSerializer()

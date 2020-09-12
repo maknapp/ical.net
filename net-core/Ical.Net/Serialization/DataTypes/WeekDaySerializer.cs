@@ -5,7 +5,7 @@ using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public class WeekDaySerializer : EncodableDataTypeSerializer
+    public sealed class WeekDaySerializer : EncodableDataTypeSerializer
     {
         public WeekDaySerializer() { }
 

@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using Ical.Net.Serialization.DataTypes;
-using Ical.Net.Utility;
+using Ical.Net.Utilities;
 using NodaTime;
 
 namespace Ical.Net.DataTypes
@@ -18,9 +18,6 @@ namespace Ical.Net.DataTypes
         public static CalDateTime Now => new CalDateTime(DateTime.Now);
 
         public static CalDateTime Today => new CalDateTime(DateTime.Today);
-
-        private bool _hasDate;
-        private bool _hasTime;
 
         public CalDateTime() { }
 
@@ -73,7 +70,7 @@ namespace Ical.Net.DataTypes
             Initialize(CoerceDateTime(year, month, day, hour, minute, second, DateTimeKind.Local), tzId, cal);
         }
 
-        private void Initialize(DateTime value, string tzId, Calendar cal)
+        private void Initialize(DateTime value, string tzId, Calendar calendar)
         {
             if (!string.IsNullOrWhiteSpace(tzId) && !tzId.Equals("UTC", StringComparison.OrdinalIgnoreCase))
             {
@@ -91,10 +88,10 @@ namespace Ical.Net.DataTypes
             Value = new DateTime(value.Year, value.Month, value.Day, value.Hour, value.Minute, value.Second, value.Kind);
             HasDate = true;
             HasTime = value.Second != 0 || value.Minute != 0 || value.Hour != 0;
-            AssociatedObject = cal;
+            AssociatedObject = calendar;
         }
 
-        private DateTime CoerceDateTime(int year, int month, int day, int hour, int minute, int second, DateTimeKind kind)
+        private static DateTime CoerceDateTime(int year, int month, int day, int hour, int minute, int second, DateTimeKind kind)
         {
             var dt = DateTime.MinValue;
 
@@ -114,7 +111,10 @@ namespace Ical.Net.DataTypes
                     dt = new DateTime(year, month, day, hour, minute, second, kind);
                 }
             }
-            catch { }
+            catch
+            {
+                // TODO: Ignore exceptions selectively
+            }
 
             return dt;
         }
@@ -142,8 +142,8 @@ namespace Ical.Net.DataTypes
             }
 
             _value = dt.Value;
-            _hasDate = dt.HasDate;
-            _hasTime = dt.HasTime;
+            HasDate = dt.HasDate;
+            HasTime = dt.HasTime;
 
             AssociateWith(dt);
         }
@@ -286,17 +286,9 @@ namespace Ical.Net.DataTypes
 
         public bool IsUtc => _value.Kind == DateTimeKind.Utc;
 
-        public bool HasDate
-        {
-            get => _hasDate;
-            set => _hasDate = value;
-        }
+        public bool HasDate { get; set; }
 
-        public bool HasTime
-        {
-            get => _hasTime;
-            set => _hasTime = value;
-        }
+        public bool HasTime { get; set; }
 
         private string _tzId = string.Empty;
 

@@ -4,7 +4,7 @@ using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public class TriggerSerializer : StringSerializer
+    public sealed class TriggerSerializer : StringSerializer
     {
         public TriggerSerializer() { }
 

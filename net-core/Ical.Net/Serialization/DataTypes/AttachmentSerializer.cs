@@ -4,7 +4,7 @@ using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public class AttachmentSerializer : EncodableDataTypeSerializer
+    public sealed class AttachmentSerializer : EncodableDataTypeSerializer
     {
         public AttachmentSerializer() { }
 
@@ -78,7 +78,7 @@ namespace Ical.Net.Serialization.DataTypes
             }
             catch
             {
-                // ignored
+                // TODO: Ignore exceptions selectively
             }
 
             return null;

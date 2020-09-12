@@ -1,17 +1,19 @@
 using System;
 using System.Linq;
 using NUnit.Framework;
+using static Ical.Net.FrameworkUnitTests.Support.AssertUtilities;
 
 namespace Ical.Net.CoreUnitTests
 {
     [TestFixture]
+    [Category("Journal")]
     public class JournalTest
     {
-        [Test, Category("Journal")]
+        [Test]
         public void Journal1()
         {
             var iCal = Calendar.Load(IcsFiles.Journal1);
-            ProgramTest.TestCal(iCal);
+            AssertCalendar(iCal);
             Assert.AreEqual(1, iCal.Journals.Count);
             var j = iCal.Journals[0];
 
@@ -21,11 +23,11 @@ namespace Ical.Net.CoreUnitTests
             Assert.IsNull(j.Start);
         }
 
-        [Test, Category("Journal")]
+        [Test]
         public void Journal2()
         {
             var iCal = Calendar.Load(IcsFiles.Journal2);
-            ProgramTest.TestCal(iCal);
+            AssertCalendar(iCal);
             Assert.AreEqual(1, iCal.Journals.Count);
             var j = iCal.Journals.First();
 

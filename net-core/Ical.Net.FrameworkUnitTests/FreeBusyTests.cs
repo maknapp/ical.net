@@ -2,20 +2,20 @@ using Ical.Net.CalendarComponents;
 using Ical.Net.DataTypes;
 using NUnit.Framework;
 
-namespace Ical.Net.CoreUnitTests
+namespace Ical.Net.FrameworkUnitTests
 {
     [TestFixture]
-    public class FreeBusyTest
+    public class FreeBusyTests
     {
         /// <summary>
         /// Ensures that GetFreeBusyStatus() return the correct status.
         /// </summary>
         [Test, Category("FreeBusy")]
-        public void GetFreeBusyStatus1()
+        public void GetFreeBusyStatus_ShouldReturnCorrectFreeBusyStatus()
         {
-            Calendar cal = new Calendar();
+            var cal = new Calendar();
 
-            CalendarEvent evt = cal.Create<CalendarEvent>();
+            var evt = cal.Create<CalendarEvent>();
             evt.Summary = "Test event";
             evt.Start = new CalDateTime(2010, 10, 1, 8, 0, 0);
             evt.End = new CalDateTime(2010, 10, 1, 9, 0, 0);

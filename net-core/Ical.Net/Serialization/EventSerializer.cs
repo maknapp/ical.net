@@ -3,7 +3,7 @@ using Ical.Net.CalendarComponents;
 
 namespace Ical.Net.Serialization
 {
-    public class EventSerializer : ComponentSerializer
+    public sealed class EventSerializer : ComponentSerializer
     {
         public EventSerializer() { }
 

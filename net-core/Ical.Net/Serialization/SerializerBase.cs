@@ -6,23 +6,17 @@ namespace Ical.Net.Serialization
 {
     public abstract class SerializerBase : IStringSerializer
     {
-        private SerializationContext _mSerializationContext;
-
         protected SerializerBase()
         {
-            _mSerializationContext = SerializationContext.Default;
+            SerializationContext = SerializationContext.Default;
         }
 
         protected SerializerBase(SerializationContext ctx)
         {
-            _mSerializationContext = ctx;
+            SerializationContext = ctx;
         }
 
-        public virtual SerializationContext SerializationContext
-        {
-            get => _mSerializationContext;
-            set => _mSerializationContext = value;
-        }
+        public SerializationContext SerializationContext { get; }
 
         public abstract Type TargetType { get; }
         public abstract string SerializeToString(object obj);
@@ -67,11 +61,11 @@ namespace Ical.Net.Serialization
             }
         }
 
-        public virtual object GetService(Type serviceType) => SerializationContext?.GetService(serviceType);
+        public object GetService(Type serviceType) => SerializationContext?.GetService(serviceType);
 
-        public virtual object GetService(string name) => SerializationContext?.GetService(name);
+        public object GetService(string name) => SerializationContext?.GetService(name);
 
-        public virtual T GetService<T>()
+        public T GetService<T>()
         {
             if (SerializationContext != null)
             {
@@ -80,7 +74,7 @@ namespace Ical.Net.Serialization
             return default(T);
         }
 
-        public virtual T GetService<T>(string name)
+        public T GetService<T>(string name)
         {
             if (SerializationContext != null)
             {

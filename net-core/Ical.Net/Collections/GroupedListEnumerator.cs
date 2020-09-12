@@ -3,21 +3,21 @@ using System.Collections.Generic;
 
 namespace Ical.Net.Collections
 {
-    public class GroupedListEnumerator<TType> :
+    public sealed class GroupedListEnumerator<TType> :
         IEnumerator<TType>
     {
-        private readonly IList<IMultiLinkedList<TType>> _lists;
-        private IEnumerator<IMultiLinkedList<TType>> _listsEnumerator;
+        private readonly IList<IList<TType>> _lists;
+        private IEnumerator<IList<TType>> _listsEnumerator;
         private IEnumerator<TType> _listEnumerator;
 
-        public GroupedListEnumerator(IList<IMultiLinkedList<TType>> lists) => _lists = lists;
+        public GroupedListEnumerator(IList<IList<TType>> lists) => _lists = lists;
 
-        public virtual TType Current
+        public TType Current
             => _listEnumerator == null
-                ? default(TType)
+                ? default
                 : _listEnumerator.Current;
 
-        public virtual void Dispose()
+        public void Dispose()
         {
             Reset();
         }
@@ -34,7 +34,7 @@ namespace Ical.Net.Collections
 
         object IEnumerator.Current
             => _listEnumerator == null
-                ? default(TType)
+                ? default
                 : _listEnumerator.Current;
 
         private bool MoveNextList()
@@ -64,7 +64,7 @@ namespace Ical.Net.Collections
             return true;
         }
 
-        public virtual bool MoveNext()
+        public bool MoveNext()
         {
             while (true)
             {
@@ -91,7 +91,7 @@ namespace Ical.Net.Collections
             }
         }
 
-        public virtual void Reset()
+        public void Reset()
         {
             if (_listsEnumerator == null)
             {

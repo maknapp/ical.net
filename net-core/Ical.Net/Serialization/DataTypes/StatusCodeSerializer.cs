@@ -5,7 +5,7 @@ using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public class StatusCodeSerializer : StringSerializer
+    public sealed class StatusCodeSerializer : StringSerializer
     {
         public StatusCodeSerializer() { }
 

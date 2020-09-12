@@ -5,7 +5,7 @@ using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public class PeriodListSerializer : EncodableDataTypeSerializer
+    public sealed class PeriodListSerializer : EncodableDataTypeSerializer
     {
         public PeriodListSerializer() { }
 

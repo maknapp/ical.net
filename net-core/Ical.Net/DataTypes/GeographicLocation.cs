@@ -9,7 +9,7 @@ namespace Ical.Net.DataTypes
     /// <see cref="Components.Event"/> or <see cref="Todo"/> item.
     /// </summary>
     [DebuggerDisplay("{Latitude};{Longitude}")]
-    public class GeographicLocation : EncodableDataType
+    public sealed class GeographicLocation : EncodableDataType
     {
         public double Latitude { get; set; }
         public double Longitude { get; set; }
@@ -32,7 +32,7 @@ namespace Ical.Net.DataTypes
 
         public override string ToString() => Latitude.ToString("0.000000") + ";" + Longitude.ToString("0.000000");
 
-        protected bool Equals(GeographicLocation other) => Latitude.Equals(other.Latitude) && Longitude.Equals(other.Longitude);
+        public bool Equals(GeographicLocation other) => Latitude.Equals(other.Latitude) && Longitude.Equals(other.Longitude);
 
         public override bool Equals(object obj)
         {

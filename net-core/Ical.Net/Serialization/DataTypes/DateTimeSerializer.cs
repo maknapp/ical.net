@@ -6,13 +6,13 @@ using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public class DateTimeSerializer : EncodableDataTypeSerializer
+    public sealed class DateTimeSerializer : EncodableDataTypeSerializer
     {
         public DateTimeSerializer() { }
 
         public DateTimeSerializer(SerializationContext ctx) : base(ctx) { }
 
-        private DateTime CoerceDateTime(int year, int month, int day, int hour, int minute, int second, DateTimeKind kind)
+        private static DateTime CoerceDateTime(int year, int month, int day, int hour, int minute, int second, DateTimeKind kind)
         {
             var dt = DateTime.MinValue;
 
@@ -32,7 +32,10 @@ namespace Ical.Net.Serialization.DataTypes
                     dt = new DateTime(year, month, day, hour, minute, second, kind);
                 }
             }
-            catch {}
+            catch
+            {
+                // TODO: Ignore exceptions selectively
+            }
 
             return dt;
         }

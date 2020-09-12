@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Ical.Net.DataTypes;
-using Ical.Net.Utility;
+using Ical.Net.Utilities;
 
 namespace Ical.Net.Evaluation
 {
@@ -46,12 +46,12 @@ namespace Ical.Net.Evaluation
     /// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     /// </summary>
-    public class RecurrencePatternEvaluator : Evaluator
+    public sealed class RecurrencePatternEvaluator : Evaluator
     {
         // FIXME: in ical4j this is configurable.
         private const int _maxIncrementCount = 1000;
 
-        protected RecurrencePattern Pattern { get; set; }
+        private RecurrencePattern Pattern { get; }
 
         public RecurrencePatternEvaluator(RecurrencePattern pattern)
         {

@@ -6,28 +6,27 @@ using NUnit.Framework;
 
 namespace Ical.Net.FrameworkUnitTests
 {
-    internal class CollectionHelpersTests
+    public class CollectionHelpersTests
     {
-        private static readonly DateTime _now = DateTime.UtcNow;
-        private static readonly DateTime _later = _now.AddHours(1);
-        private static readonly string _uid = Guid.NewGuid().ToString();
-
-        private static List<RecurrencePattern> GetSimpleRecurrenceList()
-            => new List<RecurrencePattern> { new RecurrencePattern(FrequencyType.Daily, 1) { Count = 5 } };
-        private static List<PeriodList> GetExceptionDates()
-            => new List<PeriodList> { new PeriodList { new Period(new CalDateTime(_now.AddDays(1).Date)) } };
+        private static readonly DateTime Now = new DateTime(2010, 11, 12, 05, 06, 07);
+        private static readonly DateTime OneDayLater = Now.AddHours(1);
 
         [Test]
-        public void ExDateTests()
+        public void ExceptionDateTest()
         {
             Assert.AreEqual(GetExceptionDates(), GetExceptionDates());
             Assert.AreNotEqual(GetExceptionDates(), null);
             Assert.AreNotEqual(null, GetExceptionDates());
 
             var changedPeriod = GetExceptionDates();
-            changedPeriod.First().First().StartTime = new CalDateTime(_now.AddHours(-1));
+            changedPeriod.First().First().StartTime = new CalDateTime(Now.AddHours(-1));
 
             Assert.AreNotEqual(GetExceptionDates(), changedPeriod);
+        }
+
+        private static List<PeriodList> GetExceptionDates()
+        {
+            return new List<PeriodList> { new PeriodList { new Period(new CalDateTime(OneDayLater.Date)) } };
         }
     }
 }

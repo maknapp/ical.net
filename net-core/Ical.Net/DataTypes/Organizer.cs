@@ -8,10 +8,10 @@ namespace Ical.Net.DataTypes
     /// <summary>
     /// A class that represents the organizer of an event/todo/journal.
     /// </summary>
-    [DebuggerDisplay("{Value}")]
-    public class Organizer : EncodableDataType
+    [DebuggerDisplay(nameof(Value))]
+    public sealed class Organizer : EncodableDataType
     {
-        public virtual Uri SentBy
+        public Uri SentBy
         {
             get => new Uri(Parameters.Get("SENT-BY"));
             set
@@ -27,13 +27,13 @@ namespace Ical.Net.DataTypes
             }
         }
 
-        public virtual string CommonName
+        public string CommonName
         {
             get => Parameters.Get("CN");
             set => Parameters.Set("CN", value);
         }
 
-        public virtual Uri DirectoryEntry
+        public Uri DirectoryEntry
         {
             get => new Uri(Parameters.Get("DIR"));
             set
@@ -49,7 +49,7 @@ namespace Ical.Net.DataTypes
             }
         }
 
-        public virtual Uri Value { get; set; }
+        public Uri Value { get; set; }
 
         public Organizer() {}
 
@@ -64,7 +64,7 @@ namespace Ical.Net.DataTypes
             CopyFrom(serializer.Deserialize(new StringReader(value)) as ICopyable);
         }
 
-        protected bool Equals(Organizer other) => Equals(Value, other.Value);
+        public bool Equals(Organizer other) => Equals(Value, other.Value);
 
         public override bool Equals(object obj)
         {

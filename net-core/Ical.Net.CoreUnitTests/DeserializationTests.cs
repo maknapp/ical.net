@@ -9,6 +9,7 @@ using Ical.Net.DataTypes;
 using Ical.Net.Serialization;
 using Ical.Net.Serialization.DataTypes;
 using NUnit.Framework;
+using static Ical.Net.FrameworkUnitTests.Support.AssertUtilities;
 
 namespace Ical.Net.CoreUnitTests
 {
@@ -48,9 +49,7 @@ namespace Ical.Net.CoreUnitTests
         }
 
         /// <summary>
-        /// Tests that multiple parameters of the
-        /// same name are correctly aggregated into
-        /// a single list.
+        /// Tests that multiple parameters of the same name are correctly aggregated into a single list.
         /// </summary>
         [Test]
         public void Attendee2()
@@ -138,7 +137,7 @@ namespace Ical.Net.CoreUnitTests
         public void Categories1_2()
         {
             var iCal = Calendar.Load(IcsFiles.Categories1);
-            ProgramTest.TestCal(iCal);
+            AssertCalendar(iCal);
             var evt = iCal.Events.First();
 
             var items = new List<string>();
@@ -202,7 +201,7 @@ namespace Ical.Net.CoreUnitTests
         public void Encoding2()
         {
             var iCal = Calendar.Load(IcsFiles.Encoding2);
-            ProgramTest.TestCal(iCal);
+            AssertCalendar(iCal);
             var evt = iCal.Events.First();
 
             Assert.AreEqual(
@@ -226,7 +225,7 @@ namespace Ical.Net.CoreUnitTests
         public void Encoding3()
         {
             var iCal = Calendar.Load(IcsFiles.Encoding3);
-            ProgramTest.TestCal(iCal);
+            AssertCalendar(iCal);
             var evt = iCal.Events.First();
 
             Assert.AreEqual("uuid1153170430406", evt.Uid, "UID should be 'uuid1153170430406'; it is " + evt.Uid);
@@ -276,7 +275,7 @@ END:VCALENDAR
         public void GeographicLocation1_2()
         {
             var iCal = Calendar.Load(IcsFiles.GeographicLocation1);
-            ProgramTest.TestCal(iCal);
+            AssertCalendar(iCal);
             var evt = iCal.Events.First();
 
             Assert.AreEqual(37.386013, evt.GeographicLocation.Latitude, "Latitude should be 37.386013; it is not.");

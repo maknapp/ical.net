@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Ical.Net.Serialization
 {
-    public class ParameterSerializer : SerializerBase
+    public sealed class ParameterSerializer : SerializerBase
     {
         public ParameterSerializer() {}
 

@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 using Ical.Net.Collections;
+using Ical.Net.Extensions;
 
 namespace Ical.Net
 {
@@ -9,7 +10,6 @@ namespace Ical.Net
     /// </summary>
     public class CalendarObject : CalendarObjectBase, ICalendarObject
     {
-        private ICalendarObjectList<ICalendarObject> _children;
         private ServiceProvider _serviceProvider;
 
         internal CalendarObject()
@@ -30,12 +30,12 @@ namespace Ical.Net
 
         private void Initialize()
         {
-            //ToDo: I'm fairly certain this is ONLY used for null checking. If so, maybe it can just be a bool? CalendarObjectList is an empty object, and
-            //ToDo: its constructor parameter is ignored
-            _children = new CalendarObjectList(this);
+            // TODO: I'm fairly certain this is ONLY used for null checking. If so, maybe it can just be a bool? CalendarObjectList is an empty object, and
+            // TODO: its constructor parameter is ignored
+            Children = new CalendarObjectList();
             _serviceProvider = new ServiceProvider();
 
-            _children.ItemAdded += Children_ItemAdded;
+            Children.ItemAdded += Children_ItemAdded;
         }
 
         [OnDeserializing]
@@ -48,7 +48,7 @@ namespace Ical.Net
 
         protected virtual void OnDeserialized(StreamingContext context) {}
 
-        private void Children_ItemAdded(object sender, ObjectEventArgs<ICalendarObject, int> e) => e.First.Parent = this;
+        private void Children_ItemAdded(object sender, ItemAddedEventArgs<ICalendarObject> e) => e.Item.Parent = this;
 
         protected bool Equals(CalendarObject other) => string.Equals(Name, other.Name, StringComparison.OrdinalIgnoreCase);
 
@@ -61,23 +61,23 @@ namespace Ical.Net
 
         public override int GetHashCode() => Name?.GetHashCode() ?? 0;
 
-        public override void CopyFrom(ICopyable c)
+        public override void CopyFrom(ICopyable copyable)
         {
-            var obj = c as ICalendarObject;
-            if (obj == null)
+            var calendarObject = copyable as ICalendarObject;
+            if (calendarObject == null)
             {
                 return;
             }
 
             // Copy the name and basic information
-            Name = obj.Name;
-            Parent = obj.Parent;
-            Line = obj.Line;
-            Column = obj.Column;
+            Name = calendarObject.Name;
+            Parent = calendarObject.Parent;
+            Line = calendarObject.Line;
+            Column = calendarObject.Column;
 
             // Add each child
             Children.Clear();
-            foreach (var child in obj.Children)
+            foreach (var child in calendarObject.Children)
             {
                 this.AddChild(child);
             }
@@ -86,22 +86,22 @@ namespace Ical.Net
         /// <summary>
         /// Returns the parent iCalObject that owns this one.
         /// </summary>
-        public virtual ICalendarObject Parent { get; set; }
+        public ICalendarObject Parent { get; set; }
 
         /// <summary>
         /// A collection of iCalObjects that are children of the current object.
         /// </summary>
-        public virtual ICalendarObjectList<ICalendarObject> Children => _children;
+        public ICalendarObjectList<ICalendarObject> Children { get; private set; }
 
         /// <summary>
         /// Gets or sets the name of the iCalObject.  For iCalendar components, this is the RFC 5545 name of the component.
         /// </summary>        
-        public virtual string Name { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Returns the <see cref="Calendar"/> that this DDayiCalObject belongs to.
         /// </summary>
-        public virtual Calendar Calendar
+        public Calendar Calendar
         {
             get
             {
@@ -113,30 +113,29 @@ namespace Ical.Net
 
                 return obj as Calendar;
             }
-            protected set { }
         }
 
-        public virtual int Line { get; set; }
+        public int Line { get; set; }
 
-        public virtual int Column { get; set; }
+        public int Column { get; set; }
 
-        public virtual object GetService(Type serviceType) => _serviceProvider.GetService(serviceType);
+        public object GetService(Type serviceType) => _serviceProvider.GetService(serviceType);
 
-        public virtual object GetService(string name) => _serviceProvider.GetService(name);
+        public object GetService(string name) => _serviceProvider.GetService(name);
 
-        public virtual T GetService<T>() => _serviceProvider.GetService<T>();
+        public T GetService<T>() => _serviceProvider.GetService<T>();
 
-        public virtual T GetService<T>(string name) => _serviceProvider.GetService<T>(name);
+        public T GetService<T>(string name) => _serviceProvider.GetService<T>(name);
 
-        public virtual void SetService(string name, object obj) => _serviceProvider.SetService(name, obj);
+        public void SetService(string name, object obj) => _serviceProvider.SetService(name, obj);
 
-        public virtual void SetService(object obj) => _serviceProvider.SetService(obj);
+        public void SetService(object obj) => _serviceProvider.SetService(obj);
 
-        public virtual void RemoveService(Type type) => _serviceProvider.RemoveService(type);
+        public void RemoveService(Type type) => _serviceProvider.RemoveService(type);
 
-        public virtual void RemoveService(string name) => _serviceProvider.RemoveService(name);
+        public void RemoveService(string name) => _serviceProvider.RemoveService(name);
 
-        public virtual string Group
+        public string Group
         {
             get => Name;
             set => Name = value;

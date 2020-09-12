@@ -9,106 +9,20 @@ using Ical.Net.CalendarComponents;
 using Ical.Net.DataTypes;
 using Ical.Net.Serialization;
 using Ical.Net.Serialization.DataTypes;
-using Ical.Net.Utility;
+using Ical.Net.Utilities;
 using NUnit.Framework;
+using static Ical.Net.FrameworkUnitTests.Support.SerializationUtilities;
 
 namespace Ical.Net.FrameworkUnitTests
 {
     [TestFixture]
+    [Category("Serialization")]
     public class SerializationTests
     {
-        private static readonly DateTime _nowTime = DateTime.Now;
-        private static readonly DateTime _later = _nowTime.AddHours(1);
-        private static CalendarSerializer GetNewSerializer() => new CalendarSerializer();
-        private static string SerializeToString(Calendar c) => GetNewSerializer().SerializeToString(c);
-        private static string SerializeToString(CalendarEvent e) => SerializeToString(new Calendar { Events = { e } });
-        private static CalendarEvent GetSimpleEvent() => new CalendarEvent { DtStart = new CalDateTime(_nowTime), DtEnd = new CalDateTime(_later), Duration = _later - _nowTime };
-        private static Calendar UnserializeCalendar(string s) => Calendar.Load(s);
+        private static readonly DateTime Now = new DateTime(2010, 11, 12, 05, 06, 07);
+        private static readonly DateTime Later = Now.AddHours(1);
 
-        public static void CompareCalendars(Calendar cal1, Calendar cal2)
-        {
-            CompareComponents(cal1, cal2);
-
-            Assert.AreEqual(cal1.Children.Count, cal2.Children.Count, "Children count is different between calendars.");
-
-            for (var i = 0; i < cal1.Children.Count; i++)
-            {
-                var component1 = cal1.Children[i] as ICalendarComponent;
-                var component2 = cal2.Children[i] as ICalendarComponent;
-                if (component1 != null && component2 != null)
-                {
-                    CompareComponents(component1, component2);
-                }
-            }
-        }
-
-        public static void CompareComponents(ICalendarComponent cb1, ICalendarComponent cb2)
-        {
-            foreach (var p1 in cb1.Properties)
-            {
-                var isMatch = false;
-                foreach (var p2 in cb2.Properties.AllOf(p1.Name))
-                {
-                    try
-                    {
-                        Assert.AreEqual(p1, p2, "The properties '" + p1.Name + "' are not equal.");
-                        if (p1.Value is IComparable)
-                        {
-                            Assert.AreEqual(0, ((IComparable)p1.Value).CompareTo(p2.Value), "The '" + p1.Name + "' property values do not match.");
-                        }
-                        else if (p1.Value is IEnumerable)
-                        {
-                            CompareEnumerables((IEnumerable)p1.Value, (IEnumerable)p2.Value, p1.Name);
-                        }
-                        else
-                        {
-                            Assert.AreEqual(p1.Value, p2.Value, "The '" + p1.Name + "' property values are not equal.");
-                        }
-
-                        isMatch = true;
-                        break;
-                    }
-                    catch { }
-                }
-
-                Assert.IsTrue(isMatch, "Could not find a matching property - " + p1.Name + ":" + (p1.Value?.ToString() ?? string.Empty));
-            }
-
-            Assert.AreEqual(cb1.Children.Count, cb2.Children.Count, "The number of children are not equal.");
-            for (var i = 0; i < cb1.Children.Count; i++)
-            {
-                var child1 = cb1.Children[i] as ICalendarComponent;
-                var child2 = cb2.Children[i] as ICalendarComponent;
-                if (child1 != null && child2 != null)
-                {
-                    CompareComponents(child1, child2);
-                }
-                else
-                {
-                    Assert.AreEqual(child1, child2, "The child objects are not equal.");
-                }
-            }
-        }
-
-        public static void CompareEnumerables(IEnumerable a1, IEnumerable a2, string value)
-        {
-            if (a1 == null && a2 == null)
-            {
-                return;
-            }
-
-            Assert.IsFalse((a1 == null && a2 != null) || (a1 != null && a2 == null), value + " do not match - one item is null");
-
-            var enum1 = a1.GetEnumerator();
-            var enum2 = a2.GetEnumerator();
-
-            while (enum1.MoveNext() && enum2.MoveNext())
-            {
-                Assert.AreEqual(enum1.Current, enum2.Current, value + " do not match");
-            }
-        }
-
-        public static string InspectSerializedSection(string serialized, string sectionName, IEnumerable<string> elements)
+        private static string InspectSerializedSection(string serialized, string sectionName, IEnumerable<string> elements)
         {
             const string notFound = "expected '{0}' not found";
             var searchFor = "BEGIN:" + sectionName;
@@ -145,7 +59,7 @@ namespace Ical.Net.FrameworkUnitTests
                 : $"TZID={cdt.TzId}:{returnVar}";
         }
 
-        //This method needs renaming
+        // TODO: This method needs renaming
         static Dictionary<string, string> GetValues(string serialized, string name, string value)
         {
             var lengthened = serialized.Replace(SerializationConstants.LineBreak + ' ', string.Empty);
@@ -157,7 +71,7 @@ namespace Ical.Net.FrameworkUnitTests
                 : match.Groups[1].Value.Substring(1).Split(';').Select(v => v.Split('=')).ToDictionary(v => v[0], v => v.Length > 1 ? v[1] : null);
         }
 
-        [Test, Category("Serialization"), Ignore("TODO: standard time, for NZ standard time (current example)")]
+        [Test, Ignore("TODO: standard time, for NZ standard time (current example)")]
         public void TimeZoneSerialize()
         {
             //ToDo: This test is broken as of 2016-07-13
@@ -196,7 +110,8 @@ namespace Ical.Net.FrameworkUnitTests
 
             InspectSerializedSection(vTimezone, "DAYLIGHT", new[] { "TZNAME:" + tzi.DaylightName, "TZOFFSETFROM:" + o });
         }
-        [Test, Category("Serialization")]
+
+        [Test]
         public void SerializeDeserialize()
         {
             //ToDo: This test is broken as of 2016-07-13
@@ -228,7 +143,7 @@ namespace Ical.Net.FrameworkUnitTests
             CompareCalendars(cal1, cal2);
         }
 
-        [Test, Category("Serialization")]
+        [Test]
         public void EventPropertiesSerialized()
         {
             //ToDo: This test is broken as of 2016-07-13
@@ -282,7 +197,7 @@ namespace Ical.Net.FrameworkUnitTests
                 });
         }
 
-        private static readonly IList<Attendee> _attendees = new List<Attendee>
+        private static readonly IList<Attendee> Attendees = new List<Attendee>
         {
             new Attendee("MAILTO:james@example.com")
             {
@@ -300,26 +215,27 @@ namespace Ical.Net.FrameworkUnitTests
             }
         }.AsReadOnly();
 
-        [Test, Category("Serialization")]
+        [Test]
         public void AttendeesSerialized()
         {
-            //ToDo: This test is broken as of 2016-07-13
+            // TODO: This test is broken as of 2016-07-13
             var cal = new Calendar
             {
                 Method = "REQUEST",
                 Version = "2.0"
             };
 
-            var evt = AttendeeTest.VEventFactory();
+            var evt = CreateValidEvent();
             cal.Events.Add(evt);
             const string org = "MAILTO:james@example.com";
             evt.Organizer = new Organizer(org);
 
-            evt.Attendees.AddRange(_attendees);
+            evt.Attendees.AddRange(Attendees);
 
             var serializer = new CalendarSerializer();
             var serializedCalendar = serializer.SerializeToString(cal);
 
+            // TODO: Replace with the NUnit equivalent.
             Console.Write(serializedCalendar);
 
             var vEvt = InspectSerializedSection(serializedCalendar, "VEVENT", new[] { "ORGANIZER:" + org });
@@ -360,7 +276,7 @@ namespace Ical.Net.FrameworkUnitTests
             var originalDuration = e.Duration;
             var c = new Calendar();
             c.Events.Add(e);
-            var serialized = SerializeToString(c);
+            var serialized = SerializeCalenderToString(c);
             Assert.AreEqual(originalDuration, e.Duration);
             Assert.IsTrue(!serialized.Contains("DURATION"));
         }
@@ -370,10 +286,10 @@ namespace Ical.Net.FrameworkUnitTests
         {
             var e = GetSimpleEvent();
             e.Status = EventStatus.Confirmed;
-            var serialized = SerializeToString(e);
+            var serialized = SerializeEventToString(e);
             Assert.IsTrue(serialized.Contains(EventStatus.Confirmed, EventStatus.Comparison));
 
-            var calendar = UnserializeCalendar(serialized);
+            var calendar = Calendar.Load(serialized);
             var eventStatus = calendar.Events.First().Status;
             Assert.IsTrue(string.Equals(EventStatus.Confirmed, eventStatus, EventStatus.Comparison));
         }
@@ -387,10 +303,10 @@ namespace Ical.Net.FrameworkUnitTests
             };
 
             var c = new Calendar { Todos = { component } };
-            var serialized = SerializeToString(c);
+            var serialized = SerializeCalenderToString(c);
             Assert.IsTrue(serialized.Contains(TodoStatus.NeedsAction, TodoStatus.Comparison));
 
-            var calendar = UnserializeCalendar(serialized);
+            var calendar = Calendar.Load(serialized);
             var status = calendar.Todos.First().Status;
             Assert.IsTrue(string.Equals(TodoStatus.NeedsAction, status, TodoStatus.Comparison));
         }
@@ -404,10 +320,10 @@ namespace Ical.Net.FrameworkUnitTests
             };
 
             var c = new Calendar { Journals = { component } };
-            var serialized = SerializeToString(c);
+            var serialized = SerializeCalenderToString(c);
             Assert.IsTrue(serialized.Contains(JournalStatus.Final, JournalStatus.Comparison));
 
-            var calendar = UnserializeCalendar(serialized);
+            var calendar = Calendar.Load(serialized);
             var status = calendar.Journals.First().Status;
             Assert.IsTrue(string.Equals(JournalStatus.Final, status, JournalStatus.Comparison));
         }
@@ -449,13 +365,13 @@ END:VEVENT";
         {
             var rrule = new RecurrencePattern(FrequencyType.Daily)
             {
-                Until = _nowTime.AddDays(7),
+                Until = Now.AddDays(7),
             };
             const string someTz = "Europe/Volgograd";
             var e = new CalendarEvent
             {
-                Start = new CalDateTime(_nowTime, someTz),
-                End = new CalDateTime(_nowTime.AddHours(1), someTz),
+                Start = new CalDateTime(Now, someTz),
+                End = new CalDateTime(Now.AddHours(1), someTz),
                 RecurrenceRules = new List<RecurrencePattern> {rrule},
             };
             var c = new Calendar
@@ -519,14 +435,122 @@ END:VEVENT";
             const string expectedString = "This is an expected string";
             var e = new CalendarEvent
             {
-                Start = new CalDateTime(_nowTime),
-                End = new CalDateTime(_later),
+                Start = new CalDateTime(Now),
+                End = new CalDateTime(Later),
                 Summary = expectedString,
             };
 
             var serialized = new CalendarSerializer().SerializeToString(e);
             Assert.IsTrue(serialized.Contains(expectedString, StringComparison.Ordinal));
             Assert.IsTrue(!serialized.Contains("VCALENDAR", StringComparison.Ordinal));
+        }
+
+        private static CalendarEvent CreateValidEvent()
+        {
+            return new CalendarEvent
+            {
+                Summary = "Testing",
+                Start = new CalDateTime(2010, 3, 25),
+                End = new CalDateTime(2010, 3, 26)
+            };
+        }
+
+        private static CalendarEvent GetSimpleEvent()
+        {
+            return new CalendarEvent
+            {
+                DtStart = new CalDateTime(Now),
+                DtEnd = new CalDateTime(Later),
+                Duration = Later - Now
+            };
+        }
+
+        public static void CompareCalendars(Calendar cal1, Calendar cal2)
+        {
+            CompareComponents(cal1, cal2);
+
+            Assert.AreEqual(cal1.Children.Count, cal2.Children.Count, "Children count is different between calendars.");
+
+            for (var i = 0; i < cal1.Children.Count; i++)
+            {
+                if (cal1.Children[i] is ICalendarComponent component1
+                    && cal2.Children[i] is ICalendarComponent component2)
+                {
+                    CompareComponents(component1, component2);
+                }
+            }
+        }
+
+        private static void CompareComponents(ICalendarComponent cb1, ICalendarComponent cb2)
+        {
+            foreach (var p1 in cb1.Properties)
+            {
+                var isMatch = false;
+                foreach (var p2 in cb2.Properties.AllOf(p1.Name))
+                {
+                    try
+                    {
+                        Assert.AreEqual(p1, p2, "The properties '" + p1.Name + "' are not equal.");
+                        if (p1.Value is IComparable)
+                        {
+                            Assert.AreEqual(0, ((IComparable)p1.Value).CompareTo(p2.Value),
+                                "The '" + p1.Name + "' property values do not match.");
+                        }
+                        else if (p1.Value is IEnumerable)
+                        {
+                            CompareEnumerables((IEnumerable)p1.Value, (IEnumerable)p2.Value, p1.Name);
+                        }
+                        else
+                        {
+                            Assert.AreEqual(p1.Value, p2.Value, "The '" + p1.Name + "' property values are not equal.");
+                        }
+
+                        isMatch = true;
+                        break;
+                    }
+                    catch
+                    {
+                        // TODO: What is the purpose of this catch() ?
+                    }
+                }
+
+                Assert.IsTrue(isMatch, "Could not find a matching property - " + p1.Name + ":" + (p1.Value?.ToString() ?? string.Empty));
+            }
+
+            Assert.AreEqual(cb1.Children.Count, cb2.Children.Count, "The number of children are not equal.");
+            for (var i = 0; i < cb1.Children.Count; i++)
+            {
+                var child1 = cb1.Children[i] as ICalendarComponent;
+                var child2 = cb2.Children[i] as ICalendarComponent;
+                if (child1 != null && child2 != null)
+                {
+                    CompareComponents(child1, child2);
+                }
+                else
+                {
+                    Assert.AreEqual(child1, child2, "The child objects are not equal.");
+                }
+            }
+        }
+
+        private static void CompareEnumerables(IEnumerable a1, IEnumerable a2, string value)
+        {
+            // TODO: Can we replace with NUnit native code?
+
+            if (a1 == null && a2 == null)
+            {
+                return;
+            }
+
+            Assert.IsFalse((a1 == null && a2 != null) || (a1 != null && a2 == null), value + " do not match - one item is null");
+
+            var enum1 = a1.GetEnumerator();
+            var enum2 = a2.GetEnumerator();
+
+            while (enum1.MoveNext() && enum2.MoveNext())
+            {
+                Assert.AreEqual(enum1.Current, enum2.Current, value + " do not match");
+            }
         }
     }
 }

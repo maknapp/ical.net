@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Ical.Net.DataTypes;
-using Ical.Net.Utility;
+using Ical.Net.Extensions;
+using Ical.Net.Utilities;
 using NodaTime;
 using NodaTime.TimeZones;
 
@@ -11,7 +12,7 @@ namespace Ical.Net.CalendarComponents
     /// <summary>
     /// Represents an RFC 5545 VTIMEZONE component.
     /// </summary>
-    public class VTimeZone : CalendarComponent
+    public sealed class VTimeZone : CalendarComponent
     {
         public static VTimeZone FromLocalTimeZone()
             => FromDateTimeZone(DateUtil.LocalDateTimeZone.Id);
@@ -278,7 +279,7 @@ namespace Ical.Net.CalendarComponents
 
         private DateTimeZone _nodaZone;
         private string _tzId;
-        public virtual string TzId
+        public string TzId
         {
             get
             {
@@ -320,7 +321,7 @@ namespace Ical.Net.CalendarComponents
         }
 
         private Uri _url;
-        public virtual Uri Url
+        public Uri Url
         {
             get => _url ?? (_url = Properties.Get<Uri>("TZURL"));
             set
@@ -343,16 +344,18 @@ namespace Ical.Net.CalendarComponents
 
         public HashSet<VTimeZoneInfo> TimeZoneInfos { get; set; }
 
-        protected bool Equals(VTimeZone other)
-            => string.Equals(Name, other.Name, StringComparison.OrdinalIgnoreCase)
-                && string.Equals(TzId, other.TzId, StringComparison.OrdinalIgnoreCase)
-                && Equals(Url, other.Url);
+        public bool Equals(VTimeZone other)
+        {
+            return string.Equals(Name, other.Name, StringComparison.OrdinalIgnoreCase)
+                   && string.Equals(TzId, other.TzId, StringComparison.OrdinalIgnoreCase)
+                   && Equals(Url, other.Url);
+        }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((VTimeZone)obj);
         }
 

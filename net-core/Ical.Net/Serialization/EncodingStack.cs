@@ -5,28 +5,28 @@ namespace Ical.Net.Serialization
 {
     internal class EncodingStack
     {
-        private readonly Stack<Encoding> _mStack;
+        private static readonly Encoding DefaultEncoding = Encoding.UTF8;
+        private readonly Stack<Encoding> _stack;
 
         public EncodingStack()
         {
-            _mStack = new Stack<Encoding>();
+            _stack = new Stack<Encoding>();
         }
 
-        public Encoding Current =>
-            _mStack.Count > 0
-                ? _mStack.Peek()
-                : Encoding.UTF8;
+        public Encoding Current => _stack.Count > 0
+            ? _stack.Peek()
+            : DefaultEncoding;
 
         public void Push(Encoding encoding)
         {
             if (encoding != null)
             {
-                _mStack.Push(encoding);
+                _stack.Push(encoding);
             }
         }
 
-        public Encoding Pop() => _mStack.Count > 0
-            ? _mStack.Pop()
+        public Encoding Pop() => _stack.Count > 0
+            ? _stack.Pop()
             : null;
     }
 }

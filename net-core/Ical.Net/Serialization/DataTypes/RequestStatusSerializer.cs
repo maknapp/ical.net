@@ -6,7 +6,7 @@ using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public class RequestStatusSerializer : StringSerializer
+    public sealed class RequestStatusSerializer : StringSerializer
     {
         public RequestStatusSerializer() { }
 

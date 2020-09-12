@@ -1,16 +1,22 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Reflection;
 
-namespace Ical.Net.FrameworkUnitTests
+namespace Ical.Net.FrameworkUnitTests.Support
 {
     internal class IcsFiles
     {
-        private static readonly Assembly _assembly = typeof(IcsFiles).GetTypeInfo().Assembly;
+        private static readonly Assembly Assembly = typeof(IcsFiles).GetTypeInfo().Assembly;
 
-        internal static string ReadStream(string manifestResource)
+        private static string ReadStream(string manifestResource)
         {
-            using (var stream = _assembly.GetManifestResourceStream(manifestResource))
+            using (var stream = Assembly.GetManifestResourceStream(manifestResource))
             {
+                if (stream == null)
+                {
+                    throw new ArgumentException($"ICS example file '{manifestResource}' cannot be found or accessed.", nameof(manifestResource));
+                }
+
                 return new StreamReader(stream).ReadToEnd();
             }
         }

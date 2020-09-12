@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Text;
 using Ical.Net.Serialization.DataTypes;
-using Ical.Net.Utility;
+using Ical.Net.Utilities;
 
 namespace Ical.Net.DataTypes
 {
@@ -11,13 +11,13 @@ namespace Ical.Net.DataTypes
     /// 1) A string representing a URI which is typically human-readable, OR
     /// 2) A base64-encoded string that can represent anything
     /// </summary>
-    public class Attachment : EncodableDataType
+    public sealed class Attachment : EncodableDataType
     {
-        public virtual Uri Uri { get; set; }
-        public virtual byte[] Data { get; }
+        public Uri Uri { get; internal set; }
+        public byte[] Data { get; }
 
         private Encoding _valueEncoding = System.Text.Encoding.UTF8;
-        public virtual Encoding ValueEncoding
+        public Encoding ValueEncoding
         {
             get => _valueEncoding;
             set
@@ -30,7 +30,7 @@ namespace Ical.Net.DataTypes
             }
         }
 
-        public virtual string FormatType
+        public string FormatType
         {
             get => Parameters.Get("FMTTYPE");
             set => Parameters.Set("FMTTYPE", value);
@@ -74,7 +74,7 @@ namespace Ical.Net.DataTypes
         //ToDo: See if this can be deleted
         public override void CopyFrom(ICopyable obj) { }
 
-        protected bool Equals(Attachment other)
+        public bool Equals(Attachment other)
         {
             var firstPart = Equals(Uri, other.Uri) && ValueEncoding.Equals(other.ValueEncoding);
             return Data == null

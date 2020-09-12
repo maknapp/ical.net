@@ -4,7 +4,7 @@ using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public class FreeBusyEntrySerializer : PeriodSerializer
+    public sealed class FreeBusyEntrySerializer : PeriodSerializer
     {
         public FreeBusyEntrySerializer() { }
 

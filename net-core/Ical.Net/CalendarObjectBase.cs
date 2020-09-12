@@ -4,11 +4,11 @@ namespace Ical.Net
 {
     public class CalendarObjectBase : ICopyable, ILoadable
     {
-        private bool _mIsLoaded;
+        private bool _loaded;
 
         public CalendarObjectBase()
         {
-            _mIsLoaded = true;
+            _loaded = true;
         }
 
         /// <summary>
@@ -35,13 +35,13 @@ namespace Ical.Net
             return default(T);
         }
 
-        public virtual bool IsLoaded => _mIsLoaded;
+        public virtual bool IsLoaded => _loaded;
 
         public event EventHandler Loaded;
 
         public virtual void OnLoaded()
         {
-            _mIsLoaded = true;
+            _loaded = true;
             Loaded?.Invoke(this, EventArgs.Empty);
         }
     }

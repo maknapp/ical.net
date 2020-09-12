@@ -6,34 +6,34 @@ using System.Reflection;
 
 namespace Ical.Net.Serialization
 {
-    public class GenericListSerializer : SerializerBase
+    public sealed class GenericListSerializer : SerializerBase
     {
         private readonly Type _innerType;
-        private readonly Type _objectType;
 
         public GenericListSerializer(Type objectType)
         {
             _innerType = objectType.GetGenericArguments()[0];
 
             var listDef = typeof (List<>);
-            _objectType = listDef.MakeGenericType(typeof (object));
+            TargetType = listDef.MakeGenericType(typeof (object));
         }
 
-        public override Type TargetType => _objectType;
+        public override Type TargetType { get; }
 
-        public override string SerializeToString(object obj) => throw new NotImplementedException();
+        public override string SerializeToString(object obj) 
+            => throw new NotImplementedException();
 
         private MethodInfo _addMethodInfo;
         public override object Deserialize(TextReader tr)
         {
-            var p = SerializationContext.Peek() as ICalendarProperty;
-            if (p == null)
+            var property = SerializationContext.Peek() as ICalendarProperty;
+            if (property == null)
             {
                 return null;
             }
 
             // Get a serializer factory to deserialize the contents of this list
-            var listObj = Activator.CreateInstance(_objectType);
+            var listObj = Activator.CreateInstance(TargetType);
             if (listObj == null)
             {
                 return null;
@@ -55,7 +55,7 @@ namespace Ical.Net.Serialization
             // FIXME: cache this
             if (_addMethodInfo == null)
             {
-                _addMethodInfo = _objectType.GetMethod("Add");
+                _addMethodInfo = TargetType.GetMethod("Add");
             }
 
             // Determine if the returned object is an IList<ObjectType>, rather than just an ObjectType.

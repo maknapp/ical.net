@@ -10,9 +10,10 @@ using Ical.Net.DataTypes;
 using Ical.Net.Evaluation;
 using Ical.Net.Serialization;
 using Ical.Net.Serialization.DataTypes;
-using Ical.Net.Utility;
+using Ical.Net.Utilities;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using static Ical.Net.FrameworkUnitTests.Support.AssertUtilities;
 
 namespace Ical.Net.CoreUnitTests
 {
@@ -78,7 +79,7 @@ namespace Ical.Net.CoreUnitTests
         public void YearlyComplex1()
         {
             var iCal = Calendar.Load(IcsFiles.YearlyComplex1);
-            ProgramTest.TestCal(iCal);
+            AssertCalendar(iCal);
             var evt = iCal.Events.First();
             var occurrences = evt.GetOccurrences(
                 new CalDateTime(2006, 1, 1, _tzid),
@@ -139,7 +140,7 @@ namespace Ical.Net.CoreUnitTests
         public void DailyUntil1()
         {
             var iCal = Calendar.Load(IcsFiles.DailyUntil1);
-            ProgramTest.TestCal(iCal);
+            AssertCalendar(iCal);
             var evt = iCal.Events.First();
 
             var occurrences = evt.GetOccurrences(
@@ -309,7 +310,7 @@ namespace Ical.Net.CoreUnitTests
         public void ByMonth1()
         {
             var iCal = Calendar.Load(IcsFiles.ByMonth1);
-            ProgramTest.TestCal(iCal);
+            AssertCalendar(iCal);
             var evt = iCal.Events.First();
 
             var occurrences = evt.GetOccurrences(
@@ -345,8 +346,8 @@ namespace Ical.Net.CoreUnitTests
         {
             var iCal1 = Calendar.Load(IcsFiles.ByMonth1);
             var iCal2 = Calendar.Load(IcsFiles.ByMonth2);
-            ProgramTest.TestCal(iCal1);
-            ProgramTest.TestCal(iCal2);
+            AssertCalendar(iCal1);
+            AssertCalendar(iCal2);
             var evt1 = iCal1.Events.First();
             var evt2 = iCal2.Events.First();
 
@@ -529,8 +530,8 @@ namespace Ical.Net.CoreUnitTests
         {
             var iCal1 = Calendar.Load(IcsFiles.WeeklyUntilWkst1);
             var iCal2 = Calendar.Load(IcsFiles.WeeklyCountWkst1);
-            ProgramTest.TestCal(iCal1);
-            ProgramTest.TestCal(iCal2);
+            AssertCalendar(iCal1);
+            AssertCalendar(iCal2);
             var evt1 = iCal1.Events.First();
             var evt2 = iCal2.Events.First();
 
@@ -1757,8 +1758,8 @@ namespace Ical.Net.CoreUnitTests
         {
             var iCal1 = Calendar.Load(IcsFiles.DailyByHourMinute1);
             var iCal2 = Calendar.Load(IcsFiles.MinutelyByHour1);
-            ProgramTest.TestCal(iCal1);
-            ProgramTest.TestCal(iCal2);
+            AssertCalendar(iCal1);
+            AssertCalendar(iCal2);
             var evt1 = iCal1.Events.First();
             var evt2 = iCal2.Events.First();
 

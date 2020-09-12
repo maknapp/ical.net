@@ -1,4 +1,4 @@
-﻿namespace Ical.Net
+﻿namespace Ical.Net.Extensions
 {
     public static class CalendarObjectExtensions
     {

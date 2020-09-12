@@ -11,19 +11,15 @@ namespace Ical.Net.DataTypes
     /// the alarm occurs, the <see cref="Alarm"/> that fired, and the 
     /// component on which the alarm fired.
     /// </remarks>
-    public class AlarmOccurrence : IComparable<AlarmOccurrence>
+    public sealed class AlarmOccurrence : IComparable<AlarmOccurrence>
     {
-        public Period Period { get; set; }
+        public Period Period { get; }
 
-        public IRecurringComponent Component { get; set; }
+        public IRecurringComponent Component { get; }
 
-        public Alarm Alarm { get; set; }
+        public Alarm Alarm { get; }
 
-        public IDateTime DateTime
-        {
-            get => Period.StartTime;
-            set => Period = new Period(value);
-        }
+        public IDateTime DateTime => Period.StartTime;
 
         public AlarmOccurrence(AlarmOccurrence ao)
         {
@@ -41,10 +37,12 @@ namespace Ical.Net.DataTypes
 
         public int CompareTo(AlarmOccurrence other) => Period.CompareTo(other.Period);
 
-        protected bool Equals(AlarmOccurrence other)
-            => Equals(Period, other.Period) 
-                && Equals(Component, other.Component)
-                && Equals(Alarm, other.Alarm);
+        public bool Equals(AlarmOccurrence other)
+        {
+            return Equals(Period, other.Period)
+                   && Equals(Component, other.Component)
+                   && Equals(Alarm, other.Alarm);
+        }
 
         public override bool Equals(object obj)
         {
@@ -55,7 +53,7 @@ namespace Ical.Net.DataTypes
 
         public override int GetHashCode()
         {
-            // ToDo: Alarm doesn't implement Equals or GetHashCode()
+            // TODO: Alarm doesn't implement Equals or GetHashCode()
             unchecked
             {
                 var hashCode = Period?.GetHashCode() ?? 0;

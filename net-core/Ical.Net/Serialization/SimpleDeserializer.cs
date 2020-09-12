@@ -8,7 +8,7 @@ using Ical.Net.CalendarComponents;
 
 namespace Ical.Net.Serialization
 {
-    public class SimpleDeserializer
+    public sealed class SimpleDeserializer
     {
         internal SimpleDeserializer(
             DataTypeMapper dataTypeMapper,

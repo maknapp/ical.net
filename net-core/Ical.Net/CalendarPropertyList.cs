@@ -5,19 +5,19 @@ namespace Ical.Net
 {
     public class CalendarPropertyList : GroupedValueList<string, ICalendarProperty, CalendarProperty, object>
     {
-        private readonly ICalendarObject _mParent;
+        private readonly ICalendarObject _parent;
 
         public CalendarPropertyList() {}
 
         public CalendarPropertyList(ICalendarObject parent)
         {
-            _mParent = parent;
+            _parent = parent;
             ItemAdded += CalendarPropertyList_ItemAdded;
         }
 
-        private void CalendarPropertyList_ItemAdded(object sender, ObjectEventArgs<ICalendarProperty, int> e)
+        private void CalendarPropertyList_ItemAdded(object sender, ItemAddedEventArgs<ICalendarProperty> e)
         {
-            e.First.Parent = _mParent;
+            e.Item.Parent = _parent;
         }
 
         public ICalendarProperty this[string name] => ContainsKey(name)

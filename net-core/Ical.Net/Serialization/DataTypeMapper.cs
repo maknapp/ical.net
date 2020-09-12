@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using Ical.Net.CalendarComponents;
 using Ical.Net.DataTypes;
@@ -15,11 +16,13 @@ namespace Ical.Net.Serialization
             public TypeResolverDelegate Resolver { get; set; }
             public bool AllowsMultipleValuesPerProperty { get; set; }
         }
-
-        private readonly IDictionary<string, PropertyMapping> _propertyMap = new Dictionary<string, PropertyMapping>(StringComparer.OrdinalIgnoreCase);
+        
+        private readonly IDictionary<string, PropertyMapping> _propertyMap;
 
         public DataTypeMapper()
         {
+            _propertyMap = new Dictionary<string, PropertyMapping>(StringComparer.OrdinalIgnoreCase);
+
             AddPropertyMapping(AlarmAction.Name, typeof (AlarmAction), false);
             AddPropertyMapping("ATTACH", typeof (Attachment), false);
             AddPropertyMapping("ATTENDEE", typeof (Attendee), false);
@@ -119,7 +122,7 @@ namespace Ical.Net.Serialization
             }
         }
 
-        public virtual bool GetPropertyAllowsMultipleValues(object obj)
+        public bool GetPropertyAllowsMultipleValues(object obj)
         {
             var p = obj as ICalendarProperty;
             return !string.IsNullOrWhiteSpace(p?.Name)
@@ -127,7 +130,7 @@ namespace Ical.Net.Serialization
                 && m.AllowsMultipleValuesPerProperty;
         }
 
-        public virtual Type GetPropertyMapping(object obj)
+        public Type GetPropertyMapping(object obj)
         {
             var p = obj as ICalendarProperty;
             if (p?.Name == null)

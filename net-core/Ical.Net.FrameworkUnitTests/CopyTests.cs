@@ -3,21 +3,27 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Ical.Net.CalendarComponents;
 using Ical.Net.DataTypes;
+using Ical.Net.FrameworkUnitTests.Support;
 using Ical.Net.Serialization;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 
-namespace Ical.Net.CoreUnitTests
+namespace Ical.Net.FrameworkUnitTests
 {
     [TestFixture]
-    public class CopyTest
+    [Category("Copy tests")]
+    public class CopyTests
     {
-        [Test, TestCaseSource(nameof(CopyCalendarTest_TestCases)), Category("Copy tests")]
+        private static readonly DateTime Now = new DateTime(2010, 11, 12, 05, 06, 07);
+        private static readonly DateTime Later = Now.AddHours(1);
+
+        [Test, TestCaseSource(nameof(CopyCalendarTest_TestCases))]
         public void CopyCalendarTest(string calendarString)
         {
-            var iCal1 = Calendar.Load(calendarString);
-            var iCal2 = iCal1.Copy<Calendar>();
-            SerializationTests.CompareCalendars(iCal1, iCal2);
+            var calendar1 = Calendar.Load(calendarString);
+            var calendar2 = calendar1.Copy<Calendar>();
+
+            SerializationTests.CompareCalendars(calendar1, calendar2);
         }
 
         public static IEnumerable<ITestCaseData> CopyCalendarTest_TestCases()
@@ -45,34 +51,41 @@ namespace Ical.Net.CoreUnitTests
             yield return new TestCaseData(IcsFiles.XProperty2).SetName("XProperty2");
         }
 
-        private static readonly DateTime _now = DateTime.Now;
-        private static readonly DateTime _later = _now.AddHours(1);
-
-        private static CalendarEvent GetSimpleEvent() => new CalendarEvent
-        {
-            DtStart = new CalDateTime(_now),
-            DtEnd = new CalDateTime(_later),
-            Duration = TimeSpan.FromHours(1),
-        };
-
-        private static string SerializeEvent(CalendarEvent e) => new CalendarSerializer().SerializeToString(new Calendar { Events = { e } });
-
         [Test]
         public void EventUid_Tests()
         {
-            var e = GetSimpleEvent();
-            e.Uid = "Hello";
-            var copy = e.Copy<CalendarEvent>();
-            Assert.AreEqual(e.Uid, copy.Uid);
+            var calendarEvent = CreateSimpleEvent();
+            calendarEvent.Uid = "Hello";
 
-            copy.Uid = "Goodbye";
+            var eventCopy = calendarEvent.Copy<CalendarEvent>();
+            Assert.AreEqual(calendarEvent.Uid, eventCopy.Uid);
+
+            eventCopy.Uid = "Goodbye";
 
             const string uidPattern = "UID:";
-            var serializedOrig = SerializeEvent(e);
+            var serializedOrig = SerializeEvent(calendarEvent);
             Assert.AreEqual(1, Regex.Matches(serializedOrig, uidPattern).Count);
 
-            var serializedCopy = SerializeEvent(copy);
+            var serializedCopy = SerializeEvent(eventCopy);
             Assert.AreEqual(1, Regex.Matches(serializedCopy, uidPattern).Count);
+        }
+
+        private static CalendarEvent CreateSimpleEvent()
+        {
+            return new CalendarEvent
+            {
+                DtStart = new CalDateTime(Now),
+                DtEnd = new CalDateTime(Later),
+                Duration = TimeSpan.FromHours(1),
+            };
+        }
+
+        private static string SerializeEvent(CalendarEvent calendarEvent)
+        {
+            return new CalendarSerializer().SerializeToString(new Calendar
+            {
+                Events = { calendarEvent }
+            });
         }
     }
 }

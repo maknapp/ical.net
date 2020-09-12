@@ -2,17 +2,14 @@
 using System.Collections.Generic;
 using System.Globalization;
 using Ical.Net.DataTypes;
-using Ical.Net.Utility;
+using Ical.Net.Utilities;
 
 namespace Ical.Net.Evaluation
 {
     public abstract class Evaluator : IEvaluator
     {
-        private DateTime _mEvaluationStartBounds = DateTime.MaxValue;
-        private DateTime _mEvaluationEndBounds = DateTime.MinValue;
-
-        private ICalendarObject _mAssociatedObject;
-        private readonly ICalendarDataType _mAssociatedDataType;
+        private ICalendarObject _associatedObject;
+        private readonly ICalendarDataType _associatedDataType;
 
         protected HashSet<Period> MPeriods;
 
@@ -23,14 +20,14 @@ namespace Ical.Net.Evaluation
 
         protected Evaluator(ICalendarObject associatedObject)
         {
-            _mAssociatedObject = associatedObject;
+            _associatedObject = associatedObject;
 
             Initialize();
         }
 
         protected Evaluator(ICalendarDataType dataType)
         {
-            _mAssociatedDataType = dataType;
+            _associatedDataType = dataType;
 
             Initialize();
         }
@@ -80,7 +77,8 @@ namespace Ical.Net.Evaluation
                 case FrequencyType.Yearly:
                     dt = old.AddDays(-old.DayOfYear + 1).AddYears(interval);
                     break;
-                // FIXME: use a more specific exception.
+
+                // TODO: use a more specific exception.
                 default:
                     throw new Exception("FrequencyType.NONE cannot be evaluated. Please specify a FrequencyType before evaluating the recurrence.");
             }
@@ -88,30 +86,22 @@ namespace Ical.Net.Evaluation
 
         public System.Globalization.Calendar Calendar { get; private set; }
 
-        public virtual DateTime EvaluationStartBounds
+        public DateTime EvaluationStartBounds { get; set; } = DateTime.MaxValue;
+
+        public DateTime EvaluationEndBounds { get; set; } = DateTime.MinValue;
+
+        public ICalendarObject AssociatedObject
         {
-            get => _mEvaluationStartBounds;
-            set => _mEvaluationStartBounds = value;
+            get => _associatedObject ?? _associatedDataType?.AssociatedObject;
+            protected set => _associatedObject = value;
         }
 
-        public virtual DateTime EvaluationEndBounds
-        {
-            get => _mEvaluationEndBounds;
-            set => _mEvaluationEndBounds = value;
-        }
-
-        public virtual ICalendarObject AssociatedObject
-        {
-            get => _mAssociatedObject ?? _mAssociatedDataType?.AssociatedObject;
-            protected set => _mAssociatedObject = value;
-        }
-
-        public virtual HashSet<Period> Periods => MPeriods;
+        public HashSet<Period> Periods => MPeriods;
 
         public virtual void Clear()
         {
-            _mEvaluationStartBounds = DateTime.MaxValue;
-            _mEvaluationEndBounds = DateTime.MinValue;
+            EvaluationStartBounds = DateTime.MaxValue;
+            EvaluationEndBounds = DateTime.MinValue;
             MPeriods.Clear();
         }
 

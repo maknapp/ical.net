@@ -13,7 +13,7 @@ namespace Ical.Net.DataTypes
         private ParameterCollectionProxy _proxy;
         private ServiceProvider _serviceProvider;
 
-        protected ICalendarObject _AssociatedObject;
+        private ICalendarObject _associatedObject;
 
         protected CalendarDataType()
         {
@@ -39,78 +39,76 @@ namespace Ical.Net.DataTypes
             OnDeserialized(context);
         }
 
-        protected virtual void OnDeserializing(StreamingContext context)
+        protected void OnDeserializing(StreamingContext context)
         {
             Initialize();
         }
 
-        protected virtual void OnDeserialized(StreamingContext context) {}
+        protected void OnDeserialized(StreamingContext context) {}
 
-        public virtual Type GetValueType()
+        public Type GetValueType()
         {
             // See RFC 5545 Section 3.2.20.
-            if (_proxy != null && _proxy.ContainsKey("VALUE"))
+            if (_proxy == null || !_proxy.ContainsKey("VALUE")) return null;
+
+            switch (_proxy.Get("VALUE"))
             {
-                switch (_proxy.Get("VALUE"))
-                {
-                    case "BINARY":
-                        return typeof (byte[]);
-                    case "BOOLEAN":
-                        return typeof (bool);
-                    case "CAL-ADDRESS":
-                        return typeof (Uri);
-                    case "DATE":
-                        return typeof (IDateTime);
-                    case "DATE-TIME":
-                        return typeof (IDateTime);
-                    case "DURATION":
-                        return typeof (TimeSpan);
-                    case "FLOAT":
-                        return typeof (double);
-                    case "INTEGER":
-                        return typeof (int);
-                    case "PERIOD":
-                        return typeof (Period);
-                    case "RECUR":
-                        return typeof (RecurrencePattern);
-                    case "TEXT":
-                        return typeof (string);
-                    case "TIME":
-                        // FIXME: implement ISO.8601.2004
-                        throw new NotImplementedException();
-                    case "URI":
-                        return typeof (Uri);
-                    case "UTC-OFFSET":
-                        return typeof (UtcOffset);
-                    default:
-                        return null;
-                }
+                case "BINARY":
+                    return typeof (byte[]);
+                case "BOOLEAN":
+                    return typeof (bool);
+                case "CAL-ADDRESS":
+                    return typeof (Uri);
+                case "DATE":
+                    return typeof (IDateTime);
+                case "DATE-TIME":
+                    return typeof (IDateTime);
+                case "DURATION":
+                    return typeof (TimeSpan);
+                case "FLOAT":
+                    return typeof (double);
+                case "INTEGER":
+                    return typeof (int);
+                case "PERIOD":
+                    return typeof (Period);
+                case "RECUR":
+                    return typeof (RecurrencePattern);
+                case "TEXT":
+                    return typeof (string);
+                case "TIME":
+                    // FIXME: implement ISO.8601.2004
+                    throw new NotImplementedException();
+                case "URI":
+                    return typeof (Uri);
+                case "UTC-OFFSET":
+                    return typeof (UtcOffset);
+                default:
+                    return null;
             }
-            return null;
         }
 
-        public virtual void SetValueType(string type)
+        public void SetValueType(string type)
         {
             _proxy?.Set("VALUE", type ?? type.ToUpper());
         }
 
         public virtual ICalendarObject AssociatedObject
         {
-            get => _AssociatedObject;
+            get => _associatedObject;
             set
             {
-                if (Equals(_AssociatedObject, value))
+                if (Equals(_associatedObject, value))
                 {
                     return;
                 }
 
-                _AssociatedObject = value;
-                if (_AssociatedObject != null)
+                _associatedObject = value;
+                if (_associatedObject != null)
                 {
-                    _proxy.SetParent(_AssociatedObject);
-                    if (_AssociatedObject is ICalendarParameterCollectionContainer)
+                    _proxy.SetParent(_associatedObject);
+                    if (_associatedObject is ICalendarParameterCollectionContainer)
                     {
-                        _proxy.SetProxiedObject(((ICalendarParameterCollectionContainer) _AssociatedObject).Parameters);
+                        _proxy.SetProxiedObject(((ICalendarParameterCollectionContainer) _associatedObject).Parameters);
                     }
                 }
                 else
@@ -121,9 +119,9 @@ namespace Ical.Net.DataTypes
             }
         }
 
-        public virtual Calendar Calendar => _AssociatedObject?.Calendar;
+        public Calendar Calendar => _associatedObject?.Calendar;
 
-        public virtual string Language
+        public string Language
         {
             get => Parameters.Get("LANGUAGE");
             set => Parameters.Set("LANGUAGE", value);
@@ -141,8 +139,8 @@ namespace Ical.Net.DataTypes
             }
 
             var dt = (ICalendarDataType) obj;
-            _AssociatedObject = dt.AssociatedObject;
-            _proxy.SetParent(_AssociatedObject);
+            _associatedObject = dt.AssociatedObject;
+            _proxy.SetParent(_associatedObject);
             _proxy.SetProxiedObject(dt.Parameters);
         }
 
@@ -150,7 +148,7 @@ namespace Ical.Net.DataTypes
         /// Creates a copy of the object.
         /// </summary>
         /// <returns>The copy of the object.</returns>
-        public virtual T Copy<T>()
+        public T Copy<T>()
         {
             var type = GetType();
             var obj = Activator.CreateInstance(type) as ICopyable;
@@ -164,9 +162,9 @@ namespace Ical.Net.DataTypes
             return default(T);
         }
 
-        public virtual IParameterCollection Parameters => _proxy;
+        public IParameterCollection Parameters => _proxy;
 
-        public virtual object GetService(Type serviceType) => _serviceProvider.GetService(serviceType);
+        public object GetService(Type serviceType) => _serviceProvider.GetService(serviceType);
 
         public object GetService(string name) => _serviceProvider.GetService(name);
 
