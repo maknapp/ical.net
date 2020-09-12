@@ -7,7 +7,7 @@ namespace Ical.Net.FrameworkUnitTests
 {
     public class ComponentTests
     {
-        [Test, Category("Components")]
+        [Test]
         public void UniqueComponent1()
         {
             var iCal = new Calendar();
@@ -18,7 +18,7 @@ namespace Ical.Net.FrameworkUnitTests
             Assert.IsNotNull(evt.DtStamp);
         }
 
-        [Test, Category("Components")]
+        [Test]
         public void ChangeCalDateTimeValue()
         {
             var e = new CalendarEvent

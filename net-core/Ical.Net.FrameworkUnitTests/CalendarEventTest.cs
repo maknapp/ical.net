@@ -11,20 +11,20 @@ using NUnit.Framework.Interfaces;
 namespace Ical.Net.FrameworkUnitTests
 {
     [TestFixture]
+    [Category("CalendarEvent")]
     public class CalendarEventTest
     {
-        private static readonly DateTime _now = DateTime.UtcNow;
-        private static readonly DateTime _later = _now.AddHours(1);
-        private static readonly string _uid = Guid.NewGuid().ToString();
+        private static readonly DateTime Now = new DateTime(2010, 11, 12, 05, 06, 07);
+        private static readonly DateTime Later = Now.AddHours(1);
+        private static readonly string Uid = Guid.NewGuid().ToString();
 
         /// <summary>
         /// Ensures that events can be properly added to a calendar.
         /// </summary>
-        [Test, Category("CalendarEvent")]
+        [Test]
         public void Add1()
         {
             var cal = new Calendar();
-
             var evt = new CalendarEvent
             {
                 Summary = "Testing",
@@ -40,11 +40,10 @@ namespace Ical.Net.FrameworkUnitTests
         /// <summary>
         /// Ensures that events can be properly removed from a calendar.
         /// </summary>
-        [Test, Category("CalendarEvent")]
+        [Test]
         public void Remove1()
         {
             var cal = new Calendar();
-
             var evt = new CalendarEvent
             {
                 Summary = "Testing",
@@ -64,11 +63,10 @@ namespace Ical.Net.FrameworkUnitTests
         /// <summary>
         /// Ensures that events can be properly removed from a calendar.
         /// </summary>
-        [Test, Category("CalendarEvent")]
-        public void Remove2()
+        [Test]
+        public void EnsureEventsCanBeRemovedFromCalendar()
         {
             var cal = new Calendar();
-
             var evt = new CalendarEvent
             {
                 Summary = "Testing",
@@ -88,8 +86,8 @@ namespace Ical.Net.FrameworkUnitTests
         /// <summary>
         /// Ensures that event DTSTAMP is set.
         /// </summary>
-        [Test, Category("CalendarEvent")]
-        public void EnsureDTSTAMPisNotNull()
+        [Test]
+        public void EnsureDtstampIsNotNull()
         {
             var cal = new Calendar();
 
@@ -108,8 +106,8 @@ namespace Ical.Net.FrameworkUnitTests
         /// <summary>
         /// Ensures that automatically set DTSTAMP property is of kind UTC.
         /// </summary>
-        [Test, Category("CalendarEvent")]
-        public void EnsureDTSTAMPisOfTypeUTC()
+        [Test]
+        public void EnsureDtstampIsOfTypeUtc()
         {
             var cal = new Calendar();
 
@@ -127,7 +125,8 @@ namespace Ical.Net.FrameworkUnitTests
         /// <summary>
         /// Ensures that automatically set DTSTAMP property is being serialized with kind UTC.
         /// </summary>
-        [Test, Category("Deserialization"), TestCaseSource(nameof(EnsureAutomaticallySetDtStampIsSerializedAsUtcKind_TestCases))]
+        [Category("Deserialization")]
+        [Test, TestCaseSource(nameof(EnsureAutomaticallySetDtStampIsSerializedAsUtcKind_TestCases))]
         public bool EnsureAutomaticallySetDTSTAMPisSerializedAsKindUTC(string serialized)
         {
             var lines = serialized.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
@@ -217,9 +216,9 @@ END:VCALENDAR";
 
         private static CalendarEvent GetSimpleEvent() => new CalendarEvent
         {
-            DtStart = new CalDateTime(_now),
-            DtEnd = new CalDateTime(_later),
-            Uid = _uid,
+            DtStart = new CalDateTime(Now),
+            DtEnd = new CalDateTime(Later),
+            Uid = Uid,
         };
 
         [Test]
@@ -234,7 +233,7 @@ END:VCALENDAR";
             Assert.AreNotEqual(simpleEvent.GetHashCode(), testRrule.GetHashCode());
 
             var testRdate = GetSimpleEvent();
-            testRdate.RecurrenceDates = new List<PeriodList> { new PeriodList { new Period(new CalDateTime(_now)) } };
+            testRdate.RecurrenceDates = new List<PeriodList> { new PeriodList { new Period(new CalDateTime(Now)) } };
             Assert.AreNotEqual(simpleEvent, testRdate);
             Assert.AreNotEqual(simpleEvent.GetHashCode(), testRdate.GetHashCode());
         }
@@ -242,7 +241,7 @@ END:VCALENDAR";
         private static List<RecurrencePattern> GetSimpleRecurrenceList()
             => new List<RecurrencePattern> { new RecurrencePattern(FrequencyType.Daily, 1) { Count = 5 } };
         private static List<PeriodList> GetExceptionDates()
-            => new List<PeriodList> { new PeriodList { new Period(new CalDateTime(_now.AddDays(1).Date)) } };
+            => new List<PeriodList> { new PeriodList { new Period(new CalDateTime(Now.AddDays(1).Date)) } };
 
         [Test]
         public void EventWithRecurrenceAndExceptionComparison()

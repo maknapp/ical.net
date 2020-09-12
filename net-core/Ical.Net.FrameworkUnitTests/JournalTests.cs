@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Ical.Net.FrameworkUnitTests.Support;
 using NUnit.Framework;
 using static Ical.Net.FrameworkUnitTests.Support.AssertUtilities;
 

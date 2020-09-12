@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 using Ical.Net.CalendarComponents;
 using Ical.Net.DataTypes;
-using Ical.Net.Serialization;
+using Ical.Net.FrameworkUnitTests.Support;
+using static Ical.Net.FrameworkUnitTests.Support.SerializationUtilities;
 using Ical.Net.Utilities;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
@@ -13,9 +14,9 @@ namespace Ical.Net.FrameworkUnitTests
 {
     public class EqualityAndHashingTests
     {
-        private const string _someTz = "America/Los_Angeles";
-        private static readonly DateTime _nowTime = DateTime.Parse("2016-07-16T16:47:02.9310521-04:00");
-        private static readonly DateTime _later = _nowTime.AddHours(1);
+        private const string TimezoneId = "America/Los_Angeles";
+        private static readonly DateTime Now = DateTime.Parse("2016-07-16T16:47:02.9310521-04:00");
+        private static readonly DateTime Later = Now.AddHours(1);
 
         [Test, TestCaseSource(nameof(CalDateTime_TestCases))]
         public void CalDateTime_Tests(CalDateTime incomingDt, CalDateTime expectedDt)
@@ -28,11 +29,13 @@ namespace Ical.Net.FrameworkUnitTests
 
         public static IEnumerable<ITestCaseData> CalDateTime_TestCases()
         {
-            var nowCalDt = new CalDateTime(_nowTime);
-            yield return new TestCaseData(nowCalDt, new CalDateTime(_nowTime)).SetName("Now, no time zone");
+            var nowCalDt = new CalDateTime(Now);
+            yield return new TestCaseData(nowCalDt, new CalDateTime(Now))
+                .SetName("Now, no time zone");
 
-            var nowCalDtWithTz = new CalDateTime(_nowTime, _someTz);
-            yield return new TestCaseData(nowCalDtWithTz, new CalDateTime(_nowTime, _someTz)).SetName("Now, with time zone");
+            var nowCalDtWithTz = new CalDateTime(Now, TimezoneId);
+            yield return new TestCaseData(nowCalDtWithTz, new CalDateTime(Now, TimezoneId))
+                .SetName("Now, with time zone");
         }
 
         [Test]
@@ -66,12 +69,10 @@ namespace Ical.Net.FrameworkUnitTests
 
         private static CalendarEvent GetSimpleEvent() => new CalendarEvent
         {
-            DtStart = new CalDateTime(_nowTime),
-            DtEnd = new CalDateTime(_later),
+            DtStart = new CalDateTime(Now),
+            DtEnd = new CalDateTime(Later),
             Duration = TimeSpan.FromHours(1),
         };
-
-        private static string SerializeEvent(CalendarEvent e) => new CalendarSerializer().SerializeToString(new Calendar { Events = { e } });
 
 
         public static IEnumerable<ITestCaseData> Event_TestCases()
@@ -100,8 +101,8 @@ namespace Ical.Net.FrameworkUnitTests
 
             var e = new CalendarEvent
             {
-                DtStart = new CalDateTime(_nowTime),
-                DtEnd = new CalDateTime(_later),
+                DtStart = new CalDateTime(Now),
+                DtEnd = new CalDateTime(Later),
                 Duration = TimeSpan.FromHours(1),
                 RecurrenceRules = new List<RecurrencePattern> { rruleA },
             };
@@ -118,8 +119,8 @@ namespace Ical.Net.FrameworkUnitTests
             var expectedCalendar = new Calendar();
             expectedCalendar.Events.Add(new CalendarEvent
             {
-                DtStart = new CalDateTime(_nowTime),
-                DtEnd = new CalDateTime(_later),
+                DtStart = new CalDateTime(Now),
+                DtEnd = new CalDateTime(Later),
                 Duration = TimeSpan.FromHours(1),
                 RecurrenceRules = new List<RecurrencePattern> { rruleB },
             });
@@ -235,30 +236,30 @@ namespace Ical.Net.FrameworkUnitTests
 
             e.Resources.Add("Baz");
             Assert.IsTrue(e.Resources.Count == 3);
-            var serialized = SerializeEvent(e);
+            var serialized = SerializeEventToString(e);
             Assert.IsTrue(serialized.Contains("Baz"));
 
             e.Resources.Remove("Baz");
             Assert.IsTrue(e.Resources.Count == 2);
-            serialized = SerializeEvent(e);
+            serialized = SerializeEventToString(e);
             Assert.IsFalse(serialized.Contains("Baz"));
 
             e.Resources.Add("Hello");
             Assert.IsTrue(e.Resources.Contains("Hello"));
-            serialized = SerializeEvent(e);
+            serialized = SerializeEventToString(e);
             Assert.IsTrue(serialized.Contains("Hello"));
 
             e.Resources.Clear();
             e.Resources.AddRange(origContents);
             CollectionAssert.AreEquivalent(e.Resources, origContents);
-            serialized = SerializeEvent(e);
+            serialized = SerializeEventToString(e);
             Assert.IsTrue(serialized.Contains("Foo"));
             Assert.IsTrue(serialized.Contains("Bar"));
             Assert.IsFalse(serialized.Contains("Baz"));
             Assert.IsFalse(serialized.Contains("Hello"));
         }
 
-        internal static (byte[] original, byte[] copy) GetAttachments()
+        private static (byte[] original, byte[] copy) GetAttachments()
         {
             var payload = Encoding.UTF8.GetBytes("This is an attachment!");
             var payloadCopy = new byte[payload.Length];
@@ -284,13 +285,13 @@ namespace Ical.Net.FrameworkUnitTests
         {
             var attachments = GetAttachments();
 
-            var journalNoAttach = new Journal { Start = new CalDateTime(_nowTime), Summary = "A summary!", Class = "Some class!" };
-            var journalWithAttach = new Journal { Start = new CalDateTime(_nowTime), Summary = "A summary!", Class = "Some class!" };
+            var journalNoAttach = new Journal { Start = new CalDateTime(Now), Summary = "A summary!", Class = "Some class!" };
+            var journalWithAttach = new Journal { Start = new CalDateTime(Now), Summary = "A summary!", Class = "Some class!" };
             journalWithAttach.Attachments.Add(new Attachment(attachments.original));
             yield return new TestCaseData(journalNoAttach, journalWithAttach).SetName("Journal recurring component attachment");
 
-            var todoNoAttach = new Todo { Start = new CalDateTime(_nowTime), Summary = "A summary!", Class = "Some class!" };
-            var todoWithAttach = new Todo { Start = new CalDateTime(_nowTime), Summary = "A summary!", Class = "Some class!" };
+            var todoNoAttach = new Todo { Start = new CalDateTime(Now), Summary = "A summary!", Class = "Some class!" };
+            var todoWithAttach = new Todo { Start = new CalDateTime(Now), Summary = "A summary!", Class = "Some class!" };
             todoWithAttach.Attachments.Add(new Attachment(attachments.original));
             yield return new TestCaseData(todoNoAttach, todoWithAttach).SetName("Todo recurring component attachment");
 
@@ -309,7 +310,7 @@ namespace Ical.Net.FrameworkUnitTests
 
         public static IEnumerable<ITestCaseData> PeriodTestCases()
         {
-            yield return new TestCaseData(new Period(new CalDateTime(_nowTime)), new Period(new CalDateTime(_nowTime)))
+            yield return new TestCaseData(new Period(new CalDateTime(Now)), new Period(new CalDateTime(Now)))
                 .SetName("Two identical CalDateTimes are equal");
         }
 

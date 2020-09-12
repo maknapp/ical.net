@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Ical.Net.DataTypes;
+using Ical.Net.FrameworkUnitTests.Support;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using static Ical.Net.FrameworkUnitTests.Support.AssertUtilities;
@@ -10,7 +11,7 @@ namespace Ical.Net.FrameworkUnitTests
     [TestFixture]
     public class TodoTests
     {
-        private const string _tzid = "US-Eastern";
+        private const string TimezoneId = "US-Eastern";
 
         [Test, TestCaseSource(nameof(ActiveTodo_TestCases)), Category("Todo")]
         public void ActiveTodo_Tests(string calendarString, IList<KeyValuePair<CalDateTime, bool>> incoming)
@@ -22,7 +23,7 @@ namespace Ical.Net.FrameworkUnitTests
             foreach (var calDateTime in incoming)
             {
                 var dt = calDateTime.Key;
-                dt.TzId = _tzid;
+                dt.TzId = TimezoneId;
                 Assert.AreEqual(calDateTime.Value, todo[0].IsActive(dt));
             }
         }
@@ -172,7 +173,7 @@ namespace Ical.Net.FrameworkUnitTests
             foreach (var calDateTime in incoming)
             {
                 var dt = calDateTime.Key;
-                dt.TzId = _tzid;
+                dt.TzId = TimezoneId;
                 Assert.AreEqual(calDateTime.Value, todo[0].IsCompleted(dt));
             }
         }
@@ -196,23 +197,23 @@ namespace Ical.Net.FrameworkUnitTests
 
             var items = new List<CalDateTime>
             {
-                new CalDateTime(2006, 7, 28, 9, 0, 0, _tzid),
-                new CalDateTime(2006, 8, 4, 9, 0, 0, _tzid),
-                new CalDateTime(2006, 9, 1, 9, 0, 0, _tzid),
-                new CalDateTime(2006, 10, 6, 9, 0, 0, _tzid),
-                new CalDateTime(2006, 11, 3, 9, 0, 0, _tzid),
-                new CalDateTime(2006, 12, 1, 9, 0, 0, _tzid),
-                new CalDateTime(2007, 1, 5, 9, 0, 0, _tzid),
-                new CalDateTime(2007, 2, 2, 9, 0, 0, _tzid),
-                new CalDateTime(2007, 3, 2, 9, 0, 0, _tzid),
-                new CalDateTime(2007, 4, 6, 9, 0, 0, _tzid)
+                new CalDateTime(2006, 7, 28, 9, 0, 0, TimezoneId),
+                new CalDateTime(2006, 8, 4, 9, 0, 0, TimezoneId),
+                new CalDateTime(2006, 9, 1, 9, 0, 0, TimezoneId),
+                new CalDateTime(2006, 10, 6, 9, 0, 0, TimezoneId),
+                new CalDateTime(2006, 11, 3, 9, 0, 0, TimezoneId),
+                new CalDateTime(2006, 12, 1, 9, 0, 0, TimezoneId),
+                new CalDateTime(2007, 1, 5, 9, 0, 0, TimezoneId),
+                new CalDateTime(2007, 2, 2, 9, 0, 0, TimezoneId),
+                new CalDateTime(2007, 3, 2, 9, 0, 0, TimezoneId),
+                new CalDateTime(2007, 4, 6, 9, 0, 0, TimezoneId)
             };
 
             var occurrences = todo[0].GetOccurrences(
                 new CalDateTime(2006, 7, 1, 9, 0, 0),
                 new CalDateTime(2007, 7, 1, 9, 0, 0)).OrderBy(o => o.Period.StartTime).ToList();
 
-            // FIXME: Count is not properly restricting recurrences to 10.
+            // TODO: Fix - Count is not properly restricting recurrences to 10.
             // What's going wrong here?
             Assert.AreEqual(
                 items.Count,

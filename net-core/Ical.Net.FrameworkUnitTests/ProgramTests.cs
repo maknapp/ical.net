@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Ical.Net.DataTypes;
+using Ical.Net.FrameworkUnitTests.Support;
 using Ical.Net.Utilities;
 using NUnit.Framework;
 
@@ -9,7 +10,7 @@ namespace Ical.Net.FrameworkUnitTests
     [TestFixture]
     public class ProgramTests
     {
-        private const string _tzid = "US-Eastern";
+        private const string TimezoneId = "US-Eastern";
 
         [Test]
         public void LoadAndDisplayCalendar()
@@ -38,21 +39,21 @@ namespace Ical.Net.FrameworkUnitTests
 
             // Get occurrences for the first event
             var occurrences = evt1.GetOccurrences(
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(2000, 1, 1, _tzid)).OrderBy(o => o.Period.StartTime).ToList();
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(2000, 1, 1, TimezoneId)).OrderBy(o => o.Period.StartTime).ToList();
 
             var dateTimes = new[]
             {
-                new CalDateTime(1997, 9, 10, 9, 0, 0, _tzid),
-                new CalDateTime(1997, 9, 11, 9, 0, 0, _tzid),
-                new CalDateTime(1997, 9, 12, 9, 0, 0, _tzid),
-                new CalDateTime(1997, 9, 13, 9, 0, 0, _tzid),
-                new CalDateTime(1997, 9, 14, 9, 0, 0, _tzid),
-                new CalDateTime(1997, 9, 15, 9, 0, 0, _tzid),
-                new CalDateTime(1999, 3, 10, 9, 0, 0, _tzid),
-                new CalDateTime(1999, 3, 11, 9, 0, 0, _tzid),
-                new CalDateTime(1999, 3, 12, 9, 0, 0, _tzid),
-                new CalDateTime(1999, 3, 13, 9, 0, 0, _tzid)
+                new CalDateTime(1997, 9, 10, 9, 0, 0, TimezoneId),
+                new CalDateTime(1997, 9, 11, 9, 0, 0, TimezoneId),
+                new CalDateTime(1997, 9, 12, 9, 0, 0, TimezoneId),
+                new CalDateTime(1997, 9, 13, 9, 0, 0, TimezoneId),
+                new CalDateTime(1997, 9, 14, 9, 0, 0, TimezoneId),
+                new CalDateTime(1997, 9, 15, 9, 0, 0, TimezoneId),
+                new CalDateTime(1999, 3, 10, 9, 0, 0, TimezoneId),
+                new CalDateTime(1999, 3, 11, 9, 0, 0, TimezoneId),
+                new CalDateTime(1999, 3, 12, 9, 0, 0, TimezoneId),
+                new CalDateTime(1999, 3, 13, 9, 0, 0, TimezoneId)
             };
 
             var timeZones = new[]
@@ -90,29 +91,29 @@ namespace Ical.Net.FrameworkUnitTests
 
             // Get occurrences for the 2nd event
             occurrences = evt2.GetOccurrences(
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(1998, 4, 1, _tzid)).OrderBy(o => o.Period.StartTime).ToList();
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(1998, 4, 1, TimezoneId)).OrderBy(o => o.Period.StartTime).ToList();
 
             var dateTimes1 = new[]
             {
-                new CalDateTime(1997, 9, 2, 9, 0, 0, _tzid),
-                new CalDateTime(1997, 9, 9, 9, 0, 0, _tzid),
-                new CalDateTime(1997, 9, 16, 9, 0, 0, _tzid),
-                new CalDateTime(1997, 9, 23, 9, 0, 0, _tzid),
-                new CalDateTime(1997, 9, 30, 9, 0, 0, _tzid),
-                new CalDateTime(1997, 11, 4, 9, 0, 0, _tzid),
-                new CalDateTime(1997, 11, 11, 9, 0, 0, _tzid),
-                new CalDateTime(1997, 11, 18, 9, 0, 0, _tzid),
-                new CalDateTime(1997, 11, 25, 9, 0, 0, _tzid),
-                new CalDateTime(1998, 1, 6, 9, 0, 0, _tzid),
-                new CalDateTime(1998, 1, 13, 9, 0, 0, _tzid),
-                new CalDateTime(1998, 1, 20, 9, 0, 0, _tzid),
-                new CalDateTime(1998, 1, 27, 9, 0, 0, _tzid),
-                new CalDateTime(1998, 3, 3, 9, 0, 0, _tzid),
-                new CalDateTime(1998, 3, 10, 9, 0, 0, _tzid),
-                new CalDateTime(1998, 3, 17, 9, 0, 0, _tzid),
-                new CalDateTime(1998, 3, 24, 9, 0, 0, _tzid),
-                new CalDateTime(1998, 3, 31, 9, 0, 0, _tzid)
+                new CalDateTime(1997, 9, 2, 9, 0, 0, TimezoneId),
+                new CalDateTime(1997, 9, 9, 9, 0, 0, TimezoneId),
+                new CalDateTime(1997, 9, 16, 9, 0, 0, TimezoneId),
+                new CalDateTime(1997, 9, 23, 9, 0, 0, TimezoneId),
+                new CalDateTime(1997, 9, 30, 9, 0, 0, TimezoneId),
+                new CalDateTime(1997, 11, 4, 9, 0, 0, TimezoneId),
+                new CalDateTime(1997, 11, 11, 9, 0, 0, TimezoneId),
+                new CalDateTime(1997, 11, 18, 9, 0, 0, TimezoneId),
+                new CalDateTime(1997, 11, 25, 9, 0, 0, TimezoneId),
+                new CalDateTime(1998, 1, 6, 9, 0, 0, TimezoneId),
+                new CalDateTime(1998, 1, 13, 9, 0, 0, TimezoneId),
+                new CalDateTime(1998, 1, 20, 9, 0, 0, TimezoneId),
+                new CalDateTime(1998, 1, 27, 9, 0, 0, TimezoneId),
+                new CalDateTime(1998, 3, 3, 9, 0, 0, TimezoneId),
+                new CalDateTime(1998, 3, 10, 9, 0, 0, TimezoneId),
+                new CalDateTime(1998, 3, 17, 9, 0, 0, TimezoneId),
+                new CalDateTime(1998, 3, 24, 9, 0, 0, TimezoneId),
+                new CalDateTime(1998, 3, 31, 9, 0, 0, TimezoneId)
             };
 
             var timeZones1 = new[]

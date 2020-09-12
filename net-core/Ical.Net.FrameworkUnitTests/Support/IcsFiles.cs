@@ -2,7 +2,7 @@
 using System.IO;
 using System.Reflection;
 
-namespace Ical.Net.FrameworkUnitTests
+namespace Ical.Net.FrameworkUnitTests.Support
 {
     internal class IcsFiles
     {

@@ -9,16 +9,10 @@ using NUnit.Framework;
 namespace Ical.Net.FrameworkUnitTests
 {
     [TestFixture]
+    [Category("Attendee")]
     public class AttendeeTests
     {
-        internal static CalendarEvent VEventFactory() => new CalendarEvent
-        {
-            Summary = "Testing",
-            Start = new CalDateTime(2010, 3, 25),
-            End = new CalDateTime(2010, 3, 26)
-        };
-
-        private static readonly IList<Attendee> _attendees = new List<Attendee>
+        private static readonly IReadOnlyList<Attendee> Attendees = new []
         {
             new Attendee("MAILTO:james@example.com")
             {
@@ -34,34 +28,34 @@ namespace Ical.Net.FrameworkUnitTests
                 Rsvp = true,
                 ParticipationStatus = EventParticipationStatus.Accepted
             }
-        }.AsReadOnly();
+        };
 
         
         /// <summary>
         /// Ensures that attendees can be properly added to an event.
         /// </summary>
-        [Test, Category("Attendee")]
+        [Test]
         public void Add1Attendee()
         {
-            var evt = VEventFactory();
+            CalendarEvent evt = CreateValidEvent();
             Assert.AreEqual(0, evt.Attendees.Count);
 
-            evt.Attendees.Add(_attendees[0]);
+            evt.Attendees.Add(Attendees[0]);
             Assert.AreEqual(1, evt.Attendees.Count);
 
-            //the properties below had been set to null during the Attendees.Add operation in NuGet version 2.1.4
+            // The properties below had been set to null during the Attendees.Add operation in NuGet version 2.1.4
             Assert.AreEqual(ParticipationRole.RequiredParticipant, evt.Attendees[0].Role); 
             Assert.AreEqual(EventParticipationStatus.Tentative, evt.Attendees[0].ParticipationStatus);
         }
 
-        [Test, Category("Attendee")]
+        [Test]
         public void Add2Attendees()
         {
-            var evt = VEventFactory();
+            var evt = CreateValidEvent();
             Assert.AreEqual(0, evt.Attendees.Count);
 
-            evt.Attendees.Add(_attendees[0]);
-            evt.Attendees.Add(_attendees[1]);
+            evt.Attendees.Add(Attendees[0]);
+            evt.Attendees.Add(Attendees[1]);
             Assert.AreEqual(2, evt.Attendees.Count);
             Assert.AreEqual(ParticipationRole.RequiredParticipant, evt.Attendees[1].Role);
 
@@ -74,21 +68,31 @@ namespace Ical.Net.FrameworkUnitTests
         /// <summary>
         /// Ensures that attendees can be properly removed from an event.
         /// </summary>
-        [Test, Category("Attendee")]
+        [Test]
         public void Remove1Attendee()
         {
-            var evt = VEventFactory();
+            CalendarEvent evt = CreateValidEvent();
             Assert.AreEqual(0, evt.Attendees.Count);
 
-            var attendee = _attendees.First();
+            var attendee = Attendees.First();
             evt.Attendees.Add(attendee);
             Assert.AreEqual(1, evt.Attendees.Count);
 
             evt.Attendees.Remove(attendee);
             Assert.AreEqual(0, evt.Attendees.Count);
 
-            evt.Attendees.Remove(_attendees.Last());
+            evt.Attendees.Remove(Attendees.Last());
             Assert.AreEqual(0, evt.Attendees.Count);
+        }
+
+        private static CalendarEvent CreateValidEvent()
+        {
+            return new CalendarEvent
+            {
+                Summary = "Testing",
+                Start = new CalDateTime(2010, 3, 25),
+                End = new CalDateTime(2010, 3, 26)
+            };
         }
     }
 }

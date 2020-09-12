@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Ical.Net.Utilities;
-using Ical.Net.Utilities;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 
@@ -9,7 +8,7 @@ namespace Ical.Net.FrameworkUnitTests
     public class TextUtilTests
     {
         [Test, TestCaseSource(nameof(FoldLines_TestCases))]
-        public string FoldLines_Tests(string incoming) => TextUtil.FoldLines(incoming);
+        public string FoldLines_Tests(string input) => TextUtil.FoldLines(input);
 
         public static IEnumerable<ITestCaseData> FoldLines_TestCases()
         {

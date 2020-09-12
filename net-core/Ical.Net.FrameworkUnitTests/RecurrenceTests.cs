@@ -8,6 +8,7 @@ using System.Threading;
 using Ical.Net.CalendarComponents;
 using Ical.Net.DataTypes;
 using Ical.Net.Evaluation;
+using Ical.Net.FrameworkUnitTests.Support;
 using Ical.Net.Serialization;
 using Ical.Net.Serialization.DataTypes;
 using Ical.Net.Utilities;
@@ -21,7 +22,7 @@ namespace Ical.Net.FrameworkUnitTests
     [TestFixture]
     public class RecurrenceTests
     {
-        private const string _tzid = "US-Eastern";
+        private const string TimezoneId = "US-Eastern";
 
         private void EventOccurrenceTest(
             Calendar cal,
@@ -83,10 +84,10 @@ namespace Ical.Net.FrameworkUnitTests
             AssertCalendar(iCal);
             var evt = iCal.Events.First();
             var occurrences = evt.GetOccurrences(
-                new CalDateTime(2006, 1, 1, _tzid),
-                new CalDateTime(2011, 1, 1, _tzid)).OrderBy(o => o.Period.StartTime).ToList();
+                new CalDateTime(2006, 1, 1, TimezoneId),
+                new CalDateTime(2011, 1, 1, TimezoneId)).OrderBy(o => o.Period.StartTime).ToList();
 
-            IDateTime dt = new CalDateTime(2007, 1, 1, 8, 30, 0, _tzid);
+            IDateTime dt = new CalDateTime(2007, 1, 1, 8, 30, 0, TimezoneId);
             var i = 0;
 
             while (dt.Year < 2011)
@@ -115,20 +116,20 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.DailyCount1);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(2006, 7, 1, _tzid),
-                new CalDateTime(2006, 9, 1, _tzid),
+                new CalDateTime(2006, 7, 1, TimezoneId),
+                new CalDateTime(2006, 9, 1, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(2006, 07, 18, 10, 00, 00, _tzid),
-                    new CalDateTime(2006, 07, 20, 10, 00, 00, _tzid),
-                    new CalDateTime(2006, 07, 22, 10, 00, 00, _tzid),
-                    new CalDateTime(2006, 07, 24, 10, 00, 00, _tzid),
-                    new CalDateTime(2006, 07, 26, 10, 00, 00, _tzid),
-                    new CalDateTime(2006, 07, 28, 10, 00, 00, _tzid),
-                    new CalDateTime(2006, 07, 30, 10, 00, 00, _tzid),
-                    new CalDateTime(2006, 08, 01, 10, 00, 00, _tzid),
-                    new CalDateTime(2006, 08, 03, 10, 00, 00, _tzid),
-                    new CalDateTime(2006, 08, 05, 10, 00, 00, _tzid)
+                    new CalDateTime(2006, 07, 18, 10, 00, 00, TimezoneId),
+                    new CalDateTime(2006, 07, 20, 10, 00, 00, TimezoneId),
+                    new CalDateTime(2006, 07, 22, 10, 00, 00, TimezoneId),
+                    new CalDateTime(2006, 07, 24, 10, 00, 00, TimezoneId),
+                    new CalDateTime(2006, 07, 26, 10, 00, 00, TimezoneId),
+                    new CalDateTime(2006, 07, 28, 10, 00, 00, TimezoneId),
+                    new CalDateTime(2006, 07, 30, 10, 00, 00, TimezoneId),
+                    new CalDateTime(2006, 08, 01, 10, 00, 00, TimezoneId),
+                    new CalDateTime(2006, 08, 03, 10, 00, 00, TimezoneId),
+                    new CalDateTime(2006, 08, 05, 10, 00, 00, TimezoneId)
                 },
                 null
             );
@@ -145,20 +146,20 @@ namespace Ical.Net.FrameworkUnitTests
             var evt = iCal.Events.First();
 
             var occurrences = evt.GetOccurrences(
-                new CalDateTime(1997, 9, 1, _tzid),
-                new CalDateTime(1998, 1, 1, _tzid)).OrderBy(o => o.Period.StartTime).ToList();
+                new CalDateTime(1997, 9, 1, TimezoneId),
+                new CalDateTime(1998, 1, 1, TimezoneId)).OrderBy(o => o.Period.StartTime).ToList();
 
-            IDateTime dt = new CalDateTime(1997, 9, 2, 9, 0, 0, _tzid);
+            IDateTime dt = new CalDateTime(1997, 9, 2, 9, 0, 0, TimezoneId);
             var i = 0;
             while (dt.Year < 1998)
             {
                 if (dt.GreaterThanOrEqual(evt.Start) &&
-                    dt.LessThan(new CalDateTime(1997, 12, 24, 0, 0, 0, _tzid)))
+                    dt.LessThan(new CalDateTime(1997, 12, 24, 0, 0, 0, TimezoneId)))
                 {
                     Assert.AreEqual(dt, occurrences[i].Period.StartTime, "Event should occur at " + dt);
                     Assert.IsTrue(
-                        (dt.LessThan(new CalDateTime(1997, 10, 26, _tzid)) && dt.TimeZoneName == "US-Eastern") ||
-                        (dt.GreaterThan(new CalDateTime(1997, 10, 26, _tzid)) && dt.TimeZoneName == "US-Eastern"),
+                        (dt.LessThan(new CalDateTime(1997, 10, 26, TimezoneId)) && dt.TimeZoneName == "US-Eastern") ||
+                        (dt.GreaterThan(new CalDateTime(1997, 10, 26, TimezoneId)) && dt.TimeZoneName == "US-Eastern"),
                         "Event " + dt + " doesn't occur in the correct time zone (including Daylight & Standard time zones)");
                     i++;
                 }
@@ -176,57 +177,57 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.Daily1);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1997, 9, 1, _tzid),
-                new CalDateTime(1997, 12, 4, _tzid),
+                new CalDateTime(1997, 9, 1, TimezoneId),
+                new CalDateTime(1997, 12, 4, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 9, 2, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 4, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 6, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 8, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 12, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 14, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 16, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 18, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 20, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 22, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 24, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 26, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 28, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 30, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 2, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 4, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 6, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 8, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 12, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 14, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 16, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 18, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 20, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 22, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 24, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 26, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 28, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 30, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 1, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 3, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 5, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 7, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 9, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 11, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 13, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 15, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 17, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 19, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 21, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 23, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 25, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 27, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 29, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 12, 1, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 12, 3, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 9, 2, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 4, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 6, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 8, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 12, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 14, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 16, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 18, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 20, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 22, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 24, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 26, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 28, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 30, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 2, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 4, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 6, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 8, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 12, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 14, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 16, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 18, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 20, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 22, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 24, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 26, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 28, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 30, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 1, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 3, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 5, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 7, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 9, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 11, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 13, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 15, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 17, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 19, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 21, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 23, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 25, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 27, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 29, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 12, 1, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 12, 3, 9, 0, 0, TimezoneId)
                 },
                 new[]
                 {
@@ -290,15 +291,15 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.DailyCount2);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1997, 9, 1, _tzid),
-                new CalDateTime(1998, 1, 1, _tzid),
+                new CalDateTime(1997, 9, 1, TimezoneId),
+                new CalDateTime(1998, 1, 1, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 9, 2, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 12, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 22, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 2, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 12, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 9, 2, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 12, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 22, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 2, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 12, 9, 0, 0, TimezoneId)
                 },
                 null
             );
@@ -315,16 +316,16 @@ namespace Ical.Net.FrameworkUnitTests
             var evt = iCal.Events.First();
 
             var occurrences = evt.GetOccurrences(
-                new CalDateTime(1998, 1, 1, _tzid),
-                new CalDateTime(2000, 12, 31, _tzid)).OrderBy(o => o.Period.StartTime).ToList();
+                new CalDateTime(1998, 1, 1, TimezoneId),
+                new CalDateTime(2000, 12, 31, TimezoneId)).OrderBy(o => o.Period.StartTime).ToList();
 
-            IDateTime dt = new CalDateTime(1998, 1, 1, 9, 0, 0, _tzid);
+            IDateTime dt = new CalDateTime(1998, 1, 1, 9, 0, 0, TimezoneId);
             var i = 0;
             while (dt.Year < 2001)
             {
                 if (dt.GreaterThanOrEqual(evt.Start) &&
                     dt.Month == 1 &&
-                    dt.LessThanOrEqual(new CalDateTime(2000, 1, 31, 9, 0, 0, _tzid)))
+                    dt.LessThanOrEqual(new CalDateTime(2000, 1, 31, 9, 0, 0, TimezoneId)))
                 {
                     Assert.AreEqual(dt, occurrences[i].Period.StartTime, "Event should occur at " + dt);
                     i++;
@@ -368,20 +369,20 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.WeeklyCount1);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1997, 9, 1, _tzid),
-                new CalDateTime(1998, 1, 1, _tzid),
+                new CalDateTime(1997, 9, 1, TimezoneId),
+                new CalDateTime(1998, 1, 1, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 9, 2, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 9, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 16, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 23, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 30, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 7, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 14, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 21, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 28, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 4, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 9, 2, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 9, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 16, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 23, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 30, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 7, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 14, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 21, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 28, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 4, 9, 0, 0, TimezoneId)
                 },
                 new[]
                 {
@@ -408,27 +409,27 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.WeeklyUntil1);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1997, 9, 1, _tzid),
-                new CalDateTime(1999, 1, 1, _tzid),
+                new CalDateTime(1997, 9, 1, TimezoneId),
+                new CalDateTime(1999, 1, 1, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 9, 2, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 9, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 16, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 23, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 30, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 7, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 14, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 21, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 28, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 4, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 11, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 18, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 25, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 12, 2, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 12, 9, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 12, 16, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 12, 23, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 9, 2, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 9, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 16, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 23, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 30, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 7, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 14, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 21, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 28, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 4, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 11, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 18, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 25, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 12, 2, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 12, 9, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 12, 16, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 12, 23, 9, 0, 0, TimezoneId)
                 },
                 new[]
                 {
@@ -462,21 +463,21 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.WeeklyWkst1);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1997, 9, 1, _tzid),
-                new CalDateTime(1998, 1, 31, _tzid),
+                new CalDateTime(1997, 9, 1, TimezoneId),
+                new CalDateTime(1998, 1, 31, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 9, 2, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 16, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 30, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 14, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 28, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 11, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 25, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 12, 9, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 12, 23, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 1, 6, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 1, 20, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 9, 2, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 16, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 30, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 14, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 28, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 11, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 25, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 12, 9, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 12, 23, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 1, 6, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 1, 20, 9, 0, 0, TimezoneId)
                 },
                 new[]
                 {
@@ -504,20 +505,20 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.WeeklyUntilWkst1);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1997, 9, 1, _tzid),
-                new CalDateTime(1999, 1, 1, _tzid),
+                new CalDateTime(1997, 9, 1, TimezoneId),
+                new CalDateTime(1999, 1, 1, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 9, 2, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 4, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 9, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 11, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 16, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 18, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 23, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 25, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 30, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 2, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 9, 2, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 4, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 9, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 11, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 16, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 18, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 23, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 25, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 30, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 2, 9, 0, 0, TimezoneId)
                 },
                 null
             );
@@ -554,35 +555,35 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.WeeklyUntilWkst2);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(1999, 1, 1, _tzid),
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(1999, 1, 1, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 9, 2, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 3, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 5, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 15, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 17, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 19, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 29, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 1, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 3, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 13, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 15, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 17, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 27, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 29, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 31, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 12, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 14, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 24, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 26, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 28, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 12, 8, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 12, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 12, 12, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 12, 22, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 9, 2, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 3, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 5, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 15, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 17, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 19, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 29, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 1, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 3, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 13, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 15, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 17, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 27, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 29, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 31, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 12, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 14, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 24, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 26, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 28, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 12, 8, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 12, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 12, 12, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 12, 22, 9, 0, 0, TimezoneId)
                 },
                 new[]
                 {
@@ -624,32 +625,32 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.WeeklyUntilWkst2);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1997, 9, 9, _tzid),
-                new CalDateTime(1999, 1, 1, _tzid),
+                new CalDateTime(1997, 9, 9, TimezoneId),
+                new CalDateTime(1999, 1, 1, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 9, 15, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 17, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 19, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 29, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 1, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 3, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 13, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 15, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 17, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 27, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 29, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 31, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 12, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 14, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 24, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 26, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 28, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 12, 8, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 12, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 12, 12, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 12, 22, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 9, 15, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 17, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 19, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 29, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 1, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 3, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 13, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 15, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 17, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 27, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 29, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 31, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 12, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 14, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 24, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 26, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 28, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 12, 8, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 12, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 12, 12, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 12, 22, 9, 0, 0, TimezoneId)
                 },
                 new[]
                 {
@@ -688,18 +689,18 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.WeeklyCountWkst2);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(1999, 1, 1, _tzid),
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(1999, 1, 1, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 9, 2, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 4, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 16, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 18, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 30, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 2, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 14, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 16, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 9, 2, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 4, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 16, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 18, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 30, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 2, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 14, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 16, 9, 0, 0, TimezoneId)
                 },
                 null
             );
@@ -714,20 +715,20 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.MonthlyCountByDay1);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(1999, 1, 1, _tzid),
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(1999, 1, 1, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 9, 5, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 3, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 7, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 12, 5, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 1, 2, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 2, 6, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 3, 6, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 4, 3, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 5, 1, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 6, 5, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 9, 5, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 3, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 7, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 12, 5, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 1, 2, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 2, 6, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 3, 6, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 4, 3, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 5, 1, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 6, 5, 9, 0, 0, TimezoneId)
                 },
                 new[]
                 {
@@ -754,14 +755,14 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.MonthlyUntilByDay1);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(1999, 1, 1, _tzid),
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(1999, 1, 1, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 9, 5, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 3, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 7, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 12, 5, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 9, 5, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 3, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 7, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 12, 5, 9, 0, 0, TimezoneId)
                 },
                 new[]
                 {
@@ -782,20 +783,20 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.MonthlyCountByDay2);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(1999, 1, 1, _tzid),
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(1999, 1, 1, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 9, 7, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 28, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 2, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 30, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 1, 4, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 1, 25, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 3, 1, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 3, 29, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 5, 3, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 5, 31, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 9, 7, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 28, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 2, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 30, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 1, 4, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 1, 25, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 3, 1, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 3, 29, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 5, 3, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 5, 31, 9, 0, 0, TimezoneId)
                 },
                 new[]
                 {
@@ -822,16 +823,16 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.MonthlyCountByDay3);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(1999, 1, 1, _tzid),
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(1999, 1, 1, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 9, 22, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 20, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 17, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 12, 22, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 1, 19, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 2, 16, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 9, 22, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 20, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 17, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 12, 22, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 1, 19, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 2, 16, 9, 0, 0, TimezoneId)
                 },
                 new[]
                 {
@@ -854,16 +855,16 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.ByMonthDay1);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(1998, 3, 1, _tzid),
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(1998, 3, 1, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 9, 28, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 29, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 28, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 12, 29, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 1, 29, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 2, 26, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 9, 28, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 29, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 28, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 12, 29, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 1, 29, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 2, 26, 9, 0, 0, TimezoneId)
                 },
                 new[]
                 {
@@ -887,20 +888,20 @@ namespace Ical.Net.FrameworkUnitTests
 
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(1998, 3, 1, _tzid),
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(1998, 3, 1, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 9, 2, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 15, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 2, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 15, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 2, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 15, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 12, 2, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 12, 15, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 1, 2, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 1, 15, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 9, 2, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 15, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 2, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 15, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 2, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 15, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 12, 2, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 12, 15, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 1, 2, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 1, 15, 9, 0, 0, TimezoneId)
                 },
                 new[]
                 {
@@ -927,20 +928,20 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.MonthlyCountByMonthDay2);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(1998, 3, 1, _tzid),
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(1998, 3, 1, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 9, 30, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 1, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 31, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 1, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 30, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 12, 1, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 12, 31, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 1, 1, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 1, 31, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 2, 1, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 9, 30, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 1, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 31, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 1, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 30, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 12, 1, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 12, 31, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 1, 1, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 1, 31, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 2, 1, 9, 0, 0, TimezoneId)
                 },
                 new[]
                 {
@@ -967,20 +968,20 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.MonthlyCountByMonthDay3);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(2000, 1, 1, _tzid),
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(2000, 1, 1, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 9, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 11, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 12, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 13, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 14, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 15, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 3, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 3, 11, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 3, 12, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 3, 13, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 9, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 11, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 12, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 13, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 14, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 15, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 3, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 3, 11, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 3, 12, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 3, 13, 9, 0, 0, TimezoneId)
                 },
                 new[]
                 {
@@ -1007,28 +1008,28 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.MonthlyByDay1);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(1998, 4, 1, _tzid),
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(1998, 4, 1, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 9, 2, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 9, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 16, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 23, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 30, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 4, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 11, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 18, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 25, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 1, 6, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 1, 13, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 1, 20, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 1, 27, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 3, 3, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 3, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 3, 17, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 3, 24, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 3, 31, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 9, 2, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 9, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 16, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 23, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 30, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 4, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 11, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 18, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 25, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 1, 6, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 1, 13, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 1, 20, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 1, 27, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 3, 3, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 3, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 3, 17, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 3, 24, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 3, 31, 9, 0, 0, TimezoneId)
                 },
                 new[]
                 {
@@ -1063,20 +1064,20 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.YearlyByMonth1);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(2002, 1, 1, _tzid),
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(2002, 1, 1, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 6, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 7, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 6, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 7, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 6, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 7, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(2000, 6, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(2000, 7, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(2001, 6, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(2001, 7, 10, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 6, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 7, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 6, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 7, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 6, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 7, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(2000, 6, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(2000, 7, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(2001, 6, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(2001, 7, 10, 9, 0, 0, TimezoneId)
                 },
                 null
             );
@@ -1091,20 +1092,20 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.YearlyCountByMonth1);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(2003, 4, 1, _tzid),
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(2003, 4, 1, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 3, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 1, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 2, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 3, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(2001, 1, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(2001, 2, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(2001, 3, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(2003, 1, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(2003, 2, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(2003, 3, 10, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 3, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 1, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 2, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 3, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(2001, 1, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(2001, 2, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(2001, 3, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(2003, 1, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(2003, 2, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(2003, 3, 10, 9, 0, 0, TimezoneId)
                 },
                 null
             );
@@ -1119,20 +1120,20 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.YearlyCountByYearDay1);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(2007, 1, 1, _tzid),
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(2007, 1, 1, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 1, 1, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 4, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 7, 19, 9, 0, 0, _tzid),
-                    new CalDateTime(2000, 1, 1, 9, 0, 0, _tzid),
-                    new CalDateTime(2000, 4, 9, 9, 0, 0, _tzid),
-                    new CalDateTime(2000, 7, 18, 9, 0, 0, _tzid),
-                    new CalDateTime(2003, 1, 1, 9, 0, 0, _tzid),
-                    new CalDateTime(2003, 4, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(2003, 7, 19, 9, 0, 0, _tzid),
-                    new CalDateTime(2006, 1, 1, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 1, 1, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 4, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 7, 19, 9, 0, 0, TimezoneId),
+                    new CalDateTime(2000, 1, 1, 9, 0, 0, TimezoneId),
+                    new CalDateTime(2000, 4, 9, 9, 0, 0, TimezoneId),
+                    new CalDateTime(2000, 7, 18, 9, 0, 0, TimezoneId),
+                    new CalDateTime(2003, 1, 1, 9, 0, 0, TimezoneId),
+                    new CalDateTime(2003, 4, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(2003, 7, 19, 9, 0, 0, TimezoneId),
+                    new CalDateTime(2006, 1, 1, 9, 0, 0, TimezoneId)
                 },
                 new[]
                 {
@@ -1159,13 +1160,13 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.YearlyByDay1);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(1999, 12, 31, _tzid),
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(1999, 12, 31, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 5, 19, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 5, 18, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 5, 17, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 5, 19, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 5, 18, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 5, 17, 9, 0, 0, TimezoneId)
                 },
                 null
             );
@@ -1180,13 +1181,13 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.YearlyByWeekNo1);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(1999, 12, 31, _tzid),
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(1999, 12, 31, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 5, 12, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 5, 11, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 5, 17, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 5, 12, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 5, 11, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 5, 17, 9, 0, 0, TimezoneId)
                 },
                 null
             );
@@ -1206,13 +1207,13 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.YearlyByWeekNo2);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(1999, 12, 31, _tzid),
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(1999, 12, 31, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 5, 12, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 5, 11, 9, 0, 0, _tzid),                    
-                    new CalDateTime(1999, 5, 17, 9, 0, 0, _tzid)                    
+                    new CalDateTime(1997, 5, 12, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 5, 11, 9, 0, 0, TimezoneId),                    
+                    new CalDateTime(1999, 5, 17, 9, 0, 0, TimezoneId)                    
                 },
                 null
             );
@@ -1231,12 +1232,12 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.YearlyByWeekNo3);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(2001, 1, 1, _tzid),
-                new CalDateTime(2003, 1, 31, _tzid),
+                new CalDateTime(2001, 1, 1, TimezoneId),
+                new CalDateTime(2003, 1, 31, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(2002, 1, 1, 10, 0, 0, _tzid),
-                    new CalDateTime(2002, 12, 31, 10, 0, 0, _tzid)
+                    new CalDateTime(2002, 1, 1, 10, 0, 0, TimezoneId),
+                    new CalDateTime(2002, 12, 31, 10, 0, 0, TimezoneId)
                 },
                 null
             );
@@ -1254,31 +1255,31 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.YearlyByWeekNo4);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(1999, 12, 31, _tzid),
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(1999, 12, 31, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 5, 12, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 5, 13, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 5, 14, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 5, 15, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 5, 16, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 5, 17, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 5, 18, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 5, 11, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 5, 12, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 5, 13, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 5, 14, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 5, 15, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 5, 16, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 5, 17, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 5, 17, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 5, 18, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 5, 19, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 5, 20, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 5, 21, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 5, 22, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 5, 23, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 5, 12, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 5, 13, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 5, 14, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 5, 15, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 5, 16, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 5, 17, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 5, 18, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 5, 11, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 5, 12, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 5, 13, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 5, 14, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 5, 15, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 5, 16, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 5, 17, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 5, 17, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 5, 18, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 5, 19, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 5, 20, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 5, 21, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 5, 22, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 5, 23, 9, 0, 0, TimezoneId)
                 },
                 null
             );
@@ -1298,23 +1299,23 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.YearlyByWeekNo5);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(2001, 1, 1, _tzid),
-                new CalDateTime(2003, 1, 31, _tzid),
+                new CalDateTime(2001, 1, 1, TimezoneId),
+                new CalDateTime(2003, 1, 31, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(2002, 1, 1, 10, 0, 0, _tzid),
-                    new CalDateTime(2002, 1, 2, 10, 0, 0, _tzid),
-                    new CalDateTime(2002, 1, 3, 10, 0, 0, _tzid),
-                    new CalDateTime(2002, 1, 4, 10, 0, 0, _tzid),
-                    new CalDateTime(2002, 1, 5, 10, 0, 0, _tzid),
-                    new CalDateTime(2002, 1, 6, 10, 0, 0, _tzid),                    
-                    new CalDateTime(2002, 12, 30, 10, 0, 0, _tzid),
-                    new CalDateTime(2002, 12, 31, 10, 0, 0, _tzid),
-                    new CalDateTime(2003, 1, 1, 10, 0, 0, _tzid),
-                    new CalDateTime(2003, 1, 2, 10, 0, 0, _tzid),
-                    new CalDateTime(2003, 1, 3, 10, 0, 0, _tzid),
-                    new CalDateTime(2003, 1, 4, 10, 0, 0, _tzid),
-                    new CalDateTime(2003, 1, 5, 10, 0, 0, _tzid)
+                    new CalDateTime(2002, 1, 1, 10, 0, 0, TimezoneId),
+                    new CalDateTime(2002, 1, 2, 10, 0, 0, TimezoneId),
+                    new CalDateTime(2002, 1, 3, 10, 0, 0, TimezoneId),
+                    new CalDateTime(2002, 1, 4, 10, 0, 0, TimezoneId),
+                    new CalDateTime(2002, 1, 5, 10, 0, 0, TimezoneId),
+                    new CalDateTime(2002, 1, 6, 10, 0, 0, TimezoneId),                    
+                    new CalDateTime(2002, 12, 30, 10, 0, 0, TimezoneId),
+                    new CalDateTime(2002, 12, 31, 10, 0, 0, TimezoneId),
+                    new CalDateTime(2003, 1, 1, 10, 0, 0, TimezoneId),
+                    new CalDateTime(2003, 1, 2, 10, 0, 0, TimezoneId),
+                    new CalDateTime(2003, 1, 3, 10, 0, 0, TimezoneId),
+                    new CalDateTime(2003, 1, 4, 10, 0, 0, TimezoneId),
+                    new CalDateTime(2003, 1, 5, 10, 0, 0, TimezoneId)
                 },
                 null
             );
@@ -1329,21 +1330,21 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.YearlyByMonth2);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(1999, 12, 31, _tzid),
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(1999, 12, 31, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 3, 13, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 3, 20, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 3, 27, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 3, 5, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 3, 12, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 3, 19, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 3, 26, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 3, 4, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 3, 11, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 3, 18, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 3, 25, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 3, 13, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 3, 20, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 3, 27, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 3, 5, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 3, 12, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 3, 19, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 3, 26, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 3, 4, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 3, 11, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 3, 18, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 3, 25, 9, 0, 0, TimezoneId)
                 },
                 null
             );
@@ -1358,49 +1359,49 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.YearlyByMonth3);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(1999, 12, 31, _tzid),
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(1999, 12, 31, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 6, 5, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 6, 12, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 6, 19, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 6, 26, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 7, 3, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 7, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 7, 17, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 7, 24, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 7, 31, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 8, 7, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 8, 14, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 8, 21, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 8, 28, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 6, 4, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 6, 11, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 6, 18, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 6, 25, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 7, 2, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 7, 9, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 7, 16, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 7, 23, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 7, 30, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 8, 6, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 8, 13, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 8, 20, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 8, 27, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 6, 3, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 6, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 6, 17, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 6, 24, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 7, 1, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 7, 8, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 7, 15, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 7, 22, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 7, 29, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 8, 5, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 8, 12, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 8, 19, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 8, 26, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 6, 5, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 6, 12, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 6, 19, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 6, 26, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 7, 3, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 7, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 7, 17, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 7, 24, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 7, 31, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 8, 7, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 8, 14, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 8, 21, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 8, 28, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 6, 4, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 6, 11, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 6, 18, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 6, 25, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 7, 2, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 7, 9, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 7, 16, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 7, 23, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 7, 30, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 8, 6, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 8, 13, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 8, 20, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 8, 27, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 6, 3, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 6, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 6, 17, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 6, 24, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 7, 1, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 7, 8, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 7, 15, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 7, 22, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 7, 29, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 8, 5, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 8, 12, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 8, 19, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 8, 26, 9, 0, 0, TimezoneId)
                 },
                 null
             );
@@ -1417,15 +1418,15 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.MonthlyByMonthDay1);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(2000, 12, 31, _tzid),
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(2000, 12, 31, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1998, 2, 13, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 3, 13, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 11, 13, 9, 0, 0, _tzid),
-                    new CalDateTime(1999, 8, 13, 9, 0, 0, _tzid),
-                    new CalDateTime(2000, 10, 13, 9, 0, 0, _tzid)
+                    new CalDateTime(1998, 2, 13, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 3, 13, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 11, 13, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 8, 13, 9, 0, 0, TimezoneId),
+                    new CalDateTime(2000, 10, 13, 9, 0, 0, TimezoneId)
                 },
                 new[]
                 {
@@ -1447,20 +1448,20 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.MonthlyByMonthDay2);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(1998, 6, 30, _tzid),
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(1998, 6, 30, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 9, 13, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 11, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 8, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 12, 13, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 1, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 2, 7, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 3, 7, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 4, 11, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 5, 9, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 6, 13, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 9, 13, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 11, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 8, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 12, 13, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 1, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 2, 7, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 3, 7, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 4, 11, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 5, 9, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 6, 13, 9, 0, 0, TimezoneId)
                 },
                 new[]
                 {
@@ -1487,13 +1488,13 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.YearlyByMonthDay1);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(2004, 12, 31, _tzid),
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(2004, 12, 31, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1996, 11, 5, 9, 0, 0, _tzid),
-                    new CalDateTime(2000, 11, 7, 9, 0, 0, _tzid),
-                    new CalDateTime(2004, 11, 2, 9, 0, 0, _tzid)
+                    new CalDateTime(1996, 11, 5, 9, 0, 0, TimezoneId),
+                    new CalDateTime(2000, 11, 7, 9, 0, 0, TimezoneId),
+                    new CalDateTime(2004, 11, 2, 9, 0, 0, TimezoneId)
                 },
                 null
             );
@@ -1508,13 +1509,13 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.MonthlyBySetPos1);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(2004, 12, 31, _tzid),
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(2004, 12, 31, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 9, 4, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 7, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 6, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 9, 4, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 7, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 6, 9, 0, 0, TimezoneId)
                 },
                 new[]
                 {
@@ -1534,17 +1535,17 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.MonthlyBySetPos2);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(1998, 3, 31, _tzid),
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(1998, 3, 31, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 9, 29, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 10, 30, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 11, 27, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 12, 30, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 1, 29, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 2, 26, 9, 0, 0, _tzid),
-                    new CalDateTime(1998, 3, 30, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 9, 29, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 10, 30, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 11, 27, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 12, 30, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 1, 29, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 2, 26, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1998, 3, 30, 9, 0, 0, TimezoneId)
                 },
                 new[]
                 {
@@ -1570,14 +1571,14 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.HourlyUntil1);
             EventOccurrenceTest(
                 iCal,
-                fromDate: new CalDateTime(1996, 1, 1, _tzid),
-                toDate: new CalDateTime(1998, 3, 31, _tzid),
+                fromDate: new CalDateTime(1996, 1, 1, TimezoneId),
+                toDate: new CalDateTime(1998, 3, 31, TimezoneId),
                 dateTimes: new[]
                 {
-                    new CalDateTime(1997, 9, 2, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 12, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 15, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 18, 0, 0, _tzid),
+                    new CalDateTime(1997, 9, 2, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 12, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 15, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 18, 0, 0, TimezoneId),
                 },
                 timeZones: null
             );
@@ -1592,16 +1593,16 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.MinutelyCount1);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1997, 9, 2, _tzid),
-                new CalDateTime(1997, 9, 3, _tzid),
-                new[]
+                new CalDateTime(1997, 9, 2, TimezoneId),
+                new CalDateTime(1997, 9, 3, TimezoneId),
+                new IDateTime[]
                 {
-                    new CalDateTime(1997, 9, 2, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 9, 15, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 9, 30, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 9, 45, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 10, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 10, 15, 0, _tzid)
+                    new CalDateTime(1997, 9, 2, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 9, 15, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 9, 30, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 9, 45, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 10, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 10, 15, 0, TimezoneId)
                 },
                 null
             );
@@ -1616,14 +1617,14 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.MinutelyCount2);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(1998, 12, 31, _tzid),
-                new[]
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(1998, 12, 31, TimezoneId),
+                new IDateTime[]
                 {
-                    new CalDateTime(1997, 9, 2, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 10, 30, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 12, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 13, 30, 0, _tzid)
+                    new CalDateTime(1997, 9, 2, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 10, 30, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 12, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 13, 30, 0, TimezoneId)
                 },
                 null
             );
@@ -1638,20 +1639,20 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.MinutelyCount3);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(2010, 8, 27, _tzid),
-                new CalDateTime(2010, 8, 28, _tzid),
-                new[]
+                new CalDateTime(2010, 8, 27, TimezoneId),
+                new CalDateTime(2010, 8, 28, TimezoneId),
+                new IDateTime[]
                 {
-                    new CalDateTime(2010, 8, 27, 11, 0, 0, _tzid),
-                    new CalDateTime(2010, 8, 27, 11, 1, 0, _tzid),
-                    new CalDateTime(2010, 8, 27, 11, 2, 0, _tzid),
-                    new CalDateTime(2010, 8, 27, 11, 3, 0, _tzid),
-                    new CalDateTime(2010, 8, 27, 11, 4, 0, _tzid),
-                    new CalDateTime(2010, 8, 27, 11, 5, 0, _tzid),
-                    new CalDateTime(2010, 8, 27, 11, 6, 0, _tzid),
-                    new CalDateTime(2010, 8, 27, 11, 7, 0, _tzid),
-                    new CalDateTime(2010, 8, 27, 11, 8, 0, _tzid),
-                    new CalDateTime(2010, 8, 27, 11, 9, 0, _tzid)
+                    new CalDateTime(2010, 8, 27, 11, 0, 0, TimezoneId),
+                    new CalDateTime(2010, 8, 27, 11, 1, 0, TimezoneId),
+                    new CalDateTime(2010, 8, 27, 11, 2, 0, TimezoneId),
+                    new CalDateTime(2010, 8, 27, 11, 3, 0, TimezoneId),
+                    new CalDateTime(2010, 8, 27, 11, 4, 0, TimezoneId),
+                    new CalDateTime(2010, 8, 27, 11, 5, 0, TimezoneId),
+                    new CalDateTime(2010, 8, 27, 11, 6, 0, TimezoneId),
+                    new CalDateTime(2010, 8, 27, 11, 7, 0, TimezoneId),
+                    new CalDateTime(2010, 8, 27, 11, 8, 0, TimezoneId),
+                    new CalDateTime(2010, 8, 27, 11, 9, 0, TimezoneId)
                 },
                 null
             );
@@ -1666,20 +1667,20 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.MinutelyCount4);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(2010, 8, 27, _tzid),
-                new CalDateTime(2010, 8, 28, _tzid),
-                new[]
+                new CalDateTime(2010, 8, 27, TimezoneId),
+                new CalDateTime(2010, 8, 28, TimezoneId),
+                new IDateTime[]
                 {
-                    new CalDateTime(2010, 8, 27, 11, 0, 0, _tzid),
-                    new CalDateTime(2010, 8, 27, 11, 7, 0, _tzid),
-                    new CalDateTime(2010, 8, 27, 11, 14, 0, _tzid),
-                    new CalDateTime(2010, 8, 27, 11, 21, 0, _tzid),
-                    new CalDateTime(2010, 8, 27, 11, 28, 0, _tzid),
-                    new CalDateTime(2010, 8, 27, 11, 35, 0, _tzid),
-                    new CalDateTime(2010, 8, 27, 11, 42, 0, _tzid),
-                    new CalDateTime(2010, 8, 27, 11, 49, 0, _tzid),
-                    new CalDateTime(2010, 8, 27, 11, 56, 0, _tzid),
-                    new CalDateTime(2010, 8, 27, 12, 3, 0, _tzid)
+                    new CalDateTime(2010, 8, 27, 11, 0, 0, TimezoneId),
+                    new CalDateTime(2010, 8, 27, 11, 7, 0, TimezoneId),
+                    new CalDateTime(2010, 8, 27, 11, 14, 0, TimezoneId),
+                    new CalDateTime(2010, 8, 27, 11, 21, 0, TimezoneId),
+                    new CalDateTime(2010, 8, 27, 11, 28, 0, TimezoneId),
+                    new CalDateTime(2010, 8, 27, 11, 35, 0, TimezoneId),
+                    new CalDateTime(2010, 8, 27, 11, 42, 0, TimezoneId),
+                    new CalDateTime(2010, 8, 27, 11, 49, 0, TimezoneId),
+                    new CalDateTime(2010, 8, 27, 11, 56, 0, TimezoneId),
+                    new CalDateTime(2010, 8, 27, 12, 3, 0, TimezoneId)
                 },
                 null
             );
@@ -1694,58 +1695,58 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.DailyByHourMinute1);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1997, 9, 2, _tzid),
-                new CalDateTime(1997, 9, 4, _tzid),
-                new[]
+                new CalDateTime(1997, 9, 2, TimezoneId),
+                new CalDateTime(1997, 9, 4, TimezoneId),
+                new IDateTime[]
                 {
-                    new CalDateTime(1997, 9, 2, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 9, 20, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 9, 40, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 10, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 10, 20, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 10, 40, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 11, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 11, 20, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 11, 40, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 12, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 12, 20, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 12, 40, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 13, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 13, 20, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 13, 40, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 14, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 14, 20, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 14, 40, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 15, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 15, 20, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 15, 40, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 16, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 16, 20, 0, _tzid),
-                    new CalDateTime(1997, 9, 2, 16, 40, 0, _tzid),
-                    new CalDateTime(1997, 9, 3, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 3, 9, 20, 0, _tzid),
-                    new CalDateTime(1997, 9, 3, 9, 40, 0, _tzid),
-                    new CalDateTime(1997, 9, 3, 10, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 3, 10, 20, 0, _tzid),
-                    new CalDateTime(1997, 9, 3, 10, 40, 0, _tzid),
-                    new CalDateTime(1997, 9, 3, 11, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 3, 11, 20, 0, _tzid),
-                    new CalDateTime(1997, 9, 3, 11, 40, 0, _tzid),
-                    new CalDateTime(1997, 9, 3, 12, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 3, 12, 20, 0, _tzid),
-                    new CalDateTime(1997, 9, 3, 12, 40, 0, _tzid),
-                    new CalDateTime(1997, 9, 3, 13, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 3, 13, 20, 0, _tzid),
-                    new CalDateTime(1997, 9, 3, 13, 40, 0, _tzid),
-                    new CalDateTime(1997, 9, 3, 14, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 3, 14, 20, 0, _tzid),
-                    new CalDateTime(1997, 9, 3, 14, 40, 0, _tzid),
-                    new CalDateTime(1997, 9, 3, 15, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 3, 15, 20, 0, _tzid),
-                    new CalDateTime(1997, 9, 3, 15, 40, 0, _tzid),
-                    new CalDateTime(1997, 9, 3, 16, 0, 0, _tzid),
-                    new CalDateTime(1997, 9, 3, 16, 20, 0, _tzid),
-                    new CalDateTime(1997, 9, 3, 16, 40, 0, _tzid)
+                    new CalDateTime(1997, 9, 2, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 9, 20, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 9, 40, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 10, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 10, 20, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 10, 40, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 11, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 11, 20, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 11, 40, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 12, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 12, 20, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 12, 40, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 13, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 13, 20, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 13, 40, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 14, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 14, 20, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 14, 40, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 15, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 15, 20, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 15, 40, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 16, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 16, 20, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 2, 16, 40, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 3, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 3, 9, 20, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 3, 9, 40, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 3, 10, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 3, 10, 20, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 3, 10, 40, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 3, 11, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 3, 11, 20, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 3, 11, 40, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 3, 12, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 3, 12, 20, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 3, 12, 40, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 3, 13, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 3, 13, 20, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 3, 13, 40, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 3, 14, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 3, 14, 20, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 3, 14, 40, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 3, 15, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 3, 15, 20, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 3, 15, 40, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 3, 16, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 3, 16, 20, 0, TimezoneId),
+                    new CalDateTime(1997, 9, 3, 16, 40, 0, TimezoneId)
                 },
                 null
             );
@@ -1764,8 +1765,8 @@ namespace Ical.Net.FrameworkUnitTests
             var evt1 = iCal1.Events.First();
             var evt2 = iCal2.Events.First();
 
-            var evt1Occ = evt1.GetOccurrences(new CalDateTime(1997, 9, 1, _tzid), new CalDateTime(1997, 9, 3, _tzid)).OrderBy(o => o.Period.StartTime).ToList();
-            var evt2Occ = evt2.GetOccurrences(new CalDateTime(1997, 9, 1, _tzid), new CalDateTime(1997, 9, 3, _tzid)).OrderBy(o => o.Period.StartTime).ToList();
+            var evt1Occ = evt1.GetOccurrences(new CalDateTime(1997, 9, 1, TimezoneId), new CalDateTime(1997, 9, 3, TimezoneId)).OrderBy(o => o.Period.StartTime).ToList();
+            var evt2Occ = evt2.GetOccurrences(new CalDateTime(1997, 9, 1, TimezoneId), new CalDateTime(1997, 9, 3, TimezoneId)).OrderBy(o => o.Period.StartTime).ToList();
             Assert.IsTrue(evt1Occ.Count == evt2Occ.Count, "MinutelyByHour1() does not match DailyByHourMinute1() as it should");
             for (var i = 0; i < evt1Occ.Count; i++)
                 Assert.AreEqual(evt1Occ[i].Period, evt2Occ[i].Period, "PERIOD " + i + " from DailyByHourMinute1 (" + evt1Occ[i].Period + ") does not match PERIOD " + i + " from MinutelyByHour1 (" + evt2Occ[i].Period + ")");
@@ -1780,14 +1781,14 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.WeeklyCountWkst3);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(1998, 12, 31, _tzid),
-                new[]
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(1998, 12, 31, TimezoneId),
+                new IDateTime[]
                 {
-                    new CalDateTime(1997, 8, 5, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 8, 10, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 8, 19, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 8, 24, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 8, 5, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 8, 10, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 8, 19, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 8, 24, 9, 0, 0, TimezoneId)
                 },
                 null
             );
@@ -1803,14 +1804,14 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.WeeklyCountWkst4);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(1996, 1, 1, _tzid),
-                new CalDateTime(1998, 12, 31, _tzid),
+                new CalDateTime(1996, 1, 1, TimezoneId),
+                new CalDateTime(1998, 12, 31, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(1997, 8, 5, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 8, 17, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 8, 19, 9, 0, 0, _tzid),
-                    new CalDateTime(1997, 8, 31, 9, 0, 0, _tzid)
+                    new CalDateTime(1997, 8, 5, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 8, 17, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 8, 19, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1997, 8, 31, 9, 0, 0, TimezoneId)
                 },
                 null
             );
@@ -1826,22 +1827,22 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.Bug1741093);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(2007, 7, 1, _tzid),
-                new CalDateTime(2007, 8, 1, _tzid),
+                new CalDateTime(2007, 7, 1, TimezoneId),
+                new CalDateTime(2007, 8, 1, TimezoneId),
                 new[]
                 {
-                    new CalDateTime(2007, 7, 2, 8, 0, 0, _tzid),
-                    new CalDateTime(2007, 7, 3, 8, 0, 0, _tzid),
-                    new CalDateTime(2007, 7, 4, 8, 0, 0, _tzid),
-                    new CalDateTime(2007, 7, 5, 8, 0, 0, _tzid),
-                    new CalDateTime(2007, 7, 6, 8, 0, 0, _tzid),
-                    new CalDateTime(2007, 7, 16, 8, 0, 0, _tzid),
-                    new CalDateTime(2007, 7, 17, 8, 0, 0, _tzid),
-                    new CalDateTime(2007, 7, 18, 8, 0, 0, _tzid),
-                    new CalDateTime(2007, 7, 19, 8, 0, 0, _tzid),
-                    new CalDateTime(2007, 7, 20, 8, 0, 0, _tzid),
-                    new CalDateTime(2007, 7, 30, 8, 0, 0, _tzid),
-                    new CalDateTime(2007, 7, 31, 8, 0, 0, _tzid)
+                    new CalDateTime(2007, 7, 2, 8, 0, 0, TimezoneId),
+                    new CalDateTime(2007, 7, 3, 8, 0, 0, TimezoneId),
+                    new CalDateTime(2007, 7, 4, 8, 0, 0, TimezoneId),
+                    new CalDateTime(2007, 7, 5, 8, 0, 0, TimezoneId),
+                    new CalDateTime(2007, 7, 6, 8, 0, 0, TimezoneId),
+                    new CalDateTime(2007, 7, 16, 8, 0, 0, TimezoneId),
+                    new CalDateTime(2007, 7, 17, 8, 0, 0, TimezoneId),
+                    new CalDateTime(2007, 7, 18, 8, 0, 0, TimezoneId),
+                    new CalDateTime(2007, 7, 19, 8, 0, 0, TimezoneId),
+                    new CalDateTime(2007, 7, 20, 8, 0, 0, TimezoneId),
+                    new CalDateTime(2007, 7, 30, 8, 0, 0, TimezoneId),
+                    new CalDateTime(2007, 7, 31, 8, 0, 0, TimezoneId)
                 },
                 null
             );
@@ -1858,7 +1859,7 @@ namespace Ical.Net.FrameworkUnitTests
             try
             {
                 var iCal = Calendar.Load(IcsFiles.Secondly1);
-                var occurrences = iCal.GetOccurrences(new CalDateTime(2007, 6, 21, 8, 0, 0, _tzid), new CalDateTime(2007, 7, 21, 8, 0, 0, _tzid));
+                var occurrences = iCal.GetOccurrences(new CalDateTime(2007, 6, 21, 8, 0, 0, TimezoneId), new CalDateTime(2007, 7, 21, 8, 0, 0, TimezoneId));
             }
             catch (ArgumentException)
             {
@@ -1880,21 +1881,21 @@ namespace Ical.Net.FrameworkUnitTests
 
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(2007, 6, 21, 8, 0, 0, _tzid),
-                new CalDateTime(2007, 6, 21, 8, 10, 1, _tzid), // End period is exclusive, not inclusive.
-                new[]
+                new CalDateTime(2007, 6, 21, 8, 0, 0, TimezoneId),
+                new CalDateTime(2007, 6, 21, 8, 10, 1, TimezoneId), // End period is exclusive, not inclusive.
+                new IDateTime[]
                 {
-                    new CalDateTime(2007, 6, 21, 8, 0, 0, _tzid),
-                    new CalDateTime(2007, 6, 21, 8, 1, 0, _tzid),
-                    new CalDateTime(2007, 6, 21, 8, 2, 0, _tzid),
-                    new CalDateTime(2007, 6, 21, 8, 3, 0, _tzid),
-                    new CalDateTime(2007, 6, 21, 8, 4, 0, _tzid),
-                    new CalDateTime(2007, 6, 21, 8, 5, 0, _tzid),
-                    new CalDateTime(2007, 6, 21, 8, 6, 0, _tzid),
-                    new CalDateTime(2007, 6, 21, 8, 7, 0, _tzid),
-                    new CalDateTime(2007, 6, 21, 8, 8, 0, _tzid),
-                    new CalDateTime(2007, 6, 21, 8, 9, 0, _tzid),
-                    new CalDateTime(2007, 6, 21, 8, 10, 0, _tzid)
+                    new CalDateTime(2007, 6, 21, 8, 0, 0, TimezoneId),
+                    new CalDateTime(2007, 6, 21, 8, 1, 0, TimezoneId),
+                    new CalDateTime(2007, 6, 21, 8, 2, 0, TimezoneId),
+                    new CalDateTime(2007, 6, 21, 8, 3, 0, TimezoneId),
+                    new CalDateTime(2007, 6, 21, 8, 4, 0, TimezoneId),
+                    new CalDateTime(2007, 6, 21, 8, 5, 0, TimezoneId),
+                    new CalDateTime(2007, 6, 21, 8, 6, 0, TimezoneId),
+                    new CalDateTime(2007, 6, 21, 8, 7, 0, TimezoneId),
+                    new CalDateTime(2007, 6, 21, 8, 8, 0, TimezoneId),
+                    new CalDateTime(2007, 6, 21, 8, 9, 0, TimezoneId),
+                    new CalDateTime(2007, 6, 21, 8, 10, 0, TimezoneId)
                 },
                 null
             );
@@ -1911,8 +1912,8 @@ namespace Ical.Net.FrameworkUnitTests
                 var iCal = Calendar.Load(IcsFiles.Minutely1);
                 iCal.RecurrenceRestriction = RecurrenceRestrictionType.RestrictMinutely;
                 var occurrences = iCal.GetOccurrences(
-                    new CalDateTime(2007, 6, 21, 8, 0, 0, _tzid),
-                    new CalDateTime(2007, 7, 21, 8, 0, 0, _tzid));
+                    new CalDateTime(2007, 6, 21, 8, 0, 0, TimezoneId),
+                    new CalDateTime(2007, 7, 21, 8, 0, 0, TimezoneId));
             }
             catch (Exception e)
             {
@@ -1933,15 +1934,15 @@ namespace Ical.Net.FrameworkUnitTests
 
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(2007, 6, 21, 8, 0, 0, _tzid),
-                new CalDateTime(2007, 6, 21, 12, 0, 1, _tzid), // End period is exclusive, not inclusive.
+                new CalDateTime(2007, 6, 21, 8, 0, 0, TimezoneId),
+                new CalDateTime(2007, 6, 21, 12, 0, 1, TimezoneId), // End period is exclusive, not inclusive.
                 new[]
                 {
-                    new CalDateTime(2007, 6, 21, 8, 0, 0, _tzid),
-                    new CalDateTime(2007, 6, 21, 9, 0, 0, _tzid),
-                    new CalDateTime(2007, 6, 21, 10, 0, 0, _tzid),
-                    new CalDateTime(2007, 6, 21, 11, 0, 0, _tzid),
-                    new CalDateTime(2007, 6, 21, 12, 0, 0, _tzid)
+                    new CalDateTime(2007, 6, 21, 8, 0, 0, TimezoneId),
+                    new CalDateTime(2007, 6, 21, 9, 0, 0, TimezoneId),
+                    new CalDateTime(2007, 6, 21, 10, 0, 0, TimezoneId),
+                    new CalDateTime(2007, 6, 21, 11, 0, 0, TimezoneId),
+                    new CalDateTime(2007, 6, 21, 12, 0, 0, TimezoneId)
                 },
                 null
             );
@@ -1957,7 +1958,7 @@ namespace Ical.Net.FrameworkUnitTests
             {
                 var iCal = Calendar.Load(IcsFiles.Hourly1);
                 iCal.RecurrenceRestriction = RecurrenceRestrictionType.RestrictHourly;
-                var occurrences = iCal.GetOccurrences(new CalDateTime(2007, 6, 21, 8, 0, 0, _tzid), new CalDateTime(2007, 7, 21, 8, 0, 0, _tzid));
+                var occurrences = iCal.GetOccurrences(new CalDateTime(2007, 6, 21, 8, 0, 0, TimezoneId), new CalDateTime(2007, 7, 21, 8, 0, 0, TimezoneId));
             }
             catch (Exception e)
             {
@@ -1979,15 +1980,15 @@ namespace Ical.Net.FrameworkUnitTests
 
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(2007, 6, 21, 8, 0, 0, _tzid),
-                new CalDateTime(2007, 6, 25, 8, 0, 1, _tzid), // End period is exclusive, not inclusive.
-                new[]
+                new CalDateTime(2007, 6, 21, 8, 0, 0, TimezoneId),
+                new CalDateTime(2007, 6, 25, 8, 0, 1, TimezoneId), // End period is exclusive, not inclusive.
+                new IDateTime[]
                 {
-                    new CalDateTime(2007, 6, 21, 8, 0, 0, _tzid),
-                    new CalDateTime(2007, 6, 22, 8, 0, 0, _tzid),
-                    new CalDateTime(2007, 6, 23, 8, 0, 0, _tzid),
-                    new CalDateTime(2007, 6, 24, 8, 0, 0, _tzid),
-                    new CalDateTime(2007, 6, 25, 8, 0, 0, _tzid)
+                    new CalDateTime(2007, 6, 21, 8, 0, 0, TimezoneId),
+                    new CalDateTime(2007, 6, 22, 8, 0, 0, TimezoneId),
+                    new CalDateTime(2007, 6, 23, 8, 0, 0, TimezoneId),
+                    new CalDateTime(2007, 6, 24, 8, 0, 0, TimezoneId),
+                    new CalDateTime(2007, 6, 25, 8, 0, 0, TimezoneId)
                 },
                 null
             );
@@ -2002,12 +2003,12 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.MonthlyInterval1);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(2008, 1, 1, 7, 0, 0, _tzid),
-                new CalDateTime(2008, 2, 29, 7, 0, 0, _tzid),
-                new[]
+                new CalDateTime(2008, 1, 1, 7, 0, 0, TimezoneId),
+                new CalDateTime(2008, 2, 29, 7, 0, 0, TimezoneId),
+                new IDateTime[]
                 {
-                    new CalDateTime(2008, 2, 11, 7, 0, 0, _tzid),
-                    new CalDateTime(2008, 2, 12, 7, 0, 0, _tzid)
+                    new CalDateTime(2008, 2, 11, 7, 0, 0, TimezoneId),
+                    new CalDateTime(2008, 2, 12, 7, 0, 0, TimezoneId)
                 },
                 null
             );
@@ -2022,12 +2023,12 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.YearlyInterval1);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(2006, 1, 1, 7, 0, 0, _tzid),
-                new CalDateTime(2007, 1, 31, 7, 0, 0, _tzid),
-                new[]
+                new CalDateTime(2006, 1, 1, 7, 0, 0, TimezoneId),
+                new CalDateTime(2007, 1, 31, 7, 0, 0, TimezoneId),
+                new IDateTime[]
                 {
-                    new CalDateTime(2007, 1, 8, 7, 0, 0, _tzid),
-                    new CalDateTime(2007, 1, 9, 7, 0, 0, _tzid)
+                    new CalDateTime(2007, 1, 8, 7, 0, 0, TimezoneId),
+                    new CalDateTime(2007, 1, 9, 7, 0, 0, TimezoneId)
                 },
                 null
             );
@@ -2042,12 +2043,12 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.DailyInterval1);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(2007, 4, 11, 7, 0, 0, _tzid),
-                new CalDateTime(2007, 4, 16, 7, 0, 0, _tzid),
-                new[]
+                new CalDateTime(2007, 4, 11, 7, 0, 0, TimezoneId),
+                new CalDateTime(2007, 4, 16, 7, 0, 0, TimezoneId),
+                new IDateTime[]
                 {
-                    new CalDateTime(2007, 4, 12, 7, 0, 0, _tzid),
-                    new CalDateTime(2007, 4, 15, 7, 0, 0, _tzid)
+                    new CalDateTime(2007, 4, 12, 7, 0, 0, TimezoneId),
+                    new CalDateTime(2007, 4, 15, 7, 0, 0, TimezoneId)
                 },
                 null
             );
@@ -2062,17 +2063,17 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.HourlyInterval1);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(2007, 4, 9, 10, 0, 0, _tzid),
-                new CalDateTime(2007, 4, 10, 20, 0, 0, _tzid),
-                new[]
+                new CalDateTime(2007, 4, 9, 10, 0, 0, TimezoneId),
+                new CalDateTime(2007, 4, 10, 20, 0, 0, TimezoneId),
+                new IDateTime[]
                 {
                     // NOTE: this instance is included in the result set because it ends
                     // after the start of the evaluation period.
                     // See bug #3007244.
                     // https://sourceforge.net/tracker/?func=detail&aid=3007244&group_id=187422&atid=921236
-                    new CalDateTime(2007, 4, 9, 7, 0, 0, _tzid), 
-                    new CalDateTime(2007, 4, 10, 1, 0, 0, _tzid),
-                    new CalDateTime(2007, 4, 10, 19, 0, 0, _tzid)
+                    new CalDateTime(2007, 4, 9, 7, 0, 0, TimezoneId), 
+                    new CalDateTime(2007, 4, 10, 1, 0, 0, TimezoneId),
+                    new CalDateTime(2007, 4, 10, 19, 0, 0, TimezoneId)
                 },
                 null
             );
@@ -2089,9 +2090,9 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.YearlyBySetPos1);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(2009, 1, 1, 0, 0, 0, _tzid),
-                new CalDateTime(2020, 1, 1, 0, 0, 0, _tzid),
-                new[]
+                new CalDateTime(2009, 1, 1, 0, 0, 0, TimezoneId),
+                new CalDateTime(2020, 1, 1, 0, 0, 0, TimezoneId),
+                new IDateTime[]
                 {
                     new CalDateTime(2009, 9, 27, 5, 30, 0),
                     new CalDateTime(2010, 9, 26, 5, 30, 0),
@@ -2118,9 +2119,9 @@ namespace Ical.Net.FrameworkUnitTests
             var iCal = Calendar.Load(IcsFiles.Empty1);
             EventOccurrenceTest(
                 iCal,
-                new CalDateTime(2009, 1, 1, 0, 0, 0, _tzid),
-                new CalDateTime(2010, 1, 1, 0, 0, 0, _tzid),
-                new[]
+                new CalDateTime(2009, 1, 1, 0, 0, 0, TimezoneId),
+                new CalDateTime(2010, 1, 1, 0, 0, 0, TimezoneId),
+                new IDateTime[]
                 {
                     new CalDateTime(2009, 9, 27, 5, 30, 0)
                 },
@@ -2139,7 +2140,7 @@ namespace Ical.Net.FrameworkUnitTests
                 iCal,
                 new CalDateTime(2007, 4, 9, 7, 0, 0),
                 new CalDateTime(2007, 4, 10, 23, 0, 1), // End time is exclusive, not inclusive
-                new[]
+                new IDateTime[]
                 {
                     new CalDateTime(2007, 4, 9, 7, 0, 0),
                     new CalDateTime(2007, 4, 9, 11, 0, 0),
@@ -2896,8 +2897,8 @@ END:VEVENT
 END:VCALENDAR";
             var calendar = Calendar.Load(ical);
             var firstEvent = calendar.Events.First();
-            var startSearch = new CalDateTime(2010, 1, 1, _tzid);
-            var endSearch = new CalDateTime(2016, 12, 31, _tzid);
+            var startSearch = new CalDateTime(2010, 1, 1, TimezoneId);
+            var endSearch = new CalDateTime(2016, 12, 31, TimezoneId);
 
             var occurrences = firstEvent.GetOccurrences(startSearch, endSearch).Select(o => o.Period).ToList();
             Assert.IsTrue(occurrences.Count == 0);
@@ -2925,21 +2926,21 @@ END:VCALENDAR";
 
             var calendar = Calendar.Load(ical);
             var firstEvent = calendar.Events.First();
-            var startSearch = new CalDateTime(DateTime.Parse("2015-08-28T07:00:00"), _tzid);
-            var endSearch = new CalDateTime(DateTime.Parse("2016-08-28T07:00:00").AddDays(7), _tzid);
+            var startSearch = new CalDateTime(DateTime.Parse("2015-08-28T07:00:00"), TimezoneId);
+            var endSearch = new CalDateTime(DateTime.Parse("2016-08-28T07:00:00").AddDays(7), TimezoneId);
 
             var occurrences = firstEvent.GetOccurrences(startSearch, endSearch)
                 .Select(o => o.Period)
                 .OrderBy(p => p.StartTime)
                 .ToList();
 
-            var firstExpectedOccurrence = new CalDateTime(DateTime.Parse("2016-08-29T08:00:00"), _tzid);
+            var firstExpectedOccurrence = new CalDateTime(DateTime.Parse("2016-08-29T08:00:00"), TimezoneId);
             Assert.AreEqual(firstExpectedOccurrence, occurrences.First().StartTime);
 
-            var firstExpectedRDate = new CalDateTime(DateTime.Parse("2016-08-30T10:00:00"), _tzid);
+            var firstExpectedRDate = new CalDateTime(DateTime.Parse("2016-08-30T10:00:00"), TimezoneId);
             Assert.IsTrue(occurrences[1].StartTime.Equals(firstExpectedRDate));
 
-            var secondExpectedRDate = new CalDateTime(DateTime.Parse("2016-08-31T10:00:00"), _tzid);
+            var secondExpectedRDate = new CalDateTime(DateTime.Parse("2016-08-31T10:00:00"), TimezoneId);
             Assert.IsTrue(occurrences[2].StartTime.Equals(secondExpectedRDate));
         }
 
@@ -3193,8 +3194,8 @@ END:VCALENDAR";
         {
             var e = new CalendarEvent
             {
-                DtStart = new CalDateTime(_now, _tzid),
-                DtEnd = new CalDateTime(_later, _tzid),
+                DtStart = new CalDateTime(_now, TimezoneId),
+                DtEnd = new CalDateTime(_later, TimezoneId),
             };
             return e;
         }

@@ -7,28 +7,14 @@ using NUnit.Framework.Interfaces;
 
 namespace Ical.Net.FrameworkUnitTests
 {
+    [TestFixture]
+    [Category("CalDateTime")]
     public class CalDateTimeTests
     {
-        private static readonly DateTime _now = DateTime.Now;
-        private static readonly DateTime _later = _now.AddHours(1);
-        private static CalendarEvent GetEventWithRecurrenceRules(string tzId)
-        {
-            var dailyForFiveDays = new RecurrencePattern(FrequencyType.Daily, 1)
-            {
-                Count = 5,
-            };
+        private static readonly DateTime Now = new DateTime(2010, 11, 12, 05, 06, 07);
+        private static readonly DateTime Later = Now.AddHours(1);
 
-            var calendarEvent = new CalendarEvent
-            {
-                Start = new CalDateTime(_now, tzId),
-                End = new CalDateTime(_later, tzId),
-                RecurrenceRules = new List<RecurrencePattern> { dailyForFiveDays },
-                Resources = new List<string>(new[] { "Foo", "Bar", "Baz" }),
-            };
-            return calendarEvent;
-        }
-
-        [Test, TestCaseSource(nameof(ToTimeZoneTestCases))]
+        [Test, TestCaseSource(nameof(ToTimeZone_TestCases))]
         public void ToTimeZoneTests(CalendarEvent calendarEvent, string targetTimeZone)
         {
             var startAsUtc = calendarEvent.Start.AsUtc;
@@ -39,7 +25,7 @@ namespace Ical.Net.FrameworkUnitTests
             Assert.AreEqual(startAsUtc, convertedAsUtc);
         }
 
-        public static IEnumerable<ITestCaseData> ToTimeZoneTestCases()
+        public static IEnumerable<ITestCaseData> ToTimeZone_TestCases()
         {
             const string bclCst = "Central Standard Time";
             const string bclEastern = "Eastern Standard Time";
@@ -66,11 +52,28 @@ namespace Ical.Net.FrameworkUnitTests
                 .SetName($"IANA to BCL: {ianaNy} to {bclCst}");
         }
 
-        [TestCaseSource(nameof(AsDateTimeOffsetTestCases))]
-        public DateTimeOffset AsDateTimeOffsetTests(CalDateTime incoming)
-            => incoming.AsDateTimeOffset;
+        private static CalendarEvent GetEventWithRecurrenceRules(string tzId)
+        {
+            var dailyForFiveDays = new RecurrencePattern(FrequencyType.Daily, 1)
+            {
+                Count = 5,
+            };
 
-        public static IEnumerable<ITestCaseData> AsDateTimeOffsetTestCases()
+            var calendarEvent = new CalendarEvent
+            {
+                Start = new CalDateTime(Now, tzId),
+                End = new CalDateTime(Later, tzId),
+                RecurrenceRules = new List<RecurrencePattern> { dailyForFiveDays },
+                Resources = new List<string>(new[] { "Foo", "Bar", "Baz" }),
+            };
+            return calendarEvent;
+        }
+
+        [TestCaseSource(nameof(AsDateTimeOffset_TestCases))]
+        public DateTimeOffset AsDateTimeOffsetTests(CalDateTime input) 
+            => input.AsDateTimeOffset;
+
+        public static IEnumerable<ITestCaseData> AsDateTimeOffset_TestCases()
         {
             const string nyTzId = "America/New_York";
             var summerDate = DateTime.Parse("2018-05-15T11:00");
@@ -113,11 +116,11 @@ namespace Ical.Net.FrameworkUnitTests
             Assert.AreNotEqual(firstUtc, berlinUtc);
         }
 
-        [Test, TestCaseSource(nameof(DateTimeKindOverrideTestCases))]
+        [Test, TestCaseSource(nameof(DateTimeKindOverride_TestCases))]
         public DateTimeKind DateTimeKindOverrideTests(DateTime dateTime, string tzId)
             => new CalDateTime(dateTime, tzId).Value.Kind;
 
-        public static IEnumerable<ITestCaseData> DateTimeKindOverrideTestCases()
+        public static IEnumerable<ITestCaseData> DateTimeKindOverride_TestCases()
         {
             const string localTz = "America/New_York";
             var localDt = DateTime.SpecifyKind(DateTime.Parse("2018-05-21T11:35:33"), DateTimeKind.Local);
@@ -150,6 +153,5 @@ namespace Ical.Net.FrameworkUnitTests
                 .Returns(DateTimeKind.Unspecified)
                 .SetName("DateTime with Kind = Unspecified and null tzid returns DateTimeKind.Unspecified");
         }
-
     }
 }

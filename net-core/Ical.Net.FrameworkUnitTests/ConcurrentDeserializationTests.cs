@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Ical.Net.FrameworkUnitTests.Support;
 using NUnit.Framework;
 
 namespace Ical.Net.FrameworkUnitTests

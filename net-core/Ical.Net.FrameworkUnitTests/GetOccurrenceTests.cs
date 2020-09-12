@@ -10,8 +10,6 @@ namespace Ical.Net.FrameworkUnitTests
 {
     internal class GetOccurrenceTests
     {
-        public static CalendarCollection GetCalendars(string incoming) => CalendarCollection.Load(incoming);
-
         [Test]
         public void WrongDurationTest()
         {
@@ -132,7 +130,7 @@ END:VEVENT
 
 END:VCALENDAR";
 
-            var calendar = GetCalendars(ical);
+            var calendar = CalendarCollection.Load(ical);
             var date = new DateTime(2016, 10, 11);
             var occurrences = calendar.GetOccurrences(date);
 
