@@ -6,8 +6,6 @@ namespace Ical.Net.Serialization.DataTypes
 {
     public sealed class UriSerializer : EncodableDataTypeSerializer
     {
-        public UriSerializer() {}
-
         public UriSerializer(SerializationContext ctx) : base(ctx) {}
 
         public override Type TargetType => typeof (string);

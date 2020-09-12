@@ -10,7 +10,7 @@ namespace Ical.Net.Serialization.DataTypes
 {
     public sealed class RecurrencePatternSerializer : EncodableDataTypeSerializer
     {
-        public RecurrencePatternSerializer() { }
+        public RecurrencePatternSerializer() : base(SerializationContext.Default) { }
 
         public RecurrencePatternSerializer(SerializationContext ctx) : base(ctx) { }
 

@@ -6,7 +6,7 @@ namespace Ical.Net.Serialization.DataTypes
 {
     public sealed class AttachmentSerializer : EncodableDataTypeSerializer
     {
-        public AttachmentSerializer() { }
+        public AttachmentSerializer() : base(SerializationContext.Default) { }
 
         public AttachmentSerializer(SerializationContext ctx) : base(ctx) { }
 

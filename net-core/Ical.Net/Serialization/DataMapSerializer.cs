@@ -6,7 +6,7 @@ namespace Ical.Net.Serialization
 {
     public class DataMapSerializer : SerializerBase
     {
-        public DataMapSerializer() {}
+        public DataMapSerializer() : base(SerializationContext.Default) { }
 
         public DataMapSerializer(SerializationContext ctx) : base(ctx) {}
 

@@ -7,7 +7,7 @@ namespace Ical.Net.Serialization.DataTypes
 {
     public sealed class GeographicLocationSerializer : EncodableDataTypeSerializer
     {
-        public GeographicLocationSerializer() { }
+        public GeographicLocationSerializer() : base(SerializationContext.Default) { }
 
         public GeographicLocationSerializer(SerializationContext ctx) : base(ctx) { }
 

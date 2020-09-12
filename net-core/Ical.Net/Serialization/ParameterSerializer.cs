@@ -6,8 +6,6 @@ namespace Ical.Net.Serialization
 {
     public sealed class ParameterSerializer : SerializerBase
     {
-        public ParameterSerializer() {}
-
         public ParameterSerializer(SerializationContext ctx) : base(ctx) {}
 
         public override Type TargetType => typeof (CalendarParameter);

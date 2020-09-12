@@ -6,21 +6,16 @@ namespace Ical.Net.Serialization
 {
     public abstract class SerializerBase : IStringSerializer
     {
-        protected SerializerBase()
-        {
-            SerializationContext = SerializationContext.Default;
-        }
-
         protected SerializerBase(SerializationContext ctx)
         {
             SerializationContext = ctx;
         }
 
-        public SerializationContext SerializationContext { get; }
+        protected SerializationContext SerializationContext { get; }
 
         public abstract Type TargetType { get; }
         public abstract string SerializeToString(object obj);
-        public abstract object Deserialize(TextReader tr);
+        public abstract object Deserialize(TextReader reader);
 
         public object Deserialize(Stream stream, Encoding encoding)
         {
@@ -61,46 +56,9 @@ namespace Ical.Net.Serialization
             }
         }
 
-        public object GetService(Type serviceType) => SerializationContext?.GetService(serviceType);
-
-        public object GetService(string name) => SerializationContext?.GetService(name);
-
-        public T GetService<T>()
+        protected T GetService<T>()
         {
-            if (SerializationContext != null)
-            {
-                return SerializationContext.GetService<T>();
-            }
-            return default(T);
-        }
-
-        public T GetService<T>(string name)
-        {
-            if (SerializationContext != null)
-            {
-                return SerializationContext.GetService<T>(name);
-            }
-            return default(T);
-        }
-
-        public void SetService(string name, object obj)
-        {
-            SerializationContext?.SetService(name, obj);
-        }
-
-        public void SetService(object obj)
-        {
-            SerializationContext?.SetService(obj);
-        }
-
-        public void RemoveService(Type type)
-        {
-            SerializationContext?.RemoveService(type);
-        }
-
-        public void RemoveService(string name)
-        {
-            SerializationContext?.RemoveService(name);
+            return SerializationContext != null ? SerializationContext.GetService<T>() : default;
         }
     }
 }

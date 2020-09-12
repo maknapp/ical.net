@@ -10,7 +10,7 @@ namespace Ical.Net.Serialization.DataTypes
 {
     public class StringSerializer : EncodableDataTypeSerializer
     {
-        public StringSerializer() {}
+        public StringSerializer() : base(SerializationContext.Default) { }
 
         public StringSerializer(SerializationContext ctx) : base(ctx) {}
 

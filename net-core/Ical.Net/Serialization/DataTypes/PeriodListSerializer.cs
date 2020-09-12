@@ -7,7 +7,7 @@ namespace Ical.Net.Serialization.DataTypes
 {
     public sealed class PeriodListSerializer : EncodableDataTypeSerializer
     {
-        public PeriodListSerializer() { }
+        public PeriodListSerializer() : base(SerializationContext.Default) { }
 
         public PeriodListSerializer(SerializationContext ctx) : base(ctx) { }
 

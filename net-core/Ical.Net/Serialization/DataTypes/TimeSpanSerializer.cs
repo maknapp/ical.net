@@ -7,7 +7,7 @@ namespace Ical.Net.Serialization.DataTypes
 {
     public sealed class TimeSpanSerializer : SerializerBase
     {
-        public TimeSpanSerializer() { }
+        public TimeSpanSerializer() : base(SerializationContext.Default) { }
 
         public TimeSpanSerializer(SerializationContext ctx) : base(ctx) { }
 

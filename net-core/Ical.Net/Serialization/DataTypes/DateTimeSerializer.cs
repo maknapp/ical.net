@@ -8,7 +8,7 @@ namespace Ical.Net.Serialization.DataTypes
 {
     public sealed class DateTimeSerializer : EncodableDataTypeSerializer
     {
-        public DateTimeSerializer() { }
+        public DateTimeSerializer() : base(SerializationContext.Default) { }
 
         public DateTimeSerializer(SerializationContext ctx) : base(ctx) { }
 

@@ -7,7 +7,7 @@ namespace Ical.Net.Serialization.DataTypes
 {
     public sealed class WeekDaySerializer : EncodableDataTypeSerializer
     {
-        public WeekDaySerializer() { }
+        public WeekDaySerializer() : base(SerializationContext.Default) { }
 
         public WeekDaySerializer(SerializationContext ctx) : base(ctx) { }
 

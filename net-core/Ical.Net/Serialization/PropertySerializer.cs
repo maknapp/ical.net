@@ -9,8 +9,6 @@ namespace Ical.Net.Serialization
 {
     public sealed class PropertySerializer : SerializerBase
     {
-        public PropertySerializer() {}
-
         public PropertySerializer(SerializationContext ctx) : base(ctx) {}
 
         public override Type TargetType => typeof (CalendarProperty);

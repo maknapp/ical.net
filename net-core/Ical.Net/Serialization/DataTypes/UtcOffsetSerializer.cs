@@ -8,8 +8,6 @@ namespace Ical.Net.Serialization.DataTypes
 {
     public sealed class UtcOffsetSerializer : EncodableDataTypeSerializer
     {
-        public UtcOffsetSerializer() { }
-
         public UtcOffsetSerializer(SerializationContext ctx) : base(ctx) { }
 
         public override Type TargetType => typeof (UtcOffset);

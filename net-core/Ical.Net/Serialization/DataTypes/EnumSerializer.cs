@@ -6,11 +6,6 @@ namespace Ical.Net.Serialization.DataTypes
 {
     public sealed class EnumSerializer : EncodableDataTypeSerializer
     {
-        public EnumSerializer(Type enumType)
-        {
-            TargetType = enumType;
-        }
-
         public EnumSerializer(Type enumType, SerializationContext ctx) : base(ctx)
         {
             TargetType = enumType;

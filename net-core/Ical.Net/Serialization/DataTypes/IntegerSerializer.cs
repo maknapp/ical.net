@@ -6,8 +6,6 @@ namespace Ical.Net.Serialization.DataTypes
 {
     public class IntegerSerializer : EncodableDataTypeSerializer
     {
-        public IntegerSerializer() { }
-
         public IntegerSerializer(SerializationContext ctx) : base(ctx) { }
 
         public override Type TargetType => typeof (int);

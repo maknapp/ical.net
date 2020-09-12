@@ -5,8 +5,6 @@ namespace Ical.Net.Serialization.DataTypes
 {
     public abstract class DataTypeSerializer : SerializerBase
     {
-        protected DataTypeSerializer() {}
-
         protected DataTypeSerializer(SerializationContext ctx) : base(ctx) {}
 
         protected ICalendarDataType CreateAndAssociate()

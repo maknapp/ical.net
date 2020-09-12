@@ -12,7 +12,7 @@ namespace Ical.Net.Serialization
     {
         protected virtual IComparer<ICalendarProperty> PropertySorter => new PropertyAlphabetizer();
 
-        public ComponentSerializer() { }
+        protected ComponentSerializer() : base(SerializationContext.Default) { }
 
         public ComponentSerializer(SerializationContext ctx) : base(ctx) { }
 
