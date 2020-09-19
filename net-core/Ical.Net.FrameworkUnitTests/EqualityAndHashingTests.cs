@@ -210,8 +210,8 @@ namespace Ical.Net.FrameworkUnitTests
         [Test, TestCaseSource(nameof(CalendarCollection_TestCases))]
         public void CalendarCollection_Tests(string rawCalendar)
         {
-            var a = Calendar.Load(IcsFiles.UsHolidays);
-            var b = Calendar.Load(IcsFiles.UsHolidays);
+            var a = CalendarConvert.Load(IcsFiles.UsHolidays);
+            var b = CalendarConvert.Load(IcsFiles.UsHolidays);
             
             Assert.IsNotNull(a);
             Assert.IsNotNull(b);

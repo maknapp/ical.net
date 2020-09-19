@@ -194,7 +194,7 @@ END:VEVENT
 END:VCALENDAR
 ";
 
-            var collection = Calendar.Load(ical);
+            var collection = CalendarConvert.Load(ical);
             var startCheck = new DateTime(2016, 11, 11);
             var occurrences = collection.GetOccurrences<CalendarEvent>(startCheck, startCheck.AddMonths(1));
 

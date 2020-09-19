@@ -16,7 +16,7 @@ namespace Ical.Net.FrameworkUnitTests
 
         private static void TestAlarm(string calendarString, ICollection<IDateTime> dates, CalDateTime start, CalDateTime end)
         {
-            var calendar = Calendar.Load(calendarString);
+            var calendar = CalendarConvert.Load(calendarString);
             AssertCalendar(calendar);
             var evt = calendar.Events.First();
 

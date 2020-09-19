@@ -25,7 +25,7 @@ namespace Ical.Net.FrameworkUnitTests
             var originalEvent = iCalendar.Events.Single();
 
             var serializedCalendar = SerializeCalenderToString(iCalendar);
-            var unserializedCalendar = Calendar.Load(serializedCalendar);
+            var unserializedCalendar = CalendarConvert.Load(serializedCalendar);
 
             var onlyEvent = unserializedCalendar.Events.Single();
 
@@ -67,7 +67,7 @@ namespace Ical.Net.FrameworkUnitTests
             originalCalendar.AddTimeZone(tz);
             var serializer = new CalendarSerializer();
             var serializedCalendar = serializer.SerializeToString(originalCalendar);
-            var unserializedCalendar = Calendar.Load(serializedCalendar);
+            var unserializedCalendar = CalendarConvert.Load(serializedCalendar);
 
             CollectionAssert.AreEqual(originalCalendar.TimeZones, unserializedCalendar.TimeZones);
             Assert.AreEqual(originalCalendar, unserializedCalendar);
@@ -84,7 +84,7 @@ namespace Ical.Net.FrameworkUnitTests
             calendar.Events.Add(someEvent);
 
             var serialized = SerializeCalenderToString(calendar);
-            var unserialized = Calendar.Load(serialized);
+            var unserialized = CalendarConvert.Load(serialized);
 
             Assert.AreEqual(calendar.GetHashCode(), unserialized.GetHashCode());
             Assert.IsTrue(calendar.Events.SequenceEqual(unserialized.Events));
@@ -130,7 +130,7 @@ namespace Ical.Net.FrameworkUnitTests
             calendar.Events.Add(vEvent);
 
             var serialized = SerializeCalenderToString(calendar);
-            var unserialized = Calendar.Load(serialized);
+            var unserialized = CalendarConvert.Load(serialized);
             var unserializedAttachment = unserialized
                 .Events
                 .First()
@@ -173,7 +173,7 @@ namespace Ical.Net.FrameworkUnitTests
             calendar.Events.Add(vEvent);
 
             var serialized = SerializeCalenderToString(calendar);
-            var unserialized = Calendar.Load(serialized);
+            var unserialized = CalendarConvert.Load(serialized);
             var unserializedUri = unserialized
                 .Events
                 .First()
@@ -207,7 +207,7 @@ namespace Ical.Net.FrameworkUnitTests
             var categoriesCount = Regex.Matches(serialized, "CATEGORIES").Count;
             Assert.AreEqual(1, categoriesCount);
 
-            var deserialized = Calendar.Load(serialized);
+            var deserialized = CalendarConvert.Load(serialized);
             Assert.AreEqual(vEvent, deserialized);
         }
 

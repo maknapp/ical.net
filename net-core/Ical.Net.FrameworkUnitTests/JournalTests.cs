@@ -12,7 +12,7 @@ namespace Ical.Net.FrameworkUnitTests
         [Test, Category("Journal")]
         public void Journal1()
         {
-            var iCal = Calendar.Load(IcsFiles.Journal1);
+            var iCal = CalendarConvert.Load(IcsFiles.Journal1);
             AssertCalendar(iCal);
             Assert.AreEqual(1, iCal.Journals.Count);
             var j = iCal.Journals[0];
@@ -26,7 +26,7 @@ namespace Ical.Net.FrameworkUnitTests
         [Test, Category("Journal")]
         public void Journal2()
         {
-            var iCal = Calendar.Load(IcsFiles.Journal2);
+            var iCal = CalendarConvert.Load(IcsFiles.Journal2);
             AssertCalendar(iCal);
             Assert.AreEqual(1, iCal.Journals.Count);
             var j = iCal.Journals.First();

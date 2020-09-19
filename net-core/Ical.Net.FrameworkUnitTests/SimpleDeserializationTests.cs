@@ -346,7 +346,7 @@ END:VCALENDAR
         [Test, Category("Deserialization")]
         public void RequestStatus1()
         {
-            var iCal = Calendar.Load(IcsFiles.RequestStatus1);
+            var iCal = CalendarConvert.Load(IcsFiles.RequestStatus1);
             Assert.AreEqual(1, iCal.Events.Count);
             Assert.AreEqual(4, iCal.Events.First().RequestStatuses.Count);
 

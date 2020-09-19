@@ -20,7 +20,7 @@ namespace Ical.Net.FrameworkUnitTests
         [Test, TestCaseSource(nameof(CopyCalendarTest_TestCases))]
         public void CopyCalendarTest(string calendarString)
         {
-            var calendar1 = Calendar.Load(calendarString);
+            var calendar1 = CalendarConvert.Load(calendarString);
             var calendar2 = calendar1.Copy<Calendar>();
 
             SerializationTests.CompareCalendars(calendar1, calendar2);

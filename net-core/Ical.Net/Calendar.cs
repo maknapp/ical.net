@@ -12,31 +12,54 @@ using Ical.Net.Utilities;
 
 namespace Ical.Net
 {
-    public class Calendar : CalendarComponent, IGetOccurrencesTyped, IGetFreeBusy, IMergeable
+    public static class CalendarConvert
     {
-        public static Calendar Load(string iCalendarString)
-            => CalendarCollection.Load(new StringReader(iCalendarString)).SingleOrDefault();
+        public static Calendar Load(string calendarString)
+        {
+            using (var reader = new StringReader(calendarString))
+            {
+                return CalendarCollection.Load(reader).SingleOrDefault();
+            }
+        }
+
+        public static IEnumerable<T> Load<T>(string calendarString)
+        {
+            using (var reader = new StringReader(calendarString))
+            {
+                return Load<T>(reader).ToArray();
+            }
+        }
 
         /// <summary>
         /// Loads an <see cref="Calendar"/> from an open stream.
         /// </summary>
-        /// <param name="s">The stream from which to load the <see cref="Calendar"/> object</param>
+        /// <param name="stream">The stream from which to load the <see cref="Calendar"/> object</param>
         /// <returns>An <see cref="Calendar"/> object</returns>
-        public static Calendar Load(Stream s)
-            => CalendarCollection.Load(new StreamReader(s, Encoding.UTF8)).SingleOrDefault();
+        public static Calendar Load(Stream stream, Encoding encoding)
+        {
+            using (var reader = new StreamReader(stream, encoding))
+            {
+                return CalendarCollection.Load(reader).SingleOrDefault();
+            }
+        }
 
-        public static Calendar Load(TextReader tr)
-            => CalendarCollection.Load(tr).OfType<Calendar>().SingleOrDefault();
+        public static IEnumerable<T> Load<T>(Stream stream, Encoding encoding)
+        {
+            using (var reader = new StreamReader(stream, encoding))
+            {
+                return Load<T>(reader);
+            }
+        }
 
-        public static IList<T> Load<T>(Stream s, Encoding e)
-            => Load<T>(new StreamReader(s, e));
+        public static Calendar Load(TextReader reader)
+            => CalendarCollection.Load(reader).SingleOrDefault();
 
-        public static IList<T> Load<T>(TextReader tr)
-            => SimpleDeserializer.Default.Deserialize(tr).OfType<T>().ToList();
+        public static IEnumerable<T> Load<T>(TextReader reader)
+            => SimpleDeserializer.Default.Deserialize(reader).OfType<T>().ToArray();
+    } 
 
-        public static IList<T> Load<T>(string ical)
-            => Load<T>(new StringReader(ical));
-
+    public class Calendar : CalendarComponent, IGetOccurrencesTyped, IGetFreeBusy, IMergeable
+    {
         /// <summary>
         /// To load an existing an iCalendar object, use one of the provided LoadFromXXX methods.
         /// <example>

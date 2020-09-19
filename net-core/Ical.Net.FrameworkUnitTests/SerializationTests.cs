@@ -139,7 +139,7 @@ namespace Ical.Net.FrameworkUnitTests
 
             var serializer = new CalendarSerializer();
             var serializedCalendar = serializer.SerializeToString(cal1);
-            var cal2 = Calendar.Load(serializedCalendar);
+            var cal2 = CalendarConvert.Load(serializedCalendar);
             CompareCalendars(cal1, cal2);
         }
 
@@ -289,7 +289,7 @@ namespace Ical.Net.FrameworkUnitTests
             var serialized = SerializeEventToString(e);
             Assert.IsTrue(serialized.Contains(EventStatus.Confirmed, EventStatus.Comparison));
 
-            var calendar = Calendar.Load(serialized);
+            var calendar = CalendarConvert.Load(serialized);
             var eventStatus = calendar.Events.First().Status;
             Assert.IsTrue(string.Equals(EventStatus.Confirmed, eventStatus, EventStatus.Comparison));
         }
@@ -306,7 +306,7 @@ namespace Ical.Net.FrameworkUnitTests
             var serialized = SerializeCalenderToString(c);
             Assert.IsTrue(serialized.Contains(TodoStatus.NeedsAction, TodoStatus.Comparison));
 
-            var calendar = Calendar.Load(serialized);
+            var calendar = CalendarConvert.Load(serialized);
             var status = calendar.Todos.First().Status;
             Assert.IsTrue(string.Equals(TodoStatus.NeedsAction, status, TodoStatus.Comparison));
         }
@@ -323,7 +323,7 @@ namespace Ical.Net.FrameworkUnitTests
             var serialized = SerializeCalenderToString(c);
             Assert.IsTrue(serialized.Contains(JournalStatus.Final, JournalStatus.Comparison));
 
-            var calendar = Calendar.Load(serialized);
+            var calendar = CalendarConvert.Load(serialized);
             var status = calendar.Journals.First().Status;
             Assert.IsTrue(string.Equals(JournalStatus.Final, status, JournalStatus.Comparison));
         }
@@ -353,7 +353,7 @@ X-CONFLUENCE-SUBCALENDAR-TYPE:other
 TRANSP:TRANSPARENT
 STATUS:CONFIRMED
 END:VEVENT";
-            var deserializedEvent = Calendar.Load<CalendarEvent>(ics).Single();
+            var deserializedEvent = CalendarConvert.Load<CalendarEvent>(ics).Single();
 
             Assert.IsTrue(deserializedEvent.Description.Contains("\t"));
             Assert.IsTrue(deserializedEvent.Description.Contains("•"));
@@ -425,7 +425,7 @@ END:VEVENT";
             };
             var serializer = new CalendarSerializer();
             var serializedCalendar = serializer.SerializeToString(cal1);
-            var cal2 = Calendar.Load(serializedCalendar);
+            var cal2 = CalendarConvert.Load(serializedCalendar);
             Assert.AreEqual("application/json", cal2.Events.Single().Attachments.Single().FormatType);
         }
 

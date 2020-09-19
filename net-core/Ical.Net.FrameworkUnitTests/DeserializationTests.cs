@@ -21,7 +21,7 @@ namespace Ical.Net.FrameworkUnitTests
         [Test]
         public void Attendee1()
         {
-            var iCal = Calendar.Load(IcsFiles.Attendee1);
+            var iCal = CalendarConvert.Load(IcsFiles.Attendee1);
             Assert.AreEqual(1, iCal.Events.Count);
 
             var evt = iCal.Events.First();
@@ -58,7 +58,7 @@ namespace Ical.Net.FrameworkUnitTests
         [Test]
         public void Attendee2()
         {
-            var iCal = Calendar.Load(IcsFiles.Attendee2);
+            var iCal = CalendarConvert.Load(IcsFiles.Attendee2);
             Assert.AreEqual(1, iCal.Events.Count);
 
             var evt = iCal.Events.First();
@@ -85,7 +85,7 @@ namespace Ical.Net.FrameworkUnitTests
         [Test]
         public void Bug2033495()
         {
-            var iCal = Calendar.Load(IcsFiles.Bug2033495);
+            var iCal = CalendarConvert.Load(IcsFiles.Bug2033495);
             Assert.AreEqual(1, iCal.Events.Count);
             Assert.AreEqual(iCal.Properties["X-LOTUS-CHILD_UID"].Value, "XXX");
         }
@@ -97,7 +97,7 @@ namespace Ical.Net.FrameworkUnitTests
         [Test]
         public void Bug2938007()
         {
-            var iCal = Calendar.Load(IcsFiles.Bug2938007);
+            var iCal = CalendarConvert.Load(IcsFiles.Bug2938007);
             Assert.AreEqual(1, iCal.Events.Count);
 
             var evt = iCal.Events.First();
@@ -133,14 +133,14 @@ namespace Ical.Net.FrameworkUnitTests
         [Test]
         public void CaseInsensitive4()
         {
-            var iCal = Calendar.Load(IcsFiles.CaseInsensitive4);
+            var iCal = CalendarConvert.Load(IcsFiles.CaseInsensitive4);
             Assert.AreEqual("2.5", iCal.Version);
         }
 
         [Test]
         public void Categories1_2()
         {
-            var iCal = Calendar.Load(IcsFiles.Categories1);
+            var iCal = CalendarConvert.Load(IcsFiles.Categories1);
             AssertCalendar(iCal);
             var evt = iCal.Events.First();
 
@@ -167,7 +167,7 @@ namespace Ical.Net.FrameworkUnitTests
         [Test]
         public void EmptyLines1()
         {
-            var iCal = Calendar.Load(IcsFiles.EmptyLines1);
+            var iCal = CalendarConvert.Load(IcsFiles.EmptyLines1);
             Assert.AreEqual(2, iCal.Events.Count, "iCalendar should have 2 events");
         }
 
@@ -187,7 +187,7 @@ namespace Ical.Net.FrameworkUnitTests
         [Test]
         public void EmptyLines3()
         {
-            var iCal = Calendar.Load(IcsFiles.EmptyLines3);
+            var iCal = CalendarConvert.Load(IcsFiles.EmptyLines3);
             Assert.AreEqual(1, iCal.Todos.Count, "iCalendar should have 1 todo");
         }
 
@@ -197,14 +197,14 @@ namespace Ical.Net.FrameworkUnitTests
         [Test]
         public void EmptyLines4()
         {
-            var iCal = Calendar.Load(IcsFiles.EmptyLines4);
+            var iCal = CalendarConvert.Load(IcsFiles.EmptyLines4);
             Assert.AreEqual(28, iCal.Events.Count);
         }
 
         [Test]
         public void Encoding2()
         {
-            var iCal = Calendar.Load(IcsFiles.Encoding2);
+            var iCal = CalendarConvert.Load(IcsFiles.Encoding2);
             AssertCalendar(iCal);
             var evt = iCal.Events.First();
 
@@ -228,7 +228,7 @@ namespace Ical.Net.FrameworkUnitTests
         [Test]
         public void Encoding3()
         {
-            var iCal = Calendar.Load(IcsFiles.Encoding3);
+            var iCal = CalendarConvert.Load(IcsFiles.Encoding3);
             AssertCalendar(iCal);
             var evt = iCal.Events.First();
 
@@ -269,7 +269,7 @@ UID:ebfbd3e3-cc1e-4a64-98eb-ced2598b3908
 END:VEVENT
 END:VCALENDAR
 ";
-            var iCal = Calendar.Load(sr);
+            var iCal = CalendarConvert.Load(sr);
             Assert.IsTrue(iCal.Events.Count == 2, "There should be 2 events in the parsed calendar");
             Assert.IsNotNull(iCal.Events["fd940618-45e2-4d19-b118-37fd7a8e3906"], "Event fd940618-45e2-4d19-b118-37fd7a8e3906 should exist in the calendar");
             Assert.IsNotNull(iCal.Events["ebfbd3e3-cc1e-4a64-98eb-ced2598b3908"], "Event ebfbd3e3-cc1e-4a64-98eb-ced2598b3908 should exist in the calendar");
@@ -278,7 +278,7 @@ END:VCALENDAR
         [Test]
         public void GeographicLocation1_2()
         {
-            var iCal = Calendar.Load(IcsFiles.GeographicLocation1);
+            var iCal = CalendarConvert.Load(IcsFiles.GeographicLocation1);
             AssertCalendar(iCal);
             var evt = iCal.Events.First();
 
@@ -290,7 +290,7 @@ END:VCALENDAR
         public void Google1()
         {
             var tzId = "Europe/Berlin";
-            var iCal = Calendar.Load(IcsFiles.Google1);
+            var iCal = CalendarConvert.Load(IcsFiles.Google1);
             var evt = iCal.Events["594oeajmftl3r9qlkb476rpr3c@google.com"];
             Assert.IsNotNull(evt);
 
@@ -319,7 +319,7 @@ END:VCALENDAR
         [Test]
         public void RecurrenceDates1()
         {
-            var iCal = Calendar.Load(IcsFiles.RecurrenceDates1);
+            var iCal = CalendarConvert.Load(IcsFiles.RecurrenceDates1);
             Assert.AreEqual(1, iCal.Events.Count);
             Assert.AreEqual(3, iCal.Events.First().RecurrenceDates.Count);
 
@@ -345,7 +345,7 @@ END:VCALENDAR
         [Test]
         public void RequestStatus1()
         {
-            var iCal = Calendar.Load(IcsFiles.RequestStatus1);
+            var iCal = CalendarConvert.Load(IcsFiles.RequestStatus1);
             Assert.AreEqual(1, iCal.Events.Count);
             Assert.AreEqual(4, iCal.Events.First().RequestStatuses.Count);
 
@@ -399,7 +399,7 @@ END:VCALENDAR
         [Test]
         public void Transparency2()
         {
-            var iCal = Calendar.Load(IcsFiles.Transparency2);
+            var iCal = CalendarConvert.Load(IcsFiles.Transparency2);
 
             Assert.AreEqual(1, iCal.Events.Count);
             var evt = iCal.Events.First();
@@ -414,7 +414,7 @@ END:VCALENDAR
         [Test]
         public void DateTime1()
         {
-            var iCal = Calendar.Load(IcsFiles.DateTime1);
+            var iCal = CalendarConvert.Load(IcsFiles.DateTime1);
             Assert.AreEqual(6, iCal.Events.Count);
 
             var evt = iCal.Events["nc2o66s0u36iesitl2l0b8inn8@google.com"];
@@ -428,14 +428,14 @@ END:VCALENDAR
         [Test]
         public void Language4()
         {
-            var iCal = Calendar.Load(IcsFiles.Language4);
+            var iCal = CalendarConvert.Load(IcsFiles.Language4);
             Assert.IsNotNull(iCal);
         }
 
         [Test]
         public void Outlook2007_LineFolds1()
         {
-            var iCal = Calendar.Load(IcsFiles.Outlook2007LineFolds);
+            var iCal = CalendarConvert.Load(IcsFiles.Outlook2007LineFolds);
             var events = iCal.GetOccurrences(new CalDateTime(2009, 06, 20), new CalDateTime(2009, 06, 22));
             Assert.AreEqual(1, events.Count);
         }
@@ -444,7 +444,7 @@ END:VCALENDAR
         public void Outlook2007_LineFolds2()
         {
             var longName = "The Exceptionally Long Named Meeting Room Whose Name Wraps Over Several Lines When Exported From Leading Calendar and Office Software Application Microsoft Office 2007";
-            var iCal = Calendar.Load(IcsFiles.Outlook2007LineFolds);
+            var iCal = CalendarConvert.Load(IcsFiles.Outlook2007LineFolds);
             var events = iCal.GetOccurrences<CalendarEvent>(new CalDateTime(2009, 06, 20), new CalDateTime(2009, 06, 22)).OrderBy(o => o.Period.StartTime).ToList();
             Assert.AreEqual(longName, ((CalendarEvent)events[0].Source).Location);
         }
@@ -455,7 +455,7 @@ END:VCALENDAR
         [Test]
         public void Parameter1()
         {
-            var iCal = Calendar.Load(IcsFiles.Parameter1);
+            var iCal = CalendarConvert.Load(IcsFiles.Parameter1);
 
             var evt = iCal.Events.First();
             IList<CalendarParameter> parms = evt.Properties["DTSTART"].Parameters.AllOf("VALUE").ToList();
@@ -470,7 +470,7 @@ END:VCALENDAR
         [Test]
         public void Parameter2()
         {
-            var iCal = Calendar.Load(IcsFiles.Parameter2);
+            var iCal = CalendarConvert.Load(IcsFiles.Parameter2);
             Assert.AreEqual(2, iCal.Events.Count);
         }
 
@@ -480,7 +480,7 @@ END:VCALENDAR
         [Test]
         public void WhenCalendarCannotBeDeserializedShouldThrow()
         {
-            Assert.Throws<SerializationException>(() => _ = Calendar.Load(IcsFiles.Parse1));
+            Assert.Throws<SerializationException>(() => _ = CalendarConvert.Load(IcsFiles.Parse1));
         }
 
         /// <summary>
@@ -489,7 +489,7 @@ END:VCALENDAR
         [Test]
         public void PropertyCanAppearMoreThanOnceOnCalendarComponent()
         {
-            var iCal = Calendar.Load(IcsFiles.Property1);
+            var iCal = CalendarConvert.Load(IcsFiles.Property1);
 
             IList<ICalendarProperty> props = iCal.Properties.AllOf("VERSION").ToList();
             Assert.AreEqual(2, props.Count);

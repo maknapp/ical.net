@@ -206,8 +206,8 @@ EXDATE;TZID=UTC:20161020T170000
 END:VEVENT
 END:VCALENDAR";
 
-            var noException = Calendar.Load(icalNoException).Events.First();
-            var withException = Calendar.Load(icalWithException).Events.First();
+            var noException = CalendarConvert.Load(icalNoException).Events.First();
+            var withException = CalendarConvert.Load(icalWithException).Events.First();
 
             Assert.AreNotEqual(noException, withException);
             Assert.AreNotEqual(noException.GetHashCode(), withException.GetHashCode());
@@ -286,12 +286,12 @@ END:VCALENDAR";
             var cal1 = new Calendar();
             cal1.Events.Add(vEvent);
             var serialized = serializer.SerializeToString(cal1);
-            var deserializedNoExDate = Calendar.Load(serialized);
+            var deserializedNoExDate = CalendarConvert.Load(serialized);
             Assert.AreEqual(cal1, deserializedNoExDate);
 
             vEvent.ExceptionDates = GetExceptionDates();
             serialized = serializer.SerializeToString(cal1);
-            var deserializedWithExDate = Calendar.Load(serialized);
+            var deserializedWithExDate = CalendarConvert.Load(serialized);
 
             Assert.AreNotEqual(deserializedNoExDate.Events.First(), deserializedWithExDate.Events.First());
             Assert.AreNotEqual(deserializedNoExDate.Events.First().GetHashCode(), deserializedWithExDate.Events.First().GetHashCode());
@@ -363,8 +363,8 @@ UID:04107254dc5c9094af71a0e197e65a557dfbcb84
 END:VEVENT
 END:VCALENDAR";
 
-            var calendarA = Calendar.Load(eventA);
-            var calendarB = Calendar.Load(eventB);
+            var calendarA = CalendarConvert.Load(eventA);
+            var calendarB = CalendarConvert.Load(eventB);
 
             Assert.AreEqual(calendarA.Events.First().GetHashCode(), calendarB.Events.First().GetHashCode());
             Assert.AreEqual(calendarA.Events.First(), calendarB.Events.First());
@@ -420,7 +420,7 @@ RDATE:18800101T000000
 END:STANDARD
 END:VTIMEZONE
 END:VCALENDAR";
-            var timezones = Calendar.Load(ical)
+            var timezones = CalendarConvert.Load(ical)
                 .TimeZones.First()
                 .Children.Cast<CalendarComponent>();
 
