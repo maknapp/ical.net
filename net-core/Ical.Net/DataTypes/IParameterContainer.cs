@@ -1,6 +1,6 @@
 ﻿namespace Ical.Net.DataTypes
 {
-    public interface ICalendarParameterCollectionContainer
+    public interface IParameterContainer
     {
         IParameterCollection Parameters { get; }
     }

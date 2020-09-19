@@ -36,9 +36,9 @@ namespace Ical.Net.DataTypes
             set => Parameters.Set("FMTTYPE", value);
         }
 
-        public Attachment() {}
+        public Attachment() { }
 
-        public Attachment(byte[] value) : this()
+        public Attachment(byte[] value)
         {
             if (value != null)
             {
@@ -46,32 +46,12 @@ namespace Ical.Net.DataTypes
             }
         }
 
-        public Attachment(string value) : this()
+        public string GetDataUnencoded()
         {
-            if (string.IsNullOrEmpty(value))
-            {
-                return;
-            }
-
-            var serializer = new AttachmentSerializer();
-            var a = serializer.Deserialize(value);
-            if (a == null)
-            {
-                throw new ArgumentException($"{value} is not a valid ATTACH component");
-            }
-
-            ValueEncoding = a.ValueEncoding;
-
-            Data = a.Data;
-            Uri = a.Uri;
+            return Data == null ? string.Empty : ValueEncoding.GetString(Data);
         }
 
-        public override string ToString()
-            => Data == null
-                ? string.Empty
-                : ValueEncoding.GetString(Data);
-
-        //ToDo: See if this can be deleted
+        // TODO: See if CopyFrom() method can be deleted.
         public override void CopyFrom(ICopyable obj) { }
 
         public bool Equals(Attachment other)
@@ -98,6 +78,19 @@ namespace Ical.Net.DataTypes
                 hashCode = (hashCode * 397) ^ (ValueEncoding?.GetHashCode() ?? 0);
                 return hashCode;
             }
+        }
+    }
+
+    public static class AttachmentConvert
+    {
+        public static Attachment DeserializeObject(string attachmentValue)
+        {
+            if (string.IsNullOrWhiteSpace(attachmentValue))
+            {
+                throw new ArgumentException($"'{nameof(attachmentValue)}' cannot be null, empty or whitespace.", nameof(attachmentValue));
+            }
+
+            return new AttachmentSerializer().Deserialize(attachmentValue);
         }
     }
 }

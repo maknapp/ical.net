@@ -220,7 +220,7 @@ namespace Ical.Net.FrameworkUnitTests
 "This is a test to try out base64 encoding without being too large.\r\n" +
 "This is a test to try out base64 encoding without being too large.\r\n" +
 "This is a test to try out base64 encoding without being too large.",
-                evt.Attachments[0].ToString(),
+                evt.Attachments[0].GetDataUnencoded(),
                 "Attached value does not match.");
         }
 

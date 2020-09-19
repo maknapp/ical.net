@@ -3,21 +3,16 @@ using Ical.Net.CalendarComponents;
 
 namespace Ical.Net.DataTypes
 {
-    public sealed class Occurrence : IComparable<Occurrence>
+    public sealed class Occurrence
     {
         public Period Period { get; }
+
         public IRecurrable Source { get; }
-
-        public Occurrence(Occurrence ao)
-        {
-            Period = ao.Period;
-            Source = ao.Source;
-        }
-
+        
         public Occurrence(IRecurrable recurrable, Period period)
         {
-            Source = recurrable;
-            Period = period;
+            Source = recurrable ?? throw new ArgumentNullException(nameof(recurrable));
+            Period = period ?? throw new ArgumentNullException(nameof(period));
         }
 
         public bool Equals(Occurrence other) => Equals(Period, other.Period) && Equals(Source, other.Source);
@@ -38,23 +33,5 @@ namespace Ical.Net.DataTypes
                 return ((Period?.GetHashCode() ?? 0) * 397) ^ (Source?.GetHashCode() ?? 0);
             }
         }
-
-        public override string ToString()
-        {
-            var s = "Occurrence";
-            if (Source != null)
-            {
-                s = Source.GetType().Name + " ";
-            }
-
-            if (Period != null)
-            {
-                s += "(" + Period.StartTime + ")";
-            }
-
-            return s;
-        }
-
-        public int CompareTo(Occurrence other) => Period.CompareTo(other.Period);
     }
 }

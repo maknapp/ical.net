@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.Serialization;
 using Ical.Net.Proxies;
 
 namespace Ical.Net.DataTypes
@@ -9,43 +8,19 @@ namespace Ical.Net.DataTypes
     /// </summary>
     public abstract class CalendarDataType : ICalendarDataType
     {
-        private IParameterCollection _parameters;
-        private ParameterCollectionProxy _proxy;
-        private ServiceProvider _serviceProvider;
+        private readonly IParameterCollection _parameters;
+        private readonly ParameterCollectionProxy _proxy;
+        private readonly ServiceProvider _serviceProvider;
 
         private ICalendarObject _associatedObject;
 
         protected CalendarDataType()
         {
-            Initialize();
-        }
-
-        private void Initialize()
-        {
             _parameters = new ParameterList();
             _proxy = new ParameterCollectionProxy(_parameters);
             _serviceProvider = new ServiceProvider();
         }
-
-        [OnDeserializing]
-        internal void DeserializingInternal(StreamingContext context)
-        {
-            OnDeserializing(context);
-        }
-
-        [OnDeserialized]
-        internal void DeserializedInternal(StreamingContext context)
-        {
-            OnDeserialized(context);
-        }
-
-        protected void OnDeserializing(StreamingContext context)
-        {
-            Initialize();
-        }
-
-        protected void OnDeserialized(StreamingContext context) {}
-
+        
         public Type GetValueType()
         {
             // See RFC 5545 Section 3.2.20.
@@ -89,7 +64,7 @@ namespace Ical.Net.DataTypes
 
         public void SetValueType(string type)
         {
-            _proxy?.Set("VALUE", type ?? type.ToUpper());
+            _proxy?.Set("VALUE", type?.ToUpper());
         }
 
         public virtual ICalendarObject AssociatedObject
@@ -106,9 +81,9 @@ namespace Ical.Net.DataTypes
                 if (_associatedObject != null)
                 {
                     _proxy.SetParent(_associatedObject);
-                    if (_associatedObject is ICalendarParameterCollectionContainer)
+                    if (_associatedObject is IParameterContainer)
                     {
-                        _proxy.SetProxiedObject(((ICalendarParameterCollectionContainer) _associatedObject).Parameters);
+                        _proxy.SetProxiedObject(((IParameterContainer) _associatedObject).Parameters);
                     }
                 }
                 else
@@ -159,7 +134,7 @@ namespace Ical.Net.DataTypes
                 obj.CopyFrom(this);
                 return (T) obj;
             }
-            return default(T);
+            return default;
         }
 
         public IParameterCollection Parameters => _proxy;

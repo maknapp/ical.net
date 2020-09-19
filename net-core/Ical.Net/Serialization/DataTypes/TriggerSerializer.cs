@@ -58,22 +58,22 @@ namespace Ical.Net.Serialization.DataTypes
         {
             var value = tr.ReadToEnd();
 
-            if (!(CreateAndAssociate() is Trigger t))
+            if (!(CreateAndAssociate() is Trigger trigger))
             {
                 return null;
             }
 
             // Push the trigger onto the serialization stack
-            SerializationContext.Push(t);
+            SerializationContext.Push(trigger);
             try
             {
                 // Decode the value as needed
-                value = Decode(t, value);
+                value = Decode(trigger, value);
 
                 // Set the trigger relation
-                if (t.Parameters.ContainsKey("RELATED") && t.Parameters.Get("RELATED").Equals("END"))
+                if (trigger.Parameters.ContainsKey("RELATED") && trigger.Parameters.Get("RELATED").Equals("END"))
                 {
-                    t.Related = TriggerRelation.End;
+                    trigger.Related = TriggerRelation.End;
                 }
 
                 var factory = GetService<ISerializerFactory>();
@@ -82,7 +82,7 @@ namespace Ical.Net.Serialization.DataTypes
                     return null;
                 }
 
-                var valueType = t.GetValueType() ?? typeof(TimeSpan);
+                var valueType = trigger.GetValueType() ?? typeof(TimeSpan);
                 var serializer = factory.Build(valueType, SerializationContext) as IStringSerializer;
                 var obj = serializer?.Deserialize(new StringReader(value));
                 switch (obj)
@@ -90,14 +90,14 @@ namespace Ical.Net.Serialization.DataTypes
                     case null:
                         return null;
                     case IDateTime _:
-                        t.DateTime = (IDateTime) obj;
+                        trigger.DateTime = (IDateTime) obj;
                         break;
                     default:
-                        t.Duration = (TimeSpan) obj;
+                        trigger.Duration = (TimeSpan) obj;
                         break;
                 }
 
-                return t;
+                return trigger;
             }
             finally
             {

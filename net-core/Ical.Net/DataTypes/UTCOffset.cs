@@ -1,5 +1,4 @@
 using System;
-using Ical.Net.Serialization.DataTypes;
 
 namespace Ical.Net.DataTypes
 {
@@ -17,27 +16,16 @@ namespace Ical.Net.DataTypes
         public int Minutes => Math.Abs(Offset.Minutes);
 
         public int Seconds => Math.Abs(Offset.Seconds);
-
-        public UtcOffset() {}
-
-        public UtcOffset(string value) : this()
+        
+        public UtcOffset(TimeSpan offset)
         {
-            Offset = UtcOffsetSerializer.GetOffset(value);
+            Offset = offset;
         }
 
-        public UtcOffset(TimeSpan ts)
-        {
-            Offset = ts;
-        }
+        public static implicit operator UtcOffset(TimeSpan value) => new UtcOffset(value);
 
-        public static implicit operator UtcOffset(TimeSpan ts) => new UtcOffset(ts);
-
-        public static explicit operator TimeSpan(UtcOffset o) => o.Offset;
-
-        public DateTime ToUtc(DateTime dt) => DateTime.SpecifyKind(dt.Add(-Offset), DateTimeKind.Utc);
-
-        public DateTime ToLocal(DateTime dt) => DateTime.SpecifyKind(dt.Add(Offset), DateTimeKind.Local);
-
+        public static explicit operator TimeSpan(UtcOffset value) => value.Offset;
+        
         protected bool Equals(UtcOffset other) => Offset == other.Offset;
 
         public override bool Equals(object obj)

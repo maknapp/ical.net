@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using Ical.Net.CalendarComponents;
-using Ical.Net.Serialization.DataTypes;
 
 namespace Ical.Net.DataTypes
 {
@@ -15,12 +14,6 @@ namespace Ical.Net.DataTypes
         public double Longitude { get; set; }
 
         public GeographicLocation() {}
-
-        public GeographicLocation(string value) : this()
-        {
-            var serializer = new GeographicLocationSerializer();
-            serializer.Deserialize(value);
-        }
 
         public GeographicLocation(double latitude, double longitude)
         {

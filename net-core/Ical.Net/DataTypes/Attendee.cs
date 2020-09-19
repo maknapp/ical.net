@@ -226,19 +226,21 @@ namespace Ical.Net.DataTypes
         /// <summary> Uri associated with the attendee, typically an email address </summary>
         public Uri Value { get; set; }
 
+        // This constructor is used implicitly. 
         public Attendee() {}
 
-        public Attendee(Uri attendee)
+        public Attendee(Uri attendeeUri)
         {
-            Value = attendee;
+            Value = attendeeUri;
         }
 
         public Attendee(string attendeeUri)
         {
             if (!Uri.IsWellFormedUriString(attendeeUri, UriKind.Absolute))
             {
-                throw new ArgumentException("attendeeUri");
+                throw new FormatException($"'{attendeeUri}' is incorrectly formatted");
             }
+
             Value = new Uri(attendeeUri);
         }
 

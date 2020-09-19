@@ -30,9 +30,8 @@ namespace Ical.Net.Serialization.DataTypes
 
         public override object Deserialize(TextReader tr)
         {
-            var offsetString = tr.ReadToEnd();
-            var offset = new UtcOffset(offsetString);
-            return offset;
+            string offsetString = tr.ReadToEnd();
+            return new UtcOffset(GetOffset(offsetString));
         }
 
         public static TimeSpan GetOffset(string rawOffset)

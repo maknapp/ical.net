@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Ical.Net.Evaluation;
 using Ical.Net.Serialization.DataTypes;
@@ -12,7 +11,7 @@ namespace Ical.Net.DataTypes
     /// <summary>
     /// An iCalendar list of recurring dates (or date exclusions)
     /// </summary>
-    public sealed class PeriodList : EncodableDataType, IList<Period>
+    public sealed class PeriodList : EncodableDataType, IReadOnlyList<Period>
     {
         private readonly IList<Period> _periods;
 
@@ -22,10 +21,9 @@ namespace Ical.Net.DataTypes
             SetService(new PeriodListEvaluator(this));
         }
 
-        public PeriodList(string value) : this()
+        public PeriodList(string timezoneId) : this()
         {
-            var serializer = new PeriodListSerializer();
-            CopyFrom(serializer.Deserialize(new StringReader(value)) as ICopyable);
+            TzId = timezoneId;
         }
 
         public string TzId { get; set; }
@@ -49,7 +47,7 @@ namespace Ical.Net.DataTypes
 
         public void Add(IDateTime dt) => _periods.Add(new Period(dt));
 
-        public static Dictionary<string, List<Period>> GetGroupedPeriods(IList<PeriodList> periodLists)
+        public static IDictionary<string, List<Period>> GetGroupedPeriods(IEnumerable<PeriodList> periodLists)
         {
             // In order to know if two events are equal, a semantic understanding of exdates, rdates, rrules, and exrules is required. This could be done by
             // computing the complete recurrence set (expensive) while being time-zone sensitive, or by comparing each List<Period> in each IPeriodList.
@@ -78,7 +76,9 @@ namespace Ical.Net.DataTypes
                     grouped[actualBucket].Add(period);
                 }
             }
-            return grouped.ToDictionary(k => k.Key, v => v.Value.OrderBy(d => d.StartTime).ToList());
+            return grouped.ToDictionary(
+                k => k.Key, 
+                v => v.Value.OrderBy(d => d.StartTime).ToList());
         }
 
         public bool Equals(PeriodList other)
@@ -104,21 +104,12 @@ namespace Ical.Net.DataTypes
             }
         }
 
-        public Period this[int index]
-        {
-            get => _periods[index];
-            set => _periods[index] = value;
-        }
+        public Period this[int index] => _periods[index];
 
-        public bool Remove(Period item) => _periods.Remove(item);
-        public bool IsReadOnly => _periods.IsReadOnly;
-        public int IndexOf(Period item) => _periods.IndexOf(item);
-        public void Insert(int index, Period item) => _periods.Insert(index, item);
-        public void RemoveAt(int index) => _periods.RemoveAt(index);
-        public void Add(Period item) => _periods.Add(item);
         public void Clear() => _periods.Clear();
-        public bool Contains(Period item) => _periods.Contains(item);
-        public void CopyTo(Period[] array, int arrayIndex) => _periods.CopyTo(array, arrayIndex);
+        public void Add(Period item) => _periods.Add(item);
+        public bool Remove(Period item) => _periods.Remove(item);
+
         public IEnumerator<Period> GetEnumerator() => _periods.GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => _periods.GetEnumerator();
     }

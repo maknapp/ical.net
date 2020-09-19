@@ -8,17 +8,14 @@ namespace Ical.Net.DataTypes
     {
         public Period() { }
 
-        public Period(IDateTime occurs)
-            : this(occurs, default(TimeSpan)) {}
-
         public Period(IDateTime start, IDateTime end)
         {
+            StartTime = start ?? throw new ArgumentNullException(nameof(start));
             if (end != null && end.LessThanOrEqual(start))
             {
-                throw new ArgumentException($"Start time ( {start} ) must come before the end time ( {end} )");
+                throw new ArgumentException($"Start time ({start}) must be before the end time ({end})");
             }
 
-            StartTime = start;
             if (end == null)
             {
                 return;
@@ -27,15 +24,15 @@ namespace Ical.Net.DataTypes
             Duration = end.Subtract(start);
         }
 
-        public Period(IDateTime start, TimeSpan duration)
+        public Period(IDateTime start, TimeSpan duration = default)
         {
             if (duration < TimeSpan.Zero)
             {
-                throw new ArgumentException($"Duration ( ${duration} ) cannot be less than zero");
+                throw new ArgumentException($"'{nameof(duration)}' ({duration}) cannot be negative");
             }
 
-            StartTime = start;
-            if (duration == default(TimeSpan))
+            StartTime = start ?? throw new ArgumentNullException(nameof(start));
+            if (duration == default)
             {
                 return;
             }
@@ -86,15 +83,15 @@ namespace Ical.Net.DataTypes
 
         private void ExtrapolateTimes()
         {
-            if (EndTime == null && StartTime != null && Duration != default(TimeSpan))
+            if (EndTime == null && StartTime != null && Duration != default)
             {
                 EndTime = StartTime.Add(Duration);
             }
-            else if (Duration == default(TimeSpan) && StartTime != null && EndTime != null)
+            else if (Duration == default && StartTime != null && EndTime != null)
             {
                 Duration = EndTime.Subtract(StartTime);
             }
-            else if (StartTime == null && Duration != default(TimeSpan) && EndTime != null)
+            else if (StartTime == null && Duration != default && EndTime != null)
             {
                 StartTime = EndTime.Subtract(Duration);
             }
@@ -173,19 +170,27 @@ namespace Ical.Net.DataTypes
 
         public int CompareTo(Period other)
         {
+            if (other == null)
+            {
+                return 1;
+            }
+
+            if (StartTime == null)
+            {
+                return -1;
+            }
+
             if (StartTime.Equals(other.StartTime))
             {
                 return 0;
             }
+
             if (StartTime.LessThan(other.StartTime))
             {
                 return -1;
             }
-            if (StartTime.GreaterThan(other.StartTime))
-            {
-                return 1;
-            }
-            throw new Exception("An error occurred while comparing two Periods.");
+
+            return 1;
         }
     }
 }

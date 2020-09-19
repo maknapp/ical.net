@@ -13,24 +13,17 @@ namespace Ical.Net.DataTypes
         public string ExtraData { get; set; }
 
         public StatusCode StatusCode { get; set; }
-
-        public RequestStatus() {}
-
-        public RequestStatus(string value) : this()
-        {
-            var serializer = new RequestStatusSerializer();
-            CopyFrom(serializer.Deserialize(new StringReader(value)) as ICopyable);
-        }
-
+        
         public override void CopyFrom(ICopyable obj)
         {
             base.CopyFrom(obj);
-            if (!(obj is RequestStatus))
+
+            var rs = obj as RequestStatus;
+            if (rs == null)
             {
                 return;
             }
 
-            var rs = (RequestStatus) obj;
             if (rs.StatusCode != null)
             {
                 StatusCode = rs.StatusCode;
@@ -45,8 +38,11 @@ namespace Ical.Net.DataTypes
             return serializer.SerializeToString(this);
         }
 
-        protected bool Equals(RequestStatus other) => string.Equals(Description, other.Description) && string.Equals(ExtraData, other.ExtraData) &&
-            Equals(StatusCode, other.StatusCode);
+        public bool Equals(RequestStatus other)
+        {
+            return string.Equals(Description, other.Description) && string.Equals(ExtraData, other.ExtraData) &&
+                   Equals(StatusCode, other.StatusCode);
+        }
 
         public override bool Equals(object obj)
         {

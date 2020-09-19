@@ -165,7 +165,7 @@ namespace Ical.Net.FrameworkUnitTests
         [Test, TestCaseSource(nameof(UriAttachment_TestCases))]
         public void UriAttachment_Tests(string uri, Uri expectedUri)
         {
-            var attachment = new Attachment(uri);
+            var attachment = AttachmentConvert.DeserializeObject(uri);
 
             var calendar = new Calendar();
             var vEvent = CreateValidEvent();

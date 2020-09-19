@@ -17,7 +17,6 @@ namespace Ical.Net.FrameworkUnitTests
         public void AttachmentConstructorMustAcceptNull()
         {
             Assert.DoesNotThrow(() => { _ = new Attachment((byte[])null); });
-            Assert.DoesNotThrow(() => { _ = new Attachment((string)null); });
         }
     }
 }

@@ -1,6 +1,4 @@
 using System;
-using System.IO;
-using Ical.Net.Serialization.DataTypes;
 
 namespace Ical.Net.DataTypes
 {
@@ -56,30 +54,20 @@ namespace Ical.Net.DataTypes
         public bool IsRelative => _duration != null;
 
         public Trigger() {}
-
-        public Trigger(TimeSpan ts)
-        {
-            Duration = ts;
-        }
-
-        public Trigger(string value) : this()
-        {
-            var serializer = new TriggerSerializer();
-            CopyFrom(serializer.Deserialize(new StringReader(value)) as ICopyable);
-        }
-
+        
         public override void CopyFrom(ICopyable obj)
         {
             base.CopyFrom(obj);
-            if (!(obj is Trigger))
+
+            var trigger = obj as Trigger;
+            if (trigger == null)
             {
                 return;
             }
 
-            var t = (Trigger) obj;
-            DateTime = t.DateTime;
-            Duration = t.Duration;
-            Related = t.Related;
+            DateTime = trigger.DateTime;
+            Duration = trigger.Duration;
+            Related = trigger.Related;
         }
 
         public bool Equals(Trigger other) => Equals(_dateTime, other._dateTime) && _duration.Equals(other._duration) && Related == other.Related;
