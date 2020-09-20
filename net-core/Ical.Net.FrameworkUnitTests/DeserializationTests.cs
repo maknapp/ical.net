@@ -110,23 +110,7 @@ namespace Ical.Net.FrameworkUnitTests
                 Assert.AreEqual(true, o.Period.EndTime.HasTime);
             }
         }
-
-        /// <summary>
-        /// Tests bug #3177278 - Serialize closes stream
-        /// See https://sourceforge.net/tracker/?func=detail&aid=3177278&group_id=187422&atid=921236
-        /// </summary>
-        [Test]
-        public void Bug3177278()
-        {
-            var calendar = new Calendar();
-            var serializer = new CalendarSerializer();
-
-            var ms = new MemoryStream();
-            serializer.Serialize(calendar, ms, Encoding.UTF8);
-
-            Assert.IsTrue(ms.CanWrite);
-        }
-
+        
         /// <summary>
         /// Tests that a mixed-case VERSION property is loaded properly
         /// </summary>
