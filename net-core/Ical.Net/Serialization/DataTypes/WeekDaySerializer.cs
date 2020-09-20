@@ -36,7 +36,7 @@ namespace Ical.Net.Serialization.DataTypes
         public override object Deserialize(string value)
         {
             // Create the day specifier and associate it with a calendar object
-            var ds = CreateAndAssociate() as WeekDay;
+            var ds = CreateAndAssociate<WeekDay>();
 
             // Decode the value, if necessary
             value = Decode(ds, value);

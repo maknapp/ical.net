@@ -32,7 +32,7 @@ namespace Ical.Net.Serialization.DataTypes
                 return null;
             }
 
-            var geoLocation = CreateAndAssociate() as GeographicLocation;
+            var geoLocation = CreateAndAssociate<GeographicLocation>();
             if (geoLocation == null)
             {
                 return null;

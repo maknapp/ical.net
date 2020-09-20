@@ -56,7 +56,8 @@ namespace Ical.Net.Serialization.DataTypes
 
         public override object Deserialize(string value)
         {
-            if (!(CreateAndAssociate() is Trigger trigger))
+            var trigger = CreateAndAssociate<Trigger>();
+            if (trigger == null)
             {
                 return null;
             }

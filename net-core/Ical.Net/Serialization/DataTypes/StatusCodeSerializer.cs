@@ -33,7 +33,7 @@ namespace Ical.Net.Serialization.DataTypes
 
         public override object Deserialize(string value)
         {
-            var sc = CreateAndAssociate() as StatusCode;
+            var sc = CreateAndAssociate<StatusCode>();
             if (sc == null)
             {
                 return null;

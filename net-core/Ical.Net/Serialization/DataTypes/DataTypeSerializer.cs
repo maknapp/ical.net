@@ -17,21 +17,23 @@ namespace Ical.Net.Serialization.DataTypes
         public abstract string Serialize(object obj);
         public abstract object Deserialize(string value);
 
-        protected ICalendarDataType CreateAndAssociate()
+        protected T CreateAndAssociate<T>() where T: class, ICalendarDataType
         {
             // Create an instance of the object
-            if (!(Activator.CreateInstance(TargetType) is ICalendarDataType dt))
+            var dataType = Activator.CreateInstance(TargetType) as T;
+            if (dataType == null)
             {
-                return null;
+                return default;
             }
 
             if (SerializationContext.Peek() is ICalendarObject associatedObject)
             {
-                dt.AssociatedObject = associatedObject;
+                dataType.AssociatedObject = associatedObject;
             }
 
-            return dt;
+            return dataType;
         }
+
         protected string Encode(IEncodableDataType dt, string value)
         {
             if (value == null)

@@ -64,7 +64,7 @@ namespace Ical.Net.Serialization.DataTypes
 
         public override object Deserialize(string value)
         {
-            var rs = CreateAndAssociate() as RequestStatus;
+            var rs = CreateAndAssociate<RequestStatus>();
             if (rs == null)
             {
                 return null;

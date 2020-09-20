@@ -29,7 +29,7 @@ namespace Ical.Net.Serialization.DataTypes
 
         public override object Deserialize(string value)
         {
-            var organizer = CreateAndAssociate() as Organizer;
+            var organizer = CreateAndAssociate<Organizer>();
             try
             {
                 if (organizer != null)

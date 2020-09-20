@@ -59,7 +59,7 @@ namespace Ical.Net.Serialization.DataTypes
         public override object Deserialize(string value)
         {
 
-            var p = CreateAndAssociate() as Period;
+            var p = CreateAndAssociate<Period>();
             var factory = SerializationContext.GetService<ISerializerFactory>();
             if (p == null || factory == null)
             {

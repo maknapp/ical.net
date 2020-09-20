@@ -47,7 +47,7 @@ namespace Ical.Net.Serialization.DataTypes
         {
             try
             {
-                var a = CreateAndAssociate() as Attachment;
+                var a = CreateAndAssociate<Attachment>();
                 // Decode the value, if necessary
                 var data = DecodeData(a, value);
 

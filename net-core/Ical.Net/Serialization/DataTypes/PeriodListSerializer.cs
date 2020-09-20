@@ -49,7 +49,7 @@ namespace Ical.Net.Serialization.DataTypes
         public override object Deserialize(string value)
         {
             // Create the day specifier and associate it with a calendar object
-            var rdt = CreateAndAssociate() as PeriodList;
+            var rdt = CreateAndAssociate<PeriodList>();
             var factory = SerializationContext.GetService<ISerializerFactory>();
             if (rdt == null || factory == null)
             {

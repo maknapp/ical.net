@@ -215,7 +215,7 @@ namespace Ical.Net.Serialization.DataTypes
         {
 
             // Instantiate the data type
-            var r = CreateAndAssociate() as RecurrencePattern;
+            var r = CreateAndAssociate<RecurrencePattern>();
             var factory = SerializationContext.GetService<ISerializerFactory>();
             if (r == null || factory == null)
             {

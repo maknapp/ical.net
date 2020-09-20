@@ -101,7 +101,7 @@ namespace Ical.Net.Serialization.DataTypes
         public override object Deserialize(string value)
         {
 
-            var dt = CreateAndAssociate() as IDateTime;
+            var dt = CreateAndAssociate<IDateTime>();
             if (dt == null)
             {
                 return null;

@@ -23,7 +23,7 @@ namespace Ical.Net.Serialization.DataTypes
         {
             try
             {
-                var attendee = CreateAndAssociate() as Attendee;
+                var attendee = CreateAndAssociate<Attendee>();
                 var uriString = Unescape(Decode(attendee, value));
 
                 // Prepend "mailto:" if necessary
