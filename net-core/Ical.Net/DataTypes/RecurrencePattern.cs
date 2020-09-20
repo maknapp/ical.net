@@ -132,7 +132,7 @@ namespace Ical.Net.DataTypes
                 return;
             }
             var serializer = new RecurrencePatternSerializer();
-            CopyFrom(serializer.Deserialize(new StringReader(value)) as ICopyable);
+            CopyFrom(serializer.Deserialize(value) as ICopyable);
         }
 
         public override string ToString()

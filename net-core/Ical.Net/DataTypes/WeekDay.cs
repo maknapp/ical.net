@@ -33,7 +33,7 @@ namespace Ical.Net.DataTypes
         public WeekDay(string value)
         {
             var serializer = new WeekDaySerializer();
-            CopyFrom(serializer.Deserialize(new StringReader(value)) as ICopyable);
+            CopyFrom(serializer.Deserialize(value) as ICopyable);
         }
 
         public override bool Equals(object obj)

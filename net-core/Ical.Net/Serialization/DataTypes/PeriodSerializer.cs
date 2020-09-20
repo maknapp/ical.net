@@ -83,11 +83,11 @@ namespace Ical.Net.Serialization.DataTypes
                 return false;
             }
 
-            p.StartTime = dtSerializer.Deserialize(new StringReader(values[0])) as IDateTime;
-            p.EndTime = dtSerializer.Deserialize(new StringReader(values[1])) as IDateTime;
+            p.StartTime = dtSerializer.Deserialize(values[0]) as IDateTime;
+            p.EndTime = dtSerializer.Deserialize(values[1]) as IDateTime;
             if (p.EndTime == null)
             {
-                p.Duration = (TimeSpan)durationSerializer.Deserialize(new StringReader(values[1]));
+                p.Duration = (TimeSpan)durationSerializer.Deserialize(values[1]);
             }
 
             // Only return an object if it has been deserialized correctly.

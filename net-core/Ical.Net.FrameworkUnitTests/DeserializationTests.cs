@@ -384,16 +384,16 @@ END:VCALENDAR
         {
             var serializer = new StringSerializer();
             var value = @"test\with\;characters";
-            var unescaped = (string)serializer.Deserialize(new StringReader(value));
+            var unescaped = (string)serializer.Deserialize(value);
 
             Assert.AreEqual(@"test\with;characters", unescaped, "String unescaping was incorrect.");
 
             value = @"C:\Path\To\My\New\Information";
-            unescaped = (string)serializer.Deserialize(new StringReader(value));
+            unescaped = (string)serializer.Deserialize(value);
             Assert.AreEqual("C:\\Path\\To\\My\new\\Information", unescaped, "String unescaping was incorrect.");
 
             value = @"\""This\r\nis\Na\, test\""\;\\;,";
-            unescaped = (string)serializer.Deserialize(new StringReader(value));
+            unescaped = (string)serializer.Deserialize(value);
 
             Assert.AreEqual("\"This\\r\nis\na, test\";\\;,", unescaped, "String unescaping was incorrect.");
         }

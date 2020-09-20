@@ -98,7 +98,7 @@ namespace Ical.Net.Serialization.DataTypes
                         return null;
                     }
 
-                    rs.StatusCode = serializer.Deserialize(new StringReader(Unescape(match.Groups[1].Value))) as StatusCode;
+                    rs.StatusCode = serializer.Deserialize(Unescape(match.Groups[1].Value)) as StatusCode;
                     rs.Description = Unescape(match.Groups[2].Value);
                     if (match.Groups.Count == 4)
                     {

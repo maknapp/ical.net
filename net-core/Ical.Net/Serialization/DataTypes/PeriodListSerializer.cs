@@ -69,8 +69,8 @@ namespace Ical.Net.Serialization.DataTypes
             var values = value.Split(',');
             foreach (var v in values)
             {
-                var dt = dtSerializer.Deserialize(new StringReader(v)) as IDateTime;
-                var p = periodSerializer.Deserialize(new StringReader(v)) as Period;
+                var dt = dtSerializer.Deserialize(v) as IDateTime;
+                var p = periodSerializer.Deserialize(v) as Period;
 
                 if (dt != null)
                 {

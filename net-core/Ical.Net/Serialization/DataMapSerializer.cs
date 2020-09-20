@@ -52,7 +52,7 @@ namespace Ical.Net.Serialization
                 return null;
             }
 
-            var returnValue = serializer.Deserialize(new StringReader(value));
+            var returnValue = serializer.Deserialize(value);
 
             // Default to returning the string representation of the value
             // if the value wasn't formatted correctly.

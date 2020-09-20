@@ -248,7 +248,7 @@ namespace Ical.Net.Serialization.DataTypes
                             case "UNTIL":
                                 {
                                     var serializer = factory.Build(typeof(IDateTime), SerializationContext) as IStringSerializer;
-                                    var dt = serializer?.Deserialize(new StringReader(keyValue)) as IDateTime;
+                                    var dt = serializer?.Deserialize(keyValue) as IDateTime;
                                     if (dt != null)
                                     {
                                         r.Until = dt.Value;

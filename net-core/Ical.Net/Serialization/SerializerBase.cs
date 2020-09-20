@@ -17,18 +17,7 @@ namespace Ical.Net.Serialization
 
         public abstract string Serialize(object obj);
         public abstract object Deserialize(string value);
-
-        public object Deserialize(TextReader reader)
-        {
-            if (reader == null)
-            {
-                return null;
-            }
-
-            string value = reader.ReadToEnd();
-            return Deserialize(value);
-        }
-
+        
         public object Deserialize(Stream stream, Encoding encoding)
         {
             object obj;
@@ -36,7 +25,7 @@ namespace Ical.Net.Serialization
             {
                 var encodingStack = GetService<EncodingStack>();
                 encodingStack.Push(encoding);
-                obj = Deserialize(sr);
+                obj = Deserialize(sr.ReadToEnd());
                 encodingStack.Pop();
             }
             return obj;

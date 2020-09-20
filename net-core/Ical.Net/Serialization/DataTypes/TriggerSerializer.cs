@@ -82,7 +82,7 @@ namespace Ical.Net.Serialization.DataTypes
 
                 var valueType = trigger.GetValueType() ?? typeof(TimeSpan);
                 var serializer = factory.Build(valueType, SerializationContext) as IStringSerializer;
-                var obj = serializer?.Deserialize(new StringReader(value));
+                var obj = serializer?.Deserialize(value);
                 switch (obj)
                 {
                     case null:

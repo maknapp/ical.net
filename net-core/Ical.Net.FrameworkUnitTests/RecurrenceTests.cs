@@ -60,7 +60,7 @@ namespace Ical.Net.FrameworkUnitTests
                 Assert.AreEqual(dt, occurrences[i].Period.StartTime, "Event should occur on " + dt);
                 if (timeZones != null)
                     Assert.AreEqual(timeZones[i], dt.TimeZoneName, "Event " + dt + " should occur in the " + timeZones[i] + " timezone");
-            }            
+            }
         }
 
         private void EventOccurrenceTest(
@@ -1212,8 +1212,8 @@ namespace Ical.Net.FrameworkUnitTests
                 new[]
                 {
                     new CalDateTime(1997, 5, 12, 9, 0, 0, TimezoneId),
-                    new CalDateTime(1998, 5, 11, 9, 0, 0, TimezoneId),                    
-                    new CalDateTime(1999, 5, 17, 9, 0, 0, TimezoneId)                    
+                    new CalDateTime(1998, 5, 11, 9, 0, 0, TimezoneId),
+                    new CalDateTime(1999, 5, 17, 9, 0, 0, TimezoneId)
                 },
                 null
             );
@@ -1308,7 +1308,7 @@ namespace Ical.Net.FrameworkUnitTests
                     new CalDateTime(2002, 1, 3, 10, 0, 0, TimezoneId),
                     new CalDateTime(2002, 1, 4, 10, 0, 0, TimezoneId),
                     new CalDateTime(2002, 1, 5, 10, 0, 0, TimezoneId),
-                    new CalDateTime(2002, 1, 6, 10, 0, 0, TimezoneId),                    
+                    new CalDateTime(2002, 1, 6, 10, 0, 0, TimezoneId),
                     new CalDateTime(2002, 12, 30, 10, 0, 0, TimezoneId),
                     new CalDateTime(2002, 12, 31, 10, 0, 0, TimezoneId),
                     new CalDateTime(2003, 1, 1, 10, 0, 0, TimezoneId),
@@ -1964,7 +1964,7 @@ namespace Ical.Net.FrameworkUnitTests
             {
                 Assert.IsInstanceOf<ArgumentException>(e);
             }
-            
+
         }
 
         /// <summary>
@@ -2071,7 +2071,7 @@ namespace Ical.Net.FrameworkUnitTests
                     // after the start of the evaluation period.
                     // See bug #3007244.
                     // https://sourceforge.net/tracker/?func=detail&aid=3007244&group_id=187422&atid=921236
-                    new CalDateTime(2007, 4, 9, 7, 0, 0, TimezoneId), 
+                    new CalDateTime(2007, 4, 9, 7, 0, 0, TimezoneId),
                     new CalDateTime(2007, 4, 10, 1, 0, 0, TimezoneId),
                     new CalDateTime(2007, 4, 10, 19, 0, 0, TimezoneId)
                 },
@@ -2155,7 +2155,7 @@ namespace Ical.Net.FrameworkUnitTests
                     new CalDateTime(2007, 4, 10, 23, 0, 0)
                 },
                 null
-            );            
+            );
         }
 
         /// <summary>
@@ -2518,7 +2518,7 @@ namespace Ical.Net.FrameworkUnitTests
                 new CalDateTime(2010, 2, 1, 0, 0, 0, localTzid),
                 new CalDateTime(2010, 3, 1, 0, 0, 0, localTzid),
                 new[]
-                {                    
+                {
                     new CalDateTime(2010, 2, 2, 8, 00, 00, localTzid),
                     new CalDateTime(2010, 2, 9, 8, 00, 00, localTzid),
                     new CalDateTime(2010, 2, 16, 8, 00, 00, localTzid),
@@ -2565,18 +2565,18 @@ namespace Ical.Net.FrameworkUnitTests
         [Test, Category("Recurrence")]
         public void Bug3119920()
         {
-            using (var sr = new StringReader("FREQ=WEEKLY;UNTIL=20251126T120000;INTERVAL=1;BYDAY=MO"))
-            {
-                var start = DateTime.Parse("2010-11-27 9:00:00");
-                var serializer = new RecurrencePatternSerializer();
-                var rp = (RecurrencePattern)serializer.Deserialize(sr);
-                var rpe = new RecurrencePatternEvaluator(rp);
-                var recurringPeriods = rpe.Evaluate(new CalDateTime(start), start, rp.Until, false);
-                
-                var period = recurringPeriods.ElementAt(recurringPeriods.Count - 1);
+            const string value = "FREQ=WEEKLY;UNTIL=20251126T120000;INTERVAL=1;BYDAY=MO";
 
-                Assert.AreEqual(new CalDateTime(2025, 11, 24, 9, 0, 0), period.StartTime);
-            }
+            var start = DateTime.Parse("2010-11-27 9:00:00");
+            var serializer = new RecurrencePatternSerializer();
+            var rp = (RecurrencePattern)serializer.Deserialize(value);
+            var rpe = new RecurrencePatternEvaluator(rp);
+            var recurringPeriods = rpe.Evaluate(new CalDateTime(start), start, rp.Until, false);
+
+            var period = recurringPeriods.ElementAt(recurringPeriods.Count - 1);
+
+            Assert.AreEqual(new CalDateTime(2025, 11, 24, 9, 0, 0), period.StartTime);
+
         }
 
         /// <summary>
@@ -2593,7 +2593,8 @@ namespace Ical.Net.FrameworkUnitTests
                 Summary = "29th February Test"
             };
 
-            var pattern = new RecurrencePattern {
+            var pattern = new RecurrencePattern
+            {
                 Frequency = FrequencyType.Monthly,
                 Until = new DateTime(2011, 12, 25, 0, 0, 0, DateTimeKind.Utc),
                 FirstDayOfWeek = DayOfWeek.Sunday,
@@ -2613,14 +2614,13 @@ namespace Ical.Net.FrameworkUnitTests
         [Test, Category("Recurrence")]
         public void Bug3292737()
         {
-            using (var sr = new StringReader("FREQ=WEEKLY;UNTIL=20251126"))
-            {
-                var serializer = new RecurrencePatternSerializer();
-                var rp = (RecurrencePattern)serializer.Deserialize(sr);
+            const string value = "FREQ=WEEKLY;UNTIL=20251126";
 
-                Assert.IsNotNull(rp);
-                Assert.AreEqual(new DateTime(2025, 11, 26), rp.Until);
-            }
+            var serializer = new RecurrencePatternSerializer();
+            var rp = (RecurrencePattern)serializer.Deserialize(value);
+
+            Assert.IsNotNull(rp);
+            Assert.AreEqual(new DateTime(2025, 11, 26), rp.Until);
         }
 
         /// <summary>
@@ -2716,8 +2716,8 @@ namespace Ical.Net.FrameworkUnitTests
             Assert.IsNotNull(evaluator);
 
             var occurrences = evaluator.Evaluate(
-                startDate, 
-                DateUtil.SimpleDateTimeToMatch(fromDate, startDate), 
+                startDate,
+                DateUtil.SimpleDateTimeToMatch(fromDate, startDate),
                 DateUtil.SimpleDateTimeToMatch(toDate, startDate),
                 false)
                 .OrderBy(o => o.StartTime)
@@ -2746,8 +2746,8 @@ namespace Ical.Net.FrameworkUnitTests
             Assert.IsNotNull(evaluator);
 
             var occurrences = evaluator.Evaluate(
-                startDate, 
-                DateUtil.SimpleDateTimeToMatch(fromDate, startDate), 
+                startDate,
+                DateUtil.SimpleDateTimeToMatch(fromDate, startDate),
                 DateUtil.SimpleDateTimeToMatch(toDate, startDate),
                 false);
             Assert.AreNotEqual(0, occurrences.Count);
@@ -2762,7 +2762,7 @@ namespace Ical.Net.FrameworkUnitTests
             evt.End = new CalDateTime(2009, 11, 18, 5, 10, 0);
             evt.RecurrenceRules.Add(new RecurrencePattern(FrequencyType.Daily));
             evt.Summary = "xxxxxxxxxxxxx";
- 
+
             var previousDateAndTime = new CalDateTime(2009, 11, 17, 0, 15, 0);
             var previousDateOnly = new CalDateTime(2009, 11, 17, 23, 15, 0);
             var laterDateOnly = new CalDateTime(2009, 11, 19, 3, 15, 0);
@@ -2859,7 +2859,7 @@ namespace Ical.Net.FrameworkUnitTests
             // Add the exception dates
             var periods = evaluator.Evaluate(
                 evtStart,
-                DateUtil.GetSimpleDateTimeData(evtStart), 
+                DateUtil.GetSimpleDateTimeData(evtStart),
                 DateUtil.SimpleDateTimeToMatch(evtEnd, evtStart),
                 false)
                 .OrderBy(p => p.StartTime)
@@ -2965,7 +2965,7 @@ END:VCALENDAR";
             var rrule = new RecurrencePattern(FrequencyType.Weekly, interval: 1)
             {
                 Until = DateTime.Parse("2016-08-31T07:00:00"),
-                ByDay = new List<WeekDay> { new WeekDay(DayOfWeek.Wednesday)},
+                ByDay = new List<WeekDay> { new WeekDay(DayOfWeek.Wednesday) },
             };
 
             var start = DateTime.Parse("2016-08-01T07:00:00");
