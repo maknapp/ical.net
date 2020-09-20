@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Text;
 using Ical.Net.DataTypes;
@@ -7,13 +6,18 @@ using Ical.Net.Utilities;
 
 namespace Ical.Net.Serialization
 {
-    public sealed class PropertySerializer : SerializerBase
+    public sealed class PropertySerializer : IStringSerializer
     {
-        public PropertySerializer(SerializationContext ctx) : base(ctx) {}
+        public PropertySerializer(SerializationContext ctx)
+        {
+            SerializationContext = ctx ?? throw new ArgumentNullException(nameof(ctx));
+        }
 
-        public override Type TargetType => typeof (CalendarProperty);
+        private SerializationContext SerializationContext { get; }
 
-        public override string Serialize(object obj)
+        public Type TargetType => typeof (CalendarProperty);
+
+        public string Serialize(object obj)
         {
             var prop = obj as ICalendarProperty;
             if (prop?.Values == null || !prop.Values.Any())
@@ -26,7 +30,7 @@ namespace Ical.Net.Serialization
 
             // Get a serializer factory that we can use to serialize
             // the property and parameter values
-            var sf = GetService<ISerializerFactory>();
+            var sf = SerializationContext.GetService<ISerializerFactory>();
 
             var result = new StringBuilder();
             foreach (var v in prop.Values.Where(value => value != null))
@@ -95,6 +99,6 @@ namespace Ical.Net.Serialization
             return result.ToString();
         }
 
-        public override object Deserialize(string value) => null;
+        public object Deserialize(string value) => null;
     }
 }

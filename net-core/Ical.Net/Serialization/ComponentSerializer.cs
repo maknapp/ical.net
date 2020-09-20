@@ -8,17 +8,22 @@ using Ical.Net.Utilities;
 
 namespace Ical.Net.Serialization
 {
-    public class ComponentSerializer : SerializerBase
+    public class ComponentSerializer : IStringSerializer
     {
-        protected virtual IComparer<ICalendarProperty> PropertySorter => new PropertyAlphabetizer();
+        protected ComponentSerializer() : this(SerializationContext.Default) { }
 
-        protected ComponentSerializer() : base(SerializationContext.Default) { }
+        public ComponentSerializer(SerializationContext ctx)
+        {
+            SerializationContext = ctx ?? throw new ArgumentNullException(nameof(ctx));
+        }
 
-        public ComponentSerializer(SerializationContext ctx) : base(ctx) { }
+        private SerializationContext SerializationContext { get; }
 
-        public override Type TargetType => typeof(CalendarComponent);
+        public virtual Type TargetType => typeof(CalendarComponent);
 
-        public override string Serialize(object obj)
+        public virtual IComparer<ICalendarProperty> PropertySorter => new PropertyAlphabetizer();
+
+        public virtual string Serialize(object obj)
         {
             if (!(obj is ICalendarComponent c))
             {
@@ -30,7 +35,7 @@ namespace Ical.Net.Serialization
             sb.Append(TextUtil.FoldLines($"BEGIN:{upperName}"));
 
             // Get a serializer factory
-            var sf = GetService<ISerializerFactory>();
+            var sf = SerializationContext.GetService<ISerializerFactory>();
 
             // Sort the calendar properties in alphabetical order before serializing them!
             var properties = c.Properties.OrderBy(p => p.Name).ToList();
@@ -55,9 +60,9 @@ namespace Ical.Net.Serialization
             return sb.ToString();
         }
 
-        public override object Deserialize(string value) => null;
-        
-        public class PropertyAlphabetizer : IComparer<ICalendarProperty>
+        public virtual object Deserialize(string value) => null;
+
+        private class PropertyAlphabetizer : IComparer<ICalendarProperty>
         {
             public int Compare(ICalendarProperty x, ICalendarProperty y)
             {

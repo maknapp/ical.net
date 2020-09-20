@@ -3,13 +3,13 @@ using System.Text;
 
 namespace Ical.Net.Serialization
 {
-    public sealed class ParameterSerializer : SerializerBase
+    public sealed class ParameterSerializer : IStringSerializer
     {
-        public ParameterSerializer(SerializationContext ctx) : base(ctx) {}
+        public ParameterSerializer(SerializationContext ctx) {}
 
-        public override Type TargetType => typeof (CalendarParameter);
+        public Type TargetType => typeof (CalendarParameter);
 
-        public override string Serialize(object obj)
+        public string Serialize(object obj)
         {
             if (!(obj is CalendarParameter p))
             {
@@ -33,6 +33,6 @@ namespace Ical.Net.Serialization
             return builder.ToString();
         }
 
-        public override object Deserialize(string value) => null;
+        public object Deserialize(string value) => null;
     }
 }

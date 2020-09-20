@@ -29,7 +29,7 @@ namespace Ical.Net.Serialization.DataTypes
 
                 try
                 {
-                    var factory = GetService<ISerializerFactory>();
+                    var factory = SerializationContext.GetService<ISerializerFactory>();
                     var serializer = factory?.Build(typeof (StatusCode), SerializationContext) as IStringSerializer;
                     if (serializer == null)
                     {
@@ -78,7 +78,7 @@ namespace Ical.Net.Serialization.DataTypes
 
             try
             {
-                var factory = GetService<ISerializerFactory>();
+                var factory = SerializationContext.GetService<ISerializerFactory>();
                 if (factory == null)
                 {
                     return null;

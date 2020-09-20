@@ -25,7 +25,7 @@ namespace Ical.Net.Serialization.DataTypes
                 SerializationContext.Push(t);
                 try
                 {
-                    var factory = GetService<ISerializerFactory>();
+                    var factory = SerializationContext.GetService<ISerializerFactory>();
                     if (factory == null)
                     {
                         return null;
@@ -74,7 +74,7 @@ namespace Ical.Net.Serialization.DataTypes
                     trigger.Related = TriggerRelation.End;
                 }
 
-                var factory = GetService<ISerializerFactory>();
+                var factory = SerializationContext.GetService<ISerializerFactory>();
                 if (factory == null)
                 {
                     return null;

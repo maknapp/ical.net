@@ -3,32 +3,18 @@ using Ical.Net.Serialization.DataTypes;
 
 namespace Ical.Net.Serialization
 {
-    public class DataMapSerializer : SerializerBase
+    public sealed class DataMapSerializer : IStringSerializer
     {
-        public DataMapSerializer() : base(SerializationContext.Default) { }
+        public DataMapSerializer() : this(SerializationContext.Default) { }
 
-        public DataMapSerializer(SerializationContext ctx) : base(ctx) {}
-
-        protected IStringSerializer GetMappedSerializer()
+        public DataMapSerializer(SerializationContext ctx)
         {
-            var sf = GetService<ISerializerFactory>();
-            var mapper = GetService<DataTypeMapper>();
-            if (sf == null || mapper == null)
-            {
-                return null;
-            }
-
-            var obj = SerializationContext.Peek();
-
-            // Get the data type for this object
-            var type = mapper.GetPropertyMapping(obj);
-
-            return type == null
-                ? new StringSerializer(SerializationContext)
-                : sf.Build(type, SerializationContext) as IStringSerializer;
+            SerializationContext = ctx ?? throw new ArgumentNullException(nameof(ctx));
         }
 
-        public override Type TargetType
+        private SerializationContext SerializationContext { get; }
+
+        public Type TargetType
         {
             get
             {
@@ -37,13 +23,13 @@ namespace Ical.Net.Serialization
             }
         }
 
-        public override string Serialize(object obj)
+        public string Serialize(object obj)
         {
             var serializer = GetMappedSerializer();
             return serializer?.Serialize(obj);
         }
 
-        public override object Deserialize(string value)
+        public object Deserialize(string value)
         {
             IStringSerializer serializer = GetMappedSerializer();
             if (serializer == null)
@@ -59,6 +45,25 @@ namespace Ical.Net.Serialization
             // an InvalidFormatException?  This may have some performance issues
             // as try/catch is much slower than other means.
             return returnValue ?? value;
+        }
+
+        private IStringSerializer GetMappedSerializer()
+        {
+            var sf = SerializationContext.GetService<ISerializerFactory>();
+            var mapper = SerializationContext.GetService<DataTypeMapper>();
+            if (sf == null || mapper == null)
+            {
+                return null;
+            }
+
+            var obj = SerializationContext.Peek();
+
+            // Get the data type for this object
+            var type = mapper.GetPropertyMapping(obj);
+
+            return type == null
+                ? new StringSerializer(SerializationContext)
+                : sf.Build(type, SerializationContext) as IStringSerializer;
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Ical.Net.Serialization.DataTypes
         public override string Serialize(object obj)
         {
             var periodList = obj as PeriodList;
-            var factory = GetService<ISerializerFactory>();
+            var factory = SerializationContext.GetService<ISerializerFactory>();
             if (periodList == null || factory == null)
             {
                 return null;
@@ -50,7 +50,7 @@ namespace Ical.Net.Serialization.DataTypes
         {
             // Create the day specifier and associate it with a calendar object
             var rdt = CreateAndAssociate() as PeriodList;
-            var factory = GetService<ISerializerFactory>();
+            var factory = SerializationContext.GetService<ISerializerFactory>();
             if (rdt == null || factory == null)
             {
                 return null;

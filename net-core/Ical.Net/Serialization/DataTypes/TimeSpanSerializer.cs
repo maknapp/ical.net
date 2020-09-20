@@ -1,19 +1,18 @@
 ﻿using System;
-using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public sealed class TimeSpanSerializer : SerializerBase
+    public sealed class TimeSpanSerializer : IStringSerializer
     {
-        public TimeSpanSerializer() : base(SerializationContext.Default) { }
+        public TimeSpanSerializer() : this(SerializationContext.Default) { }
 
-        public TimeSpanSerializer(SerializationContext ctx) : base(ctx) { }
+        public TimeSpanSerializer(SerializationContext ctx) { }
 
-        public override Type TargetType => typeof (TimeSpan);
+        public Type TargetType => typeof (TimeSpan);
 
-        public override string Serialize(object obj)
+        public string Serialize(object obj)
         {
             if (!(obj is TimeSpan))
             {
@@ -70,7 +69,7 @@ namespace Ical.Net.Serialization.DataTypes
             new Regex(@"^(?<sign>\+|-)?P(((?<week>\d+)W)|(?<main>((?<day>\d+)D)?(?<time>T((?<hour>\d+)H)?((?<minute>\d+)M)?((?<second>\d+)S)?)?))$",
                 RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-        public override object Deserialize(string value)
+        public object Deserialize(string value)
         {
             try
             {

@@ -3,9 +3,19 @@ using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public abstract class DataTypeSerializer : SerializerBase
+    public abstract class DataTypeSerializer : IStringSerializer
     {
-        protected DataTypeSerializer(SerializationContext ctx) : base(ctx) {}
+        protected DataTypeSerializer(SerializationContext ctx)
+        {
+            SerializationContext = ctx ?? throw new ArgumentNullException(nameof(ctx));
+        }
+
+        protected SerializationContext SerializationContext { get; }
+
+        public abstract Type TargetType { get; }
+
+        public abstract string Serialize(object obj);
+        public abstract object Deserialize(string value);
 
         protected ICalendarDataType CreateAndAssociate()
         {

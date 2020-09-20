@@ -159,7 +159,7 @@ namespace Ical.Net.Serialization
         private void SetPropertyValue(SerializationContext context, CalendarProperty property, string value)
         {
             var type = _dataTypeMapper.GetPropertyMapping(property) ?? typeof(string);
-            var serializer = (SerializerBase)_serializerFactory.Build(type, context);
+            var serializer = _serializerFactory.Build(type, context);
 
             var propertyValue = serializer.Deserialize(value);
             if (propertyValue is IEnumerable<string> propertyValues)

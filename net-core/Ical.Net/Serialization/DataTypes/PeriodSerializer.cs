@@ -16,7 +16,7 @@ namespace Ical.Net.Serialization.DataTypes
         public override string Serialize(object obj)
         {
             var p = obj as Period;
-            var factory = GetService<ISerializerFactory>();
+            var factory = SerializationContext.GetService<ISerializerFactory>();
 
             if (p == null || factory == null)
             {
@@ -61,7 +61,7 @@ namespace Ical.Net.Serialization.DataTypes
         {
 
             var p = CreateAndAssociate() as Period;
-            var factory = GetService<ISerializerFactory>();
+            var factory = SerializationContext.GetService<ISerializerFactory>();
             if (p == null || factory == null)
             {
                 return null;

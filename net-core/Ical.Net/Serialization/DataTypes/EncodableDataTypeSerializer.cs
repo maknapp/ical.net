@@ -19,7 +19,7 @@ namespace Ical.Net.Serialization.DataTypes
             }
 
             // Return the value in the current encoding
-            var encodingStack = GetService<EncodingStack>();
+            var encodingStack = SerializationContext.GetService<EncodingStack>();
             return Encode(dt, encodingStack.Current.GetBytes(value));
         }
 
@@ -33,7 +33,7 @@ namespace Ical.Net.Serialization.DataTypes
             if (dt?.Encoding == null)
             {
                 // Default to the current encoding
-                var encodingStack = GetService<EncodingStack>();
+                var encodingStack = SerializationContext.GetService<EncodingStack>();
                 return encodingStack.Current.GetString(data);
             }
 
@@ -54,7 +54,7 @@ namespace Ical.Net.Serialization.DataTypes
             }
 
             // Default to the current encoding
-            var encodingStack = GetService<EncodingStack>();
+            var encodingStack = SerializationContext.GetService<EncodingStack>();
             return encodingStack.Current.GetString(data);
         }
 
@@ -68,7 +68,7 @@ namespace Ical.Net.Serialization.DataTypes
             if (dt?.Encoding == null)
             {
                 // Default to the current encoding
-                var encodingStack = GetService<EncodingStack>();
+                var encodingStack = SerializationContext.GetService<EncodingStack>();
                 return encodingStack.Current.GetBytes(value);
             }
 

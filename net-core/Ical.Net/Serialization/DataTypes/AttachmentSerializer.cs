@@ -53,7 +53,7 @@ namespace Ical.Net.Serialization.DataTypes
                 var data = DecodeData(a, value);
 
                 // Get the currently-used encoding off the encoding stack.
-                var encodingStack = GetService<EncodingStack>();
+                var encodingStack = SerializationContext.GetService<EncodingStack>();
                 a.ValueEncoding = encodingStack.Current;
 
                 // Get the format of the attachment
