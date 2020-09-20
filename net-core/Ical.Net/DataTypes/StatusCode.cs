@@ -1,7 +1,5 @@
 using System;
-using System.IO;
 using System.Linq;
-using Ical.Net.Serialization.DataTypes;
 using Ical.Net.Utilities;
 
 namespace Ical.Net.DataTypes
@@ -9,7 +7,7 @@ namespace Ical.Net.DataTypes
     /// <summary>
     /// An iCalendar status code.
     /// </summary>
-    public sealed class StatusCode : EncodableDataType
+    public sealed class StatusCode : CalendarDataType
     {
         public int[] Parts { get; private set; }
 

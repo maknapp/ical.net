@@ -6,7 +6,7 @@ namespace Ical.Net.DataTypes
     /// <summary>
     /// A class that represents the return status of an iCalendar request.
     /// </summary>
-    public sealed class RequestStatus : EncodableDataType
+    public sealed class RequestStatus : CalendarDataType
     {
         public string Description { get; set; }
 

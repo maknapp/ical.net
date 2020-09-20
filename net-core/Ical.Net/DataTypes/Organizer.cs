@@ -9,7 +9,7 @@ namespace Ical.Net.DataTypes
     /// A class that represents the organizer of an event/todo/journal.
     /// </summary>
     [DebuggerDisplay(nameof(Value))]
-    public sealed class Organizer : EncodableDataType
+    public sealed class Organizer : CalendarDataType
     {
         public Uri SentBy
         {

@@ -20,7 +20,7 @@ namespace Ical.Net.Serialization.DataTypes
 
             if (SerializationContext.Peek() is ICalendarObject co)
             {
-                var dt = new EncodableDataType
+                var dt = new CalendarDataType
                 {
                     AssociatedObject = co
                 };
@@ -33,7 +33,7 @@ namespace Ical.Net.Serialization.DataTypes
         {
             if (SerializationContext.Peek() is ICalendarObject co)
             {
-                var dt = new EncodableDataType
+                var dt = new CalendarDataType
                 {
                     AssociatedObject = co
                 };

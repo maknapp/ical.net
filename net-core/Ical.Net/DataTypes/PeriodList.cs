@@ -11,7 +11,7 @@ namespace Ical.Net.DataTypes
     /// <summary>
     /// An iCalendar list of recurring dates (or date exclusions)
     /// </summary>
-    public sealed class PeriodList : EncodableDataType, IReadOnlyList<Period>
+    public sealed class PeriodList : CalendarDataType, IReadOnlyList<Period>
     {
         private readonly IList<Period> _periods;
 

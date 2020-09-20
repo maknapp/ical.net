@@ -11,7 +11,7 @@ namespace Ical.Net.DataTypes
     /// class handles time zone differences, and integrates seamlessly into the iCalendar framework.
     /// </remarks>
     /// </summary>
-    public sealed class CalDateTime : EncodableDataType, IDateTime
+    public sealed class CalDateTime : CalendarDataType, IDateTime
     {
         public static CalDateTime Now => new CalDateTime(DateTime.Now);
 
@@ -107,18 +107,6 @@ namespace Ical.Net.DataTypes
             }
 
             return dt;
-        }
-
-        public override ICalendarObject AssociatedObject
-        {
-            get => base.AssociatedObject;
-            set
-            {
-                if (!Equals(AssociatedObject, value))
-                {
-                    base.AssociatedObject = value;
-                }
-            }
         }
 
         public override void CopyFrom(ICopyable obj)

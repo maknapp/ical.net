@@ -6,7 +6,7 @@ namespace Ical.Net.DataTypes
     /// <summary>
     /// An abstract class from which all iCalendar data types inherit.
     /// </summary>
-    public abstract class CalendarDataType : ICalendarDataType
+    public class CalendarDataType : ICalendarDataType, IEncodableDataType
     {
         private readonly IParameterCollection _parameters;
         private readonly ParameterCollectionProxy _proxy;
@@ -14,7 +14,7 @@ namespace Ical.Net.DataTypes
 
         private ICalendarObject _associatedObject;
 
-        protected CalendarDataType()
+        public CalendarDataType()
         {
             _parameters = new ParameterList();
             _proxy = new ParameterCollectionProxy(_parameters);
@@ -51,7 +51,7 @@ namespace Ical.Net.DataTypes
                 case "TEXT":
                     return typeof (string);
                 case "TIME":
-                    // FIXME: implement ISO.8601.2004
+                    // TODO: implement ISO.8601.2004
                     throw new NotImplementedException();
                 case "URI":
                     return typeof (Uri);
@@ -66,8 +66,13 @@ namespace Ical.Net.DataTypes
         {
             _proxy?.Set("VALUE", type?.ToUpper());
         }
+        public string Encoding
+        {
+            get => Parameters.Get("ENCODING");
+            set => Parameters.Set("ENCODING", value);
+        }
 
-        public virtual ICalendarObject AssociatedObject
+        public ICalendarObject AssociatedObject
         {
             get => _associatedObject;
             set
@@ -108,12 +113,12 @@ namespace Ical.Net.DataTypes
         /// </summary>
         public virtual void CopyFrom(ICopyable obj)
         {
-            if (!(obj is ICalendarDataType))
+            var dt = obj as ICalendarDataType;
+            if (dt == null)
             {
                 return;
             }
 
-            var dt = (ICalendarDataType) obj;
             _associatedObject = dt.AssociatedObject;
             _proxy.SetParent(_associatedObject);
             _proxy.SetProxiedObject(dt.Parameters);

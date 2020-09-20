@@ -4,7 +4,7 @@ using Ical.Net.Serialization.DataTypes;
 namespace Ical.Net.DataTypes
 {
     /// <summary> Represents an iCalendar period of time. </summary>    
-    public class Period : EncodableDataType, IComparable<Period>
+    public class Period : CalendarDataType, IComparable<Period>
     {
         public Period() { }
 

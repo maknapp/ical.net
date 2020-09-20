@@ -79,7 +79,7 @@ namespace Ical.Net.Serialization.DataTypes
             if (co != null)
             {
                 // Encode the string as needed.
-                var dt = new EncodableDataType
+                var dt = new CalendarDataType
                 {
                     AssociatedObject = co
                 };
@@ -118,10 +118,10 @@ namespace Ical.Net.Serialization.DataTypes
             }
 
             // Try to decode the string
-            EncodableDataType dt = null;
+            CalendarDataType dt = null;
             if (co != null)
             {
-                dt = new EncodableDataType
+                dt = new CalendarDataType
                 {
                     AssociatedObject = co
                 };

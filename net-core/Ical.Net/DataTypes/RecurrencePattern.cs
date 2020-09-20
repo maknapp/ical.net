@@ -12,7 +12,7 @@ namespace Ical.Net.DataTypes
     /// An iCalendar representation of the <c>RRULE</c> property.
     /// https://tools.ietf.org/html/rfc5545#section-3.3.10
     /// </summary>
-    public class RecurrencePattern : EncodableDataType
+    public class RecurrencePattern : CalendarDataType
     {
         private int _interval = int.MinValue;
         private RecurrenceRestrictionType? _restrictionType;

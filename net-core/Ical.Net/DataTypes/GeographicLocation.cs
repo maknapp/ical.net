@@ -8,7 +8,7 @@ namespace Ical.Net.DataTypes
     /// <see cref="Components.Event"/> or <see cref="Todo"/> item.
     /// </summary>
     [DebuggerDisplay("{Latitude};{Longitude}")]
-    public sealed class GeographicLocation : EncodableDataType
+    public sealed class GeographicLocation : CalendarDataType
     {
         public double Latitude { get; set; }
         public double Longitude { get; set; }

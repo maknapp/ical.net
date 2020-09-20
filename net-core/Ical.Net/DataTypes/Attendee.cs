@@ -5,7 +5,7 @@ using Ical.Net.Utilities;
 
 namespace Ical.Net.DataTypes
 {
-    public sealed class Attendee : EncodableDataType
+    public sealed class Attendee : CalendarDataType
     {
         private Uri _sentBy;
         /// <summary> SENT-BY, to indicate who is acting on behalf of the ATTENDEE </summary>

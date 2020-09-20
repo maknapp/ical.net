@@ -6,7 +6,7 @@ namespace Ical.Net.DataTypes
     /// A class that is used to specify exactly when an <see cref="Components.Alarm"/> component will trigger.
     /// Usually this date/time is relative to the component to which the Alarm is associated.
     /// </summary>    
-    public sealed class Trigger : EncodableDataType
+    public sealed class Trigger : CalendarDataType
     {
         private IDateTime _dateTime;
         private TimeSpan? _duration;

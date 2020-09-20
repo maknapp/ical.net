@@ -11,7 +11,7 @@ namespace Ical.Net.DataTypes
     /// 1) A string representing a URI which is typically human-readable, OR
     /// 2) A base64-encoded string that can represent anything
     /// </summary>
-    public sealed class Attachment : EncodableDataType
+    public sealed class Attachment : CalendarDataType
     {
         public Uri Uri { get; internal set; }
         public byte[] Data { get; }

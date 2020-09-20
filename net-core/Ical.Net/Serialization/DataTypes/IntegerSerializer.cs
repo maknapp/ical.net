@@ -20,7 +20,7 @@ namespace Ical.Net.Serialization.DataTypes
                 if (obj != null)
                 {
                     // Encode the value as needed.
-                    var dt = new EncodableDataType
+                    var dt = new CalendarDataType
                     {
                         AssociatedObject = obj
                     };
@@ -42,7 +42,7 @@ namespace Ical.Net.Serialization.DataTypes
                 if (obj != null)
                 {
                     // Decode the value, if necessary!
-                    var dt = new EncodableDataType
+                    var dt = new CalendarDataType
                     {
                         AssociatedObject = obj
                     };

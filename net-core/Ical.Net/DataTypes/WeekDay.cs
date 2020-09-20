@@ -7,7 +7,7 @@ namespace Ical.Net.DataTypes
     /// <summary>
     /// Represents an RFC 5545 "BYDAY" value.
     /// </summary>
-    public sealed class WeekDay : EncodableDataType
+    public sealed class WeekDay : CalendarDataType
     {
         public int Offset { get; set; } = int.MinValue;
 
