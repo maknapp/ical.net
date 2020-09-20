@@ -13,7 +13,7 @@ namespace Ical.Net.Serialization
 
         public override Type TargetType => typeof (CalendarProperty);
 
-        public override string SerializeToString(object obj)
+        public override string Serialize(object obj)
         {
             var prop = obj as ICalendarProperty;
             if (prop?.Values == null || !prop.Values.Any())
@@ -47,7 +47,7 @@ namespace Ical.Net.Serialization
                 // FIXME: the "parameter modification" operation should
                 // be separated from serialization. Perhaps something
                 // like PreSerialize(), etc.
-                var value = valueSerializer.SerializeToString(v);
+                var value = valueSerializer.Serialize(v);
 
                 // Get the list of parameters we'll be serializing
                 var parameterList = prop.Parameters;
@@ -81,7 +81,7 @@ namespace Ical.Net.Serialization
                         // Serialize each parameter
                         // Separate parameters with semicolons
                         sb.Append(";");
-                        sb.Append(string.Join(";", parameterList.Select(param => parameterSerializer.SerializeToString(param))));
+                        sb.Append(string.Join(";", parameterList.Select(param => parameterSerializer.Serialize(param))));
                     }
                 }
                 sb.Append(":");

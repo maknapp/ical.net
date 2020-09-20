@@ -138,7 +138,7 @@ namespace Ical.Net.DataTypes
         public override string ToString()
         {
             var serializer = new RecurrencePatternSerializer();
-            return serializer.SerializeToString(this);
+            return serializer.Serialize(this);
         }
 
         protected bool Equals(RecurrencePattern other) => (Interval == other.Interval)

@@ -11,7 +11,7 @@ namespace Ical.Net.Serialization
 
         public override Type TargetType => typeof (CalendarEvent);
 
-        public override string SerializeToString(object obj)
+        public override string Serialize(object obj)
         {
             var evt = obj as CalendarEvent;
 
@@ -25,7 +25,7 @@ namespace Ical.Net.Serialization
             {
                 actualEvent = evt;
             }
-            return base.SerializeToString(actualEvent);
+            return base.Serialize(actualEvent);
         }
     }
 }

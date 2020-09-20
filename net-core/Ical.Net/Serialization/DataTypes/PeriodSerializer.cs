@@ -13,7 +13,7 @@ namespace Ical.Net.Serialization.DataTypes
 
         public override Type TargetType => typeof (Period);
 
-        public override string SerializeToString(object obj)
+        public override string Serialize(object obj)
         {
             var p = obj as Period;
             var factory = GetService<ISerializerFactory>();
@@ -37,14 +37,14 @@ namespace Ical.Net.Serialization.DataTypes
                 var sb = new StringBuilder();
 
                 // Serialize the start time                    
-                sb.Append(dtSerializer.SerializeToString(p.StartTime));
+                sb.Append(dtSerializer.Serialize(p.StartTime));
 
                 // Serialize the duration
                 if (!p.StartTime.HasTime)
                 {
                     // Serialize the duration
                     sb.Append("/");
-                    sb.Append(timeSpanSerializer.SerializeToString(p.Duration));
+                    sb.Append(timeSpanSerializer.Serialize(p.Duration));
                 }
 
                 // Encode the value as necessary

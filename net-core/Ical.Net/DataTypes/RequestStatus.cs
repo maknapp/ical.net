@@ -35,7 +35,7 @@ namespace Ical.Net.DataTypes
         public override string ToString()
         {
             var serializer = new RequestStatusSerializer();
-            return serializer.SerializeToString(this);
+            return serializer.Serialize(this);
         }
 
         public bool Equals(RequestStatus other)

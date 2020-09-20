@@ -8,13 +8,13 @@ namespace Ical.Net.Serialization
     {
         protected SerializerBase(SerializationContext ctx)
         {
-            SerializationContext = ctx;
+            SerializationContext = ctx ?? throw new ArgumentNullException(nameof(ctx));
         }
 
         protected SerializationContext SerializationContext { get; }
 
         public abstract Type TargetType { get; }
-        public abstract string SerializeToString(object obj);
+        public abstract string Serialize(object obj);
         public abstract object Deserialize(TextReader reader);
 
         public object Deserialize(Stream stream, Encoding encoding)
@@ -36,8 +36,8 @@ namespace Ical.Net.Serialization
             // we don't want the stream to be closed by this serialization.
             // Fixes bug #3177278 - Serialize closes stream
 
-            const int defaultBuffer = 1024;     //This is StreamWriter's built-in default buffer size
-            using (var sw = new StreamWriter(stream, encoding, defaultBuffer, leaveOpen: true))
+            const int defaultBufferSize = 1024;     //This is StreamWriter's built-in default buffer size
+            using (var sw = new StreamWriter(stream, encoding, defaultBufferSize, leaveOpen: true))
             {
                 // Push the current object onto the serialization stack
                 SerializationContext.Push(obj);
@@ -46,7 +46,7 @@ namespace Ical.Net.Serialization
                 var encodingStack = GetService<EncodingStack>();
                 encodingStack.Push(encoding);
 
-                sw.Write(SerializeToString(obj));
+                sw.Write(Serialize(obj));
 
                 // Pop the current encoding off the serialization stack
                 encodingStack.Pop();

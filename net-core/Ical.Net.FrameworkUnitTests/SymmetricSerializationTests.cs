@@ -66,7 +66,7 @@ namespace Ical.Net.FrameworkUnitTests
             };
             originalCalendar.AddTimeZone(tz);
             var serializer = new CalendarSerializer();
-            var serializedCalendar = serializer.SerializeToString(originalCalendar);
+            var serializedCalendar = serializer.Serialize(originalCalendar);
             var unserializedCalendar = CalendarConvert.Load(serializedCalendar);
 
             CollectionAssert.AreEqual(originalCalendar.TimeZones, unserializedCalendar.TimeZones);

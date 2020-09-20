@@ -78,7 +78,7 @@ namespace Ical.Net.DataTypes
         public override string ToString()
         {
             var periodSerializer = new PeriodSerializer();
-            return periodSerializer.SerializeToString(this);
+            return periodSerializer.Serialize(this);
         }
 
         private void ExtrapolateTimes()

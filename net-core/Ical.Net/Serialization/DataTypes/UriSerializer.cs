@@ -10,7 +10,7 @@ namespace Ical.Net.Serialization.DataTypes
 
         public override Type TargetType => typeof (string);
 
-        public override string SerializeToString(object obj)
+        public override string Serialize(object obj)
         {
             if (!(obj is Uri))
             {

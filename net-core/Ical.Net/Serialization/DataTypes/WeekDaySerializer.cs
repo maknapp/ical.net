@@ -13,7 +13,7 @@ namespace Ical.Net.Serialization.DataTypes
 
         public override Type TargetType => typeof (WeekDay);
 
-        public override string SerializeToString(object obj)
+        public override string Serialize(object obj)
         {
             if (!(obj is WeekDay ds))
             {

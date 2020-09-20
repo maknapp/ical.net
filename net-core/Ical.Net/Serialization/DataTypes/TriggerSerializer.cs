@@ -12,7 +12,7 @@ namespace Ical.Net.Serialization.DataTypes
 
         public override Type TargetType => typeof (Trigger);
 
-        public override string SerializeToString(object obj)
+        public override string Serialize(object obj)
         {
             try
             {
@@ -40,7 +40,7 @@ namespace Ical.Net.Serialization.DataTypes
                     var value = valueType == typeof(IDateTime)
                         ? t.DateTime
                         : (object) t.Duration;
-                    return serializer.SerializeToString(value);
+                    return serializer.Serialize(value);
                 }
                 finally
                 {

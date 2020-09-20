@@ -2837,7 +2837,7 @@ namespace Ical.Net.FrameworkUnitTests
             evt.RecurrenceRules.Add(recur);
 
             var serializer = new RecurrencePatternSerializer();
-            Assert.IsTrue(string.Compare(serializer.SerializeToString(recur), "FREQ=DAILY;COUNT=3;BYDAY=MO,WE,FR", StringComparison.Ordinal) == 0,
+            Assert.IsTrue(string.Compare(serializer.Serialize(recur), "FREQ=DAILY;COUNT=3;BYDAY=MO,WE,FR", StringComparison.Ordinal) == 0,
                 "Serialized recurrence string is incorrect");
         }
 
@@ -3390,7 +3390,7 @@ END:VCALENDAR";
             };
 
             var serializer = new CalendarSerializer();
-            var serialized = serializer.SerializeToString(calendar);
+            var serialized = serializer.Serialize(calendar);
 
             const string contains = "20171108T103000";
             var expectedContains = expectedKind == DateTimeKind.Local

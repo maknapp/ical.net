@@ -14,6 +14,6 @@ namespace Ical.Net.FrameworkUnitTests.Support
         }
 
         public static string SerializeCalenderToString(Calendar calendar)
-            => new CalendarSerializer().SerializeToString(calendar);
+            => new CalendarSerializer().Serialize(calendar);
     }
 }

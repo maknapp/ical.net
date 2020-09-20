@@ -13,7 +13,7 @@ namespace Ical.Net.FrameworkUnitTests
         {
             // see http://www.ietf.org/rfc/rfc2445.txt p.36
             var result = new DateTimeSerializer()
-                .SerializeToString(
+                .Serialize(
                 new CalDateTime(new DateTime(1997, 7, 14, 13, 30, 0, DateTimeKind.Local), "US-Eastern"));
 
             // TZID is applied elsewhere - just make sure this doesn't have 'Z' appended. 

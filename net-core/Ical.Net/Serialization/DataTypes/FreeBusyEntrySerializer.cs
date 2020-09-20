@@ -12,12 +12,12 @@ namespace Ical.Net.Serialization.DataTypes
 
         public override Type TargetType => typeof (FreeBusyEntry);
 
-        public override string SerializeToString(object obj)
+        public override string Serialize(object obj)
         {
             var entry = obj as FreeBusyEntry;
             if (entry == null)
             {
-                return base.SerializeToString(obj);
+                return base.Serialize(obj);
             }
 
             switch (entry.Status)
@@ -36,7 +36,7 @@ namespace Ical.Net.Serialization.DataTypes
                     break;
             }
 
-            return base.SerializeToString(obj);
+            return base.Serialize(obj);
         }
 
         public override object Deserialize(TextReader tr)

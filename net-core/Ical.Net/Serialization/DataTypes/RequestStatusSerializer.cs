@@ -14,7 +14,7 @@ namespace Ical.Net.Serialization.DataTypes
 
         public override Type TargetType => typeof (RequestStatus);
 
-        public override string SerializeToString(object obj)
+        public override string Serialize(object obj)
         {
             try
             {
@@ -37,7 +37,7 @@ namespace Ical.Net.Serialization.DataTypes
                     }
 
                     var builder = new StringBuilder();
-                    builder.Append(Escape(serializer.SerializeToString(rs.StatusCode)));
+                    builder.Append(Escape(serializer.Serialize(rs.StatusCode)));
                     builder.Append(";");
                     builder.Append(Escape(rs.Description));
                     if (!string.IsNullOrWhiteSpace(rs.ExtraData))

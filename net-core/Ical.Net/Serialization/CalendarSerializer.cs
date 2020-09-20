@@ -18,11 +18,11 @@ namespace Ical.Net.Serialization
 
         public CalendarSerializer(SerializationContext ctx) : base(ctx) {}
 
-        public string SerializeToString() => SerializeToString(_calendar);
+        public string SerializeToString() => Serialize(_calendar);
 
         protected override IComparer<ICalendarProperty> PropertySorter => new CalendarPropertySorter();
 
-        public override string SerializeToString(object obj)
+        public override string Serialize(object obj)
         {
             if (obj is Calendar)
             {
@@ -31,10 +31,10 @@ namespace Ical.Net.Serialization
                 calendar.Version = LibraryMetadata.Version;
                 calendar.ProductId = LibraryMetadata.ProdId;
 
-                return base.SerializeToString(calendar);
+                return base.Serialize(calendar);
             }
 
-            return base.SerializeToString(obj);
+            return base.Serialize(obj);
         }
 
         public override object Deserialize(TextReader tr) => null;

@@ -13,7 +13,7 @@ namespace Ical.Net.Serialization.DataTypes
 
         public override Type TargetType { get; }
 
-        public override string SerializeToString(object enumValue)
+        public override string Serialize(object enumValue)
         {
             try
             {

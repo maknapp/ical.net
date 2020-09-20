@@ -62,7 +62,7 @@ namespace Ical.Net.FrameworkUnitTests
             var cal = new Calendar();
             cal.Events.Add(evt);
             var serializer = new CalendarSerializer();
-            Console.Write(serializer.SerializeToString(cal));
+            Console.Write(serializer.Serialize(cal));
         }
 
         /// <summary>

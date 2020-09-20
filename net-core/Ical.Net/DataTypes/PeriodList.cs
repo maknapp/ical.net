@@ -43,7 +43,7 @@ namespace Ical.Net.DataTypes
             }
         }
 
-        public override string ToString() => new PeriodListSerializer().SerializeToString(this);
+        public override string ToString() => new PeriodListSerializer().Serialize(this);
 
         public void Add(IDateTime dt) => _periods.Add(new Period(dt));
 

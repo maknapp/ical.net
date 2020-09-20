@@ -18,7 +18,7 @@ namespace Ical.Net.Serialization
 
         public override Type TargetType => typeof(CalendarComponent);
 
-        public override string SerializeToString(object obj)
+        public override string Serialize(object obj)
         {
             if (!(obj is ICalendarComponent c))
             {
@@ -40,7 +40,7 @@ namespace Ical.Net.Serialization
             {
                 // Get a serializer for each property.
                 var serializer = sf.Build(p.GetType(), SerializationContext) as IStringSerializer;
-                sb.Append(serializer.SerializeToString(p));
+                sb.Append(serializer.Serialize(p));
             }
 
             // Serialize child objects
@@ -48,7 +48,7 @@ namespace Ical.Net.Serialization
             {
                 // Get a serializer for each child object.
                 var serializer = sf.Build(child.GetType(), SerializationContext) as IStringSerializer;
-                sb.Append(serializer.SerializeToString(child));
+                sb.Append(serializer.Serialize(child));
             }
 
             sb.Append(TextUtil.FoldLines($"END:{upperName}"));

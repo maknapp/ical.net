@@ -10,7 +10,7 @@ namespace Ical.Net.Serialization
 
         public override Type TargetType => typeof (CalendarParameter);
 
-        public override string SerializeToString(object obj)
+        public override string Serialize(object obj)
         {
             if (!(obj is CalendarParameter p))
             {

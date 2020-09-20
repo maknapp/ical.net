@@ -38,10 +38,10 @@ namespace Ical.Net.Serialization
             }
         }
 
-        public override string SerializeToString(object obj)
+        public override string Serialize(object obj)
         {
             var serializer = GetMappedSerializer();
-            return serializer?.SerializeToString(obj);
+            return serializer?.Serialize(obj);
         }
 
         public override object Deserialize(TextReader tr)

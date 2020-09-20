@@ -10,7 +10,7 @@ namespace Ical.Net.Serialization.DataTypes
 
         public override Type TargetType => typeof (int);
 
-        public override string SerializeToString(object integer)
+        public override string Serialize(object integer)
         {
             try
             {

@@ -13,7 +13,7 @@ namespace Ical.Net.Serialization.DataTypes
 
         public override Type TargetType => typeof (GeographicLocation);
 
-        public override string SerializeToString(object obj)
+        public override string Serialize(object obj)
         {
             var g = obj as GeographicLocation;
             if (g == null)

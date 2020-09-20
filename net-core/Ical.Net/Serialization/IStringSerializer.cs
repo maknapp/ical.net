@@ -4,7 +4,7 @@ namespace Ical.Net.Serialization
 {
     public interface IStringSerializer : ISerializer
     {
-        string SerializeToString(object obj);
+        string Serialize(object obj);
         object Deserialize(TextReader reader);
     }
 }

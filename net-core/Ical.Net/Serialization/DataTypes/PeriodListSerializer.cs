@@ -13,7 +13,7 @@ namespace Ical.Net.Serialization.DataTypes
 
         public override Type TargetType => typeof (PeriodList);
 
-        public override string SerializeToString(object obj)
+        public override string Serialize(object obj)
         {
             var periodList = obj as PeriodList;
             var factory = GetService<ISerializerFactory>();
@@ -35,11 +35,11 @@ namespace Ical.Net.Serialization.DataTypes
             {
                 if (p.EndTime != null)
                 {
-                    parts.Add(periodSerializer.SerializeToString(p));
+                    parts.Add(periodSerializer.Serialize(p));
                 }
                 else if (p.StartTime != null)
                 {
-                    parts.Add(dtSerializer.SerializeToString(p.StartTime));
+                    parts.Add(dtSerializer.Serialize(p.StartTime));
                 }
             }
 

@@ -94,7 +94,7 @@ namespace Ical.Net.FrameworkUnitTests
             cal.Events.Add(evt);
 
             var serializer = new CalendarSerializer();
-            var serializedCalendar = serializer.SerializeToString(cal);
+            var serializedCalendar = serializer.Serialize(cal);
 
             Console.Write(serializedCalendar);
 
@@ -138,7 +138,7 @@ namespace Ical.Net.FrameworkUnitTests
             cal1.Events.Add(evt);
 
             var serializer = new CalendarSerializer();
-            var serializedCalendar = serializer.SerializeToString(cal1);
+            var serializedCalendar = serializer.Serialize(cal1);
             var cal2 = CalendarConvert.Load(serializedCalendar);
             CompareCalendars(cal1, cal2);
         }
@@ -173,7 +173,7 @@ namespace Ical.Net.FrameworkUnitTests
             cal.Events.Add(evt);
 
             var serializer = new CalendarSerializer();
-            var serializedCalendar = serializer.SerializeToString(cal);
+            var serializedCalendar = serializer.Serialize(cal);
 
             Console.Write(serializedCalendar);
             Assert.IsTrue(serializedCalendar.StartsWith("BEGIN:VCALENDAR"));
@@ -233,7 +233,7 @@ namespace Ical.Net.FrameworkUnitTests
             evt.Attendees.AddRange(Attendees);
 
             var serializer = new CalendarSerializer();
-            var serializedCalendar = serializer.SerializeToString(cal);
+            var serializedCalendar = serializer.Serialize(cal);
 
             // TODO: Replace with the NUnit equivalent.
             Console.Write(serializedCalendar);
@@ -265,7 +265,7 @@ namespace Ical.Net.FrameworkUnitTests
         [Test]
         public void ZeroTimeSpan_Test()
         {
-            var result = new TimeSpanSerializer().SerializeToString(TimeSpan.Zero);
+            var result = new TimeSpanSerializer().Serialize(TimeSpan.Zero);
             Assert.IsTrue("P0D".Equals(result, StringComparison.Ordinal));
         }
 
@@ -378,7 +378,7 @@ END:VEVENT";
             {
                 Events = { e },
             };
-            var serialized = new CalendarSerializer().SerializeToString(c);
+            var serialized = new CalendarSerializer().Serialize(c);
             var serializedUntilNotContainsZSuffix = serialized
                 .Split(new[] {"\r\n"}, StringSplitOptions.RemoveEmptyEntries)
                 .Single(line => line.StartsWith("RRULE:", StringComparison.Ordinal));
@@ -396,7 +396,7 @@ END:VEVENT";
                 ProductId = "FOO",
                 Version = "BAR"
             };
-            var serialized = new CalendarSerializer().SerializeToString(c);
+            var serialized = new CalendarSerializer().Serialize(c);
             var expectedProdid = $"PRODID:{LibraryMetadata.ProdId}";
             Assert.IsTrue(serialized.Contains(expectedProdid, StringComparison.Ordinal));
 
@@ -424,7 +424,7 @@ END:VEVENT";
                 },
             };
             var serializer = new CalendarSerializer();
-            var serializedCalendar = serializer.SerializeToString(cal1);
+            var serializedCalendar = serializer.Serialize(cal1);
             var cal2 = CalendarConvert.Load(serializedCalendar);
             Assert.AreEqual("application/json", cal2.Events.Single().Attachments.Single().FormatType);
         }
@@ -440,7 +440,7 @@ END:VEVENT";
                 Summary = expectedString,
             };
 
-            var serialized = new CalendarSerializer().SerializeToString(e);
+            var serialized = new CalendarSerializer().Serialize(e);
             Assert.IsTrue(serialized.Contains(expectedString, StringComparison.Ordinal));
             Assert.IsTrue(!serialized.Contains("VCALENDAR", StringComparison.Ordinal));
         }

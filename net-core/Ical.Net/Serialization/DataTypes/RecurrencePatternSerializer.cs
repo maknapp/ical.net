@@ -103,7 +103,7 @@ namespace Ical.Net.Serialization.DataTypes
 
         public override Type TargetType => typeof (RecurrencePattern);
 
-        public override string SerializeToString(object obj)
+        public override string Serialize(object obj)
         {
             var recur = obj as RecurrencePattern;
             var factory = GetService<ISerializerFactory>();
@@ -145,7 +145,7 @@ namespace Ical.Net.Serialization.DataTypes
                 {
                     IDateTime until = new CalDateTime(recur.Until);
                     until.HasTime = true;
-                    values.Add("UNTIL=" + serializer.SerializeToString(until));
+                    values.Add("UNTIL=" + serializer.Serialize(until));
                 }
             }
 
@@ -166,7 +166,7 @@ namespace Ical.Net.Serialization.DataTypes
                 var serializer = factory.Build(typeof (WeekDay), SerializationContext) as IStringSerializer;
                 if (serializer != null)
                 {
-                    bydayValues.AddRange(recur.ByDay.Select(byday => serializer.SerializeToString(byday)));
+                    bydayValues.AddRange(recur.ByDay.Select(byday => serializer.Serialize(byday)));
                 }
 
                 values.Add("BYDAY=" + string.Join(",", bydayValues));

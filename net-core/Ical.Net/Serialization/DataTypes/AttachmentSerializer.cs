@@ -12,7 +12,7 @@ namespace Ical.Net.Serialization.DataTypes
 
         public override Type TargetType => typeof (Attachment);
 
-        public override string SerializeToString(object obj)
+        public override string Serialize(object obj)
         {
             var a = obj as Attachment;
             if (a == null)

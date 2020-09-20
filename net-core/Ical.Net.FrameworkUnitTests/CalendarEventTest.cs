@@ -141,7 +141,7 @@ namespace Ical.Net.FrameworkUnitTests
             emptyCalendar.Events.Add(evt);
 
             var serializer = new CalendarSerializer();
-            yield return new TestCaseData(serializer.SerializeToString(emptyCalendar))
+            yield return new TestCaseData(serializer.Serialize(emptyCalendar))
                 .SetName("Empty calendar with empty event returns true")
                 .Returns(true);
 
@@ -151,7 +151,7 @@ namespace Ical.Net.FrameworkUnitTests
                 DtStamp = new CalDateTime(new DateTime(2016, 8, 17, 2, 30, 0, DateTimeKind.Utc))
             };
             explicitDtStampCalendar.Events.Add(explicitDtStampEvent);
-            yield return new TestCaseData(serializer.SerializeToString(explicitDtStampCalendar))
+            yield return new TestCaseData(serializer.Serialize(explicitDtStampCalendar))
                 .SetName("CalendarEvent with explicitly-set DTSTAMP property returns true")
                 .Returns(true);
         }
@@ -285,12 +285,12 @@ END:VCALENDAR";
             vEvent.RecurrenceRules = GetSimpleRecurrenceList();
             var cal1 = new Calendar();
             cal1.Events.Add(vEvent);
-            var serialized = serializer.SerializeToString(cal1);
+            var serialized = serializer.Serialize(cal1);
             var deserializedNoExDate = CalendarConvert.Load(serialized);
             Assert.AreEqual(cal1, deserializedNoExDate);
 
             vEvent.ExceptionDates = GetExceptionDates();
-            serialized = serializer.SerializeToString(cal1);
+            serialized = serializer.Serialize(cal1);
             var deserializedWithExDate = CalendarConvert.Load(serialized);
 
             Assert.AreNotEqual(deserializedNoExDate.Events.First(), deserializedWithExDate.Events.First());

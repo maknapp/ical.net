@@ -82,7 +82,7 @@ namespace Ical.Net.FrameworkUnitTests
 
         private static string SerializeEvent(CalendarEvent calendarEvent)
         {
-            return new CalendarSerializer().SerializeToString(new Calendar
+            return new CalendarSerializer().Serialize(new Calendar
             {
                 Events = { calendarEvent }
             });
