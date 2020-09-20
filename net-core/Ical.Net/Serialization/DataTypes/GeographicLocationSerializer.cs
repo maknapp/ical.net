@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Globalization;
-using System.IO;
 using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public sealed class GeographicLocationSerializer : EncodableDataTypeSerializer
+    public sealed class GeographicLocationSerializer : DataTypeSerializer
     {
         public GeographicLocationSerializer() : base(SerializationContext.Default) { }
 

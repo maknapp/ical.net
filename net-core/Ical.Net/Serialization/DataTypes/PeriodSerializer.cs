@@ -1,11 +1,10 @@
 ﻿using System;
-using System.IO;
 using System.Text;
 using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public class PeriodSerializer : EncodableDataTypeSerializer
+    public class PeriodSerializer : DataTypeSerializer
     {
         public PeriodSerializer() : base(SerializationContext.Default) { }
 

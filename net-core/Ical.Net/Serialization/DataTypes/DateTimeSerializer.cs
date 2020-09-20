@@ -1,12 +1,11 @@
 ﻿using System;
-using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public sealed class DateTimeSerializer : EncodableDataTypeSerializer
+    public sealed class DateTimeSerializer : DataTypeSerializer
     {
         public DateTimeSerializer() : base(SerializationContext.Default) { }
 

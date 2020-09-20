@@ -6,7 +6,7 @@ using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public sealed class UtcOffsetSerializer : EncodableDataTypeSerializer
+    public sealed class UtcOffsetSerializer : DataTypeSerializer
     {
         public UtcOffsetSerializer(SerializationContext ctx) : base(ctx) { }
 

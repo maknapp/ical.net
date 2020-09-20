@@ -1,10 +1,9 @@
 ﻿using System;
-using System.IO;
 using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public sealed class UriSerializer : EncodableDataTypeSerializer
+    public sealed class UriSerializer : DataTypeSerializer
     {
         public UriSerializer(SerializationContext ctx) : base(ctx) {}
 

@@ -8,7 +8,7 @@ using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public class StringSerializer : EncodableDataTypeSerializer
+    public class StringSerializer : DataTypeSerializer
     {
         public StringSerializer() : base(SerializationContext.Default) { }
 

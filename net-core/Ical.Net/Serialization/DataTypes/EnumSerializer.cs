@@ -4,7 +4,7 @@ using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public sealed class EnumSerializer : EncodableDataTypeSerializer
+    public sealed class EnumSerializer : DataTypeSerializer
     {
         public EnumSerializer(Type enumType, SerializationContext ctx) : base(ctx)
         {

@@ -32,5 +32,73 @@ namespace Ical.Net.Serialization.DataTypes
 
             return dt;
         }
+        protected string Encode(IEncodableDataType dt, string value)
+        {
+            if (value == null)
+            {
+                return null;
+            }
+
+            if (dt?.Encoding == null)
+            {
+                return value;
+            }
+
+            // Return the value in the current encoding
+            var encodingStack = SerializationContext.GetService<EncodingStack>();
+            return Encode(dt, encodingStack.Current.GetBytes(value));
+        }
+
+        protected string Encode(IEncodableDataType dt, byte[] data)
+        {
+            if (data == null)
+            {
+                return null;
+            }
+
+            if (dt?.Encoding == null)
+            {
+                // Default to the current encoding
+                var encodingStack = SerializationContext.GetService<EncodingStack>();
+                return encodingStack.Current.GetString(data);
+            }
+
+            return EncodingProvider.Encode(dt.Encoding, data);
+        }
+
+        protected string Decode(IEncodableDataType dt, string value)
+        {
+            if (dt?.Encoding == null)
+            {
+                return value;
+            }
+
+            byte[] data = DecodeData(dt, value);
+            if (data == null)
+            {
+                return null;
+            }
+
+            // Default to the current encoding
+            var encodingStack = SerializationContext.GetService<EncodingStack>();
+            return encodingStack.Current.GetString(data);
+        }
+
+        protected byte[] DecodeData(IEncodableDataType dt, string value)
+        {
+            if (value == null)
+            {
+                return null;
+            }
+
+            if (dt?.Encoding == null)
+            {
+                // Default to the current encoding
+                var encodingStack = SerializationContext.GetService<EncodingStack>();
+                return encodingStack.Current.GetBytes(value);
+            }
+
+            return EncodingProvider.DecodeData(dt.Encoding, value);
+        }
     }
 }

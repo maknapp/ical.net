@@ -1,10 +1,9 @@
 ﻿using System;
-using System.IO;
 using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public sealed class AttachmentSerializer : EncodableDataTypeSerializer
+    public sealed class AttachmentSerializer : DataTypeSerializer
     {
         public AttachmentSerializer() : base(SerializationContext.Default) { }
 

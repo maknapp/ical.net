@@ -8,7 +8,7 @@ using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization.DataTypes
 {
-    public sealed class RecurrencePatternSerializer : EncodableDataTypeSerializer
+    public sealed class RecurrencePatternSerializer : DataTypeSerializer
     {
         public RecurrencePatternSerializer() : base(SerializationContext.Default) { }
 
