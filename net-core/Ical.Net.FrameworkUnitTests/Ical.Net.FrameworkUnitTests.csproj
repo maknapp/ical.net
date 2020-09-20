@@ -79,7 +79,6 @@
     <Compile Include="RecurrenceTests.cs" />
     <Compile Include="Support\SerializationUtilities.cs" />
     <Compile Include="SerializationTests.cs" />
-    <Compile Include="SimpleDeserializationTests.cs" />
     <Compile Include="Support\AssertUtilities.cs" />
     <Compile Include="SymmetricSerializationTests.cs" />
     <Compile Include="TextUtilTests.cs" />
