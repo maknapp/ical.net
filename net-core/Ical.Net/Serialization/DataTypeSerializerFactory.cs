@@ -16,7 +16,7 @@ namespace Ical.Net.Serialization
         /// </summary>
         /// <param name="objectType">The type of object to be serialized.</param>
         /// <param name="ctx">The serialization context.</param>
-        public ISerializer Build(Type objectType, SerializationContext ctx)
+        public IStringSerializer Build(Type objectType, SerializationContext ctx)
         {
             if (objectType == null) return null;
             

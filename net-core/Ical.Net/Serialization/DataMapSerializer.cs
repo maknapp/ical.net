@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using Ical.Net.Serialization.DataTypes;
 
 namespace Ical.Net.Serialization
@@ -33,7 +32,7 @@ namespace Ical.Net.Serialization
         {
             get
             {
-                ISerializer serializer = GetMappedSerializer();
+                IStringSerializer serializer = GetMappedSerializer();
                 return serializer?.TargetType;
             }
         }

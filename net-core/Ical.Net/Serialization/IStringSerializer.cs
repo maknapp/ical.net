@@ -1,7 +1,11 @@
-﻿namespace Ical.Net.Serialization
+﻿using System;
+
+namespace Ical.Net.Serialization
 {
-    public interface IStringSerializer : ISerializer
+    public interface IStringSerializer
     {
+        Type TargetType { get; }
+
         string Serialize(object obj);
 
         object Deserialize(string value);
