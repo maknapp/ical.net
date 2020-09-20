@@ -33,7 +33,7 @@ namespace PerfTests
         public List<Occurrence> SingleThreaded()
         {
             return _manyCalendars
-                .SelectMany(Calendar.Load<Calendar>)
+                .SelectMany(CalendarConvert.Load<Calendar>)
                 .SelectMany(c => c.Events)
                 .SelectMany(e => e.GetOccurrences(_searchStart, _searchEnd))
                 .ToList();
@@ -44,7 +44,7 @@ namespace PerfTests
         {
             return _manyCalendars
                 .AsParallel()
-                .SelectMany(Calendar.Load<Calendar>)
+                .SelectMany(CalendarConvert.Load<Calendar>)
                 .SelectMany(c => c.Events)
                 .SelectMany(e => e.GetOccurrences(_searchStart, _searchEnd))
                 .ToList();
@@ -54,7 +54,7 @@ namespace PerfTests
         public List<Occurrence> ParallelUponGetOccurrences()
         {
             return _manyCalendars
-                .SelectMany(Calendar.Load<Calendar>)
+                .SelectMany(CalendarConvert.Load<Calendar>)
                 .SelectMany(c => c.Events)
                 .AsParallel()
                 .SelectMany(e => e.GetOccurrences(_searchStart, _searchEnd))
@@ -66,7 +66,7 @@ namespace PerfTests
         {
             return _manyCalendars
                 .AsParallel()
-                .SelectMany(Calendar.Load<Calendar>)
+                .SelectMany(CalendarConvert.Load<Calendar>)
                 .AsSequential()
                 .SelectMany(c => c.Events)
                 .SelectMany(e => e.GetOccurrences(_searchStart, _searchEnd))

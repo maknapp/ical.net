@@ -54,10 +54,8 @@ namespace Ical.Net.Serialization.DataTypes
             }
         }
 
-        public override object Deserialize(TextReader tr)
+        public override object Deserialize(string value)
         {
-            var value = tr.ReadToEnd();
-
             if (!(CreateAndAssociate() is Trigger trigger))
             {
                 return null;

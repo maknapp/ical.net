@@ -64,7 +64,7 @@ END:VCALENDAR
 ";
 
         [Benchmark]
-        public void Deserialize() => Calendar.Load(_sampleEvent).Events.First();
+        public void Deserialize() => CalendarConvert.Load(_sampleEvent).Events.First();
 
         [Benchmark]
         public void SerializeCalendar() => new CalendarSerializer().Serialize(SimpleCalendar);

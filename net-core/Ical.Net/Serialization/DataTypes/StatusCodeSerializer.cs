@@ -31,10 +31,8 @@ namespace Ical.Net.Serialization.DataTypes
 
         internal static readonly Regex StatusCode = new Regex(@"\d(\.\d+)*", RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
-        public override object Deserialize(TextReader tr)
+        public override object Deserialize(string value)
         {
-            var value = tr.ReadToEnd();
-
             var sc = CreateAndAssociate() as StatusCode;
             if (sc == null)
             {

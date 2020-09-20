@@ -27,17 +27,14 @@ namespace Ical.Net.Serialization.DataTypes
             }
         }
 
-        public override object Deserialize(TextReader tr)
+        public override object Deserialize(string value)
         {
-            var value = tr.ReadToEnd();
-
-            Organizer o = null;
+            var organizer = CreateAndAssociate() as Organizer;
             try
             {
-                o = CreateAndAssociate() as Organizer;
-                if (o != null)
+                if (organizer != null)
                 {
-                    var uriString = Unescape(Decode(o, value));
+                    var uriString = Unescape(Decode(organizer, value));
 
                     // Prepend "mailto:" if necessary
                     if (!uriString.StartsWith("mailto:", StringComparison.OrdinalIgnoreCase))
@@ -45,7 +42,7 @@ namespace Ical.Net.Serialization.DataTypes
                         uriString = "mailto:" + uriString;
                     }
 
-                    o.Value = new Uri(uriString);
+                    organizer.Value = new Uri(uriString);
                 }
             }
             catch
@@ -53,7 +50,7 @@ namespace Ical.Net.Serialization.DataTypes
                 // TODO: Ignore exceptions selectively
             }
 
-            return o;
+            return organizer;
         }
     }
 }

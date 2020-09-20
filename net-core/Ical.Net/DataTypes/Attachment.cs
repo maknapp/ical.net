@@ -90,7 +90,7 @@ namespace Ical.Net.DataTypes
                 throw new ArgumentException($"'{nameof(attachmentValue)}' cannot be null, empty or whitespace.", nameof(attachmentValue));
             }
 
-            return new AttachmentSerializer().Deserialize(attachmentValue);
+            return new AttachmentSerializer().Deserialize(attachmentValue) as Attachment;
         }
     }
 }

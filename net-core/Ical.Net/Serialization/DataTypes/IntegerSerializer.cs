@@ -34,10 +34,8 @@ namespace Ical.Net.Serialization.DataTypes
             }
         }
 
-        public override object Deserialize(TextReader tr)
+        public override object Deserialize(string value)
         {
-            var value = tr.ReadToEnd();
-
             try
             {
                 var obj = SerializationContext.Peek() as ICalendarObject;

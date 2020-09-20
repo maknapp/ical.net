@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Text;
 
 namespace Ical.Net.Serialization
@@ -34,6 +33,6 @@ namespace Ical.Net.Serialization
             return builder.ToString();
         }
 
-        public override object Deserialize(TextReader tr) => null;
+        public override object Deserialize(string value) => null;
     }
 }

@@ -37,7 +37,7 @@ namespace Ical.Net.Serialization
             return base.Serialize(obj);
         }
 
-        public override object Deserialize(TextReader tr) => null;
+        public override object Deserialize(string value) => null;
 
         private class CalendarPropertySorter : IComparer<ICalendarProperty>
         {

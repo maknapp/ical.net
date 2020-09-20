@@ -57,9 +57,8 @@ namespace Ical.Net.Serialization.DataTypes
             }
         }
 
-        public override object Deserialize(TextReader tr)
+        public override object Deserialize(string value)
         {
-            var value = tr.ReadToEnd();
 
             var p = CreateAndAssociate() as Period;
             var factory = GetService<ISerializerFactory>();
@@ -68,8 +67,8 @@ namespace Ical.Net.Serialization.DataTypes
                 return null;
             }
 
-            var dtSerializer = factory.Build(typeof (IDateTime), SerializationContext) as IStringSerializer;
-            var durationSerializer = factory.Build(typeof (TimeSpan), SerializationContext) as IStringSerializer;
+            var dtSerializer = factory.Build(typeof(IDateTime), SerializationContext) as IStringSerializer;
+            var durationSerializer = factory.Build(typeof(TimeSpan), SerializationContext) as IStringSerializer;
             if (dtSerializer == null || durationSerializer == null)
             {
                 return null;
@@ -88,7 +87,7 @@ namespace Ical.Net.Serialization.DataTypes
             p.EndTime = dtSerializer.Deserialize(new StringReader(values[1])) as IDateTime;
             if (p.EndTime == null)
             {
-                p.Duration = (TimeSpan) durationSerializer.Deserialize(new StringReader(values[1]));
+                p.Duration = (TimeSpan)durationSerializer.Deserialize(new StringReader(values[1]));
             }
 
             // Only return an object if it has been deserialized correctly.

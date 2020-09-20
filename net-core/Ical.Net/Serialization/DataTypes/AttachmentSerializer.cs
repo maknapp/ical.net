@@ -44,13 +44,13 @@ namespace Ical.Net.Serialization.DataTypes
             return Encode(a, a.Data);
         }
 
-        public Attachment Deserialize(string attachment)
+        public override object Deserialize(string value)
         {
             try
             {
                 var a = CreateAndAssociate() as Attachment;
                 // Decode the value, if necessary
-                var data = DecodeData(a, attachment);
+                var data = DecodeData(a, value);
 
                 // Get the currently-used encoding off the encoding stack.
                 var encodingStack = GetService<EncodingStack>();
@@ -71,7 +71,7 @@ namespace Ical.Net.Serialization.DataTypes
 
                 // The default VALUE type for attachments is URI.  So, let's
                 // grab the URI by default.
-                var uriValue = Decode(a, attachment);
+                var uriValue = Decode(a, value);
                 a.Uri = new Uri(uriValue);
 
                 return a;
@@ -83,7 +83,5 @@ namespace Ical.Net.Serialization.DataTypes
 
             return null;
         }
-
-        public override object Deserialize(TextReader tr) => Deserialize(tr.ReadToEnd());
     }
 }

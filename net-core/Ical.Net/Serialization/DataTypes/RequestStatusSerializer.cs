@@ -62,10 +62,8 @@ namespace Ical.Net.Serialization.DataTypes
         internal static readonly Regex NarrowRequestMatch = new Regex(@"(.*?[^\\]);(.*?[^\\]);(.+)", RegexOptions.Compiled);
         internal static readonly Regex BroadRequestMatch = new Regex(@"(.*?[^\\]);(.+)", RegexOptions.Compiled);
 
-        public override object Deserialize(TextReader tr)
+        public override object Deserialize(string value)
         {
-            var value = tr.ReadToEnd();
-
             var rs = CreateAndAssociate() as RequestStatus;
             if (rs == null)
             {

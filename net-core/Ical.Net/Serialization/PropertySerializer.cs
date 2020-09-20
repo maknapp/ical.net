@@ -95,6 +95,6 @@ namespace Ical.Net.Serialization
             return result.ToString();
         }
 
-        public override object Deserialize(TextReader tr) => null;
+        public override object Deserialize(string value) => null;
     }
 }

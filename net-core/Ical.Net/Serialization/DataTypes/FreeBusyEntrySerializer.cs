@@ -39,12 +39,12 @@ namespace Ical.Net.Serialization.DataTypes
             return base.Serialize(obj);
         }
 
-        public override object Deserialize(TextReader tr)
+        public override object Deserialize(string value)
         {
-            var entry = base.Deserialize(tr) as FreeBusyEntry;
+            var entry = base.Deserialize(value) as FreeBusyEntry;
             if (entry == null)
             {
-                return entry;
+                return null;
             }
 
             if (!entry.Parameters.ContainsKey("FBTYPE"))
@@ -52,13 +52,13 @@ namespace Ical.Net.Serialization.DataTypes
                 return entry;
             }
 
-            var value = entry.Parameters.Get("FBTYPE");
-            if (value == null)
+            var type = entry.Parameters.Get("FBTYPE");
+            if (type == null)
             {
                 return entry;
             }
 
-            switch (value.ToUpperInvariant())
+            switch (type.ToUpperInvariant())
             {
                 case "FREE":
                     entry.Status = FreeBusyStatus.Free;

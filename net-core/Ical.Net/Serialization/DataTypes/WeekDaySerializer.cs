@@ -30,12 +30,11 @@ namespace Ical.Net.Serialization.DataTypes
             return Encode(ds, value);
         }
 
+
         private static readonly Regex _dayOfWeek = new Regex(@"(\+|-)?(\d{1,2})?(\w{2})", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-        public override object Deserialize(TextReader tr)
+        public override object Deserialize(string value)
         {
-            var value = tr.ReadToEnd();
-
             // Create the day specifier and associate it with a calendar object
             var ds = CreateAndAssociate() as WeekDay;
 
@@ -56,6 +55,7 @@ namespace Ical.Net.Serialization.DataTypes
                     ds.Offset *= -1;
                 }
             }
+
             ds.DayOfWeek = RecurrencePatternSerializer.GetDayOfWeek(match.Groups[3].Value);
             return ds;
         }

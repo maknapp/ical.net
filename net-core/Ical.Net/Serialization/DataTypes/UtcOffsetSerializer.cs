@@ -28,10 +28,10 @@ namespace Ical.Net.Serialization.DataTypes
 
         internal static readonly Regex DecodeOffset = new Regex(@"(\+|-)(\d{2})(\d{2})(\d{2})?", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-        public override object Deserialize(TextReader tr)
+        public override object Deserialize(string value)
         {
-            string offsetString = tr.ReadToEnd();
-            return new UtcOffset(GetOffset(offsetString));
+            TimeSpan offset = GetOffset(value);
+            return new UtcOffset(offset);
         }
 
         public static TimeSpan GetOffset(string rawOffset)

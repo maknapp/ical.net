@@ -62,7 +62,7 @@ END:VALARM
 END:VEVENT
 END:VCALENDAR";
 
-            var calendar = Calendar.Load(e);
+            var calendar = CalendarConvert.Load(e);
             var calendarEvent = calendar.Events.First();
             var searchStart = new DateTime(2009, 06, 20);
             var searchEnd = new DateTime(2011,06,23);
@@ -124,7 +124,7 @@ END:VALARM
 END:VEVENT
 END:VCALENDAR";
 
-            var calendar = Calendar.Load(e);
+            var calendar = CalendarConvert.Load(e);
             var calendarEvent = calendar.Events.First();
             var searchStart = new DateTime(2009, 06, 20);
             var searchEnd = new DateTime(2011, 06, 23);

@@ -44,15 +44,14 @@ namespace Ical.Net.Serialization
             return serializer?.Serialize(obj);
         }
 
-        public override object Deserialize(TextReader tr)
+        public override object Deserialize(string value)
         {
-            var serializer = GetMappedSerializer();
+            IStringSerializer serializer = GetMappedSerializer();
             if (serializer == null)
             {
                 return null;
             }
 
-            var value = tr.ReadToEnd();
             var returnValue = serializer.Deserialize(new StringReader(value));
 
             // Default to returning the string representation of the value

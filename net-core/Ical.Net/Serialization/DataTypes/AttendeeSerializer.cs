@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using Ical.Net.DataTypes;
 
 namespace Ical.Net.Serialization.DataTypes
@@ -20,12 +19,12 @@ namespace Ical.Net.Serialization.DataTypes
                 : Encode(a, a.Value.OriginalString);
         }
 
-        public Attendee Deserialize(string attendee)
+        public override object Deserialize(string value)
         {
             try
             {
-                var a = CreateAndAssociate() as Attendee;
-                var uriString = Unescape(Decode(a, attendee));
+                var attendee = CreateAndAssociate() as Attendee;
+                var uriString = Unescape(Decode(attendee, value));
 
                 // Prepend "mailto:" if necessary
                 if (!uriString.StartsWith("mailto:", StringComparison.OrdinalIgnoreCase))
@@ -33,8 +32,8 @@ namespace Ical.Net.Serialization.DataTypes
                     uriString = "mailto:" + uriString;
                 }
 
-                a.Value = new Uri(uriString);
-                return a;
+                attendee.Value = new Uri(uriString);
+                return attendee;
             }
             catch
             {
@@ -43,7 +42,5 @@ namespace Ical.Net.Serialization.DataTypes
 
             return null;
         }
-
-        public override object Deserialize(TextReader tr) => Deserialize(tr.ReadToEnd());
     }
 }

@@ -14,8 +14,20 @@ namespace Ical.Net.Serialization
         protected SerializationContext SerializationContext { get; }
 
         public abstract Type TargetType { get; }
+
         public abstract string Serialize(object obj);
-        public abstract object Deserialize(TextReader reader);
+        public abstract object Deserialize(string value);
+
+        public object Deserialize(TextReader reader)
+        {
+            if (reader == null)
+            {
+                return null;
+            }
+
+            string value = reader.ReadToEnd();
+            return Deserialize(value);
+        }
 
         public object Deserialize(Stream stream, Encoding encoding)
         {

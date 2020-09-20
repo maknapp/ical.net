@@ -30,15 +30,8 @@ namespace Ical.Net.Serialization.DataTypes
             return uri.OriginalString;
         }
 
-        public override object Deserialize(TextReader tr)
+        public override object Deserialize(string value)
         {
-            if (tr == null)
-            {
-                return null;
-            }
-
-            var value = tr.ReadToEnd();
-
             if (SerializationContext.Peek() is ICalendarObject co)
             {
                 var dt = new EncodableDataType
@@ -53,7 +46,7 @@ namespace Ical.Net.Serialization.DataTypes
                 var uri = new Uri(value);
                 return uri;
             }
-            catch {}
+            catch { }
             return null;
         }
     }

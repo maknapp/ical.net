@@ -70,10 +70,8 @@ namespace Ical.Net.Serialization.DataTypes
             new Regex(@"^(?<sign>\+|-)?P(((?<week>\d+)W)|(?<main>((?<day>\d+)D)?(?<time>T((?<hour>\d+)H)?((?<minute>\d+)M)?((?<second>\d+)S)?)?))$",
                 RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-        public override object Deserialize(TextReader tr)
+        public override object Deserialize(string value)
         {
-            var value = tr.ReadToEnd();
-
             try
             {
                 var match = TimespanMatch.Match(value);
@@ -120,7 +118,7 @@ namespace Ical.Net.Serialization.DataTypes
                     return new TimeSpan(days * mult, hours * mult, minutes * mult, seconds * mult);
                 }
             }
-            catch {}
+            catch { }
 
             return value;
         }

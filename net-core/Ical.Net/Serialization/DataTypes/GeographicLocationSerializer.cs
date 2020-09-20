@@ -26,21 +26,21 @@ namespace Ical.Net.Serialization.DataTypes
             return Encode(g, value);
         }
 
-        public GeographicLocation Deserialize(string value)
+        public override object Deserialize(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
             {
                 return null;
             }
 
-            var g = CreateAndAssociate() as GeographicLocation;
-            if (g == null)
+            var geoLocation = CreateAndAssociate() as GeographicLocation;
+            if (geoLocation == null)
             {
                 return null;
             }
 
             // Decode the value, if necessary!
-            value = Decode(g, value);
+            value = Decode(geoLocation, value);
 
             var values = value.Split(new [] {';'}, StringSplitOptions.RemoveEmptyEntries);
             if (values.Length != 2)
@@ -50,12 +50,10 @@ namespace Ical.Net.Serialization.DataTypes
 
             double.TryParse(values[0], NumberStyles.Any, CultureInfo.InvariantCulture, out var lat);
             double.TryParse(values[1], NumberStyles.Any, CultureInfo.InvariantCulture, out var lon);
-            g.Latitude = lat;
-            g.Longitude = lon;
+            geoLocation.Latitude = lat;
+            geoLocation.Longitude = lon;
 
-            return g;
+            return geoLocation;
         }
-
-        public override object Deserialize(TextReader tr) => Deserialize(tr.ReadToEnd());
     }
 }

@@ -46,10 +46,8 @@ namespace Ical.Net.Serialization.DataTypes
             return Encode(periodList, string.Join(",", parts));
         }
 
-        public override object Deserialize(TextReader tr)
+        public override object Deserialize(string value)
         {
-            var value = tr.ReadToEnd();
-
             // Create the day specifier and associate it with a calendar object
             var rdt = CreateAndAssociate() as PeriodList;
             var factory = GetService<ISerializerFactory>();
@@ -61,8 +59,8 @@ namespace Ical.Net.Serialization.DataTypes
             // Decode the value, if necessary
             value = Decode(rdt, value);
 
-            var dtSerializer = factory.Build(typeof (IDateTime), SerializationContext) as IStringSerializer;
-            var periodSerializer = factory.Build(typeof (Period), SerializationContext) as IStringSerializer;
+            var dtSerializer = factory.Build(typeof(IDateTime), SerializationContext) as IStringSerializer;
+            var periodSerializer = factory.Build(typeof(Period), SerializationContext) as IStringSerializer;
             if (dtSerializer == null || periodSerializer == null)
             {
                 return null;

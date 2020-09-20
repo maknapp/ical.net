@@ -239,7 +239,7 @@ namespace Ical.Net.FrameworkUnitTests
         [Test]
         public void Event8()
         {
-            var sr = @"BEGIN:VCALENDAR
+            var calendarContent = @"BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Apple Computer\, Inc//iCal 1.0//EN
 CALSCALE:GREGORIAN
@@ -269,7 +269,7 @@ UID:ebfbd3e3-cc1e-4a64-98eb-ced2598b3908
 END:VEVENT
 END:VCALENDAR
 ";
-            var iCal = CalendarConvert.Load(sr);
+            var iCal = CalendarConvert.Load(calendarContent);
             Assert.IsTrue(iCal.Events.Count == 2, "There should be 2 events in the parsed calendar");
             Assert.IsNotNull(iCal.Events["fd940618-45e2-4d19-b118-37fd7a8e3906"], "Event fd940618-45e2-4d19-b118-37fd7a8e3906 should exist in the calendar");
             Assert.IsNotNull(iCal.Events["ebfbd3e3-cc1e-4a64-98eb-ced2598b3908"], "Event ebfbd3e3-cc1e-4a64-98eb-ced2598b3908 should exist in the calendar");
@@ -308,7 +308,9 @@ END:VCALENDAR
             };
 
             for (var i = 0; i < dateTimes.Length; i++)
+            {
                 Assert.AreEqual(dateTimes[i], occurrences[i].Period.StartTime, "Event should occur at " + dateTimes[i]);
+            }
 
             Assert.AreEqual(dateTimes.Length, occurrences.Count, "There should be exactly " + dateTimes.Length + " occurrences; there were " + occurrences.Count);
         }
