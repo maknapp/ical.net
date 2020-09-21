@@ -1,18 +1,36 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Ical.Net.Collections;
 
 namespace Ical.Net
 {
-    public class CalendarPropertyList : GroupedValueList<string, ICalendarProperty, CalendarProperty, object>
+    public interface ICalendarPropertyList: IEnumerable<ICalendarProperty>
+    {
+        TType Get<TType>(string group);
+        IList<TType> GetMany<TType>(string group);
+        IEnumerable<ICalendarProperty> AllOf(string group);
+        void Clear();
+        bool ContainsKey(string group);
+        bool Contains(ICalendarProperty item);
+        void Set(string group, object value);
+        void Set(string group, IEnumerable<object> values);
+        void Add(ICalendarProperty item);
+        bool Remove(string group);
+        ICalendarProperty this[string name] { get; }
+    }
+
+    public class CalendarPropertyList : ICalendarPropertyList
     {
         private readonly ICalendarObject _parent;
-
-        public CalendarPropertyList() {}
+        private readonly GroupedValueList<string, ICalendarProperty, CalendarProperty, object> _list;
 
         public CalendarPropertyList(ICalendarObject parent)
         {
-            _parent = parent;
-            ItemAdded += CalendarPropertyList_ItemAdded;
+            _parent = parent ?? throw new ArgumentNullException(nameof(parent));
+            _list = new GroupedValueList<string, ICalendarProperty, CalendarProperty, object>();
+            _list.ItemAdded += CalendarPropertyList_ItemAdded;
         }
 
         private void CalendarPropertyList_ItemAdded(object sender, ItemAddedEventArgs<ICalendarProperty> e)
@@ -20,8 +38,43 @@ namespace Ical.Net
             e.Item.Parent = _parent;
         }
 
-        public ICalendarProperty this[string name] => ContainsKey(name)
-            ? AllOf(name).FirstOrDefault()
-            : null;
+        public TType Get<TType>(string group) 
+            => _list.Get<TType>(group);
+
+        public IList<TType> GetMany<TType>(string @group)
+            => _list.GetMany<TType>(group);
+
+        public IEnumerable<ICalendarProperty> AllOf(string group)
+            => _list.AllOf(group);
+
+        public void Clear()
+            => _list.Clear();
+
+        public bool ContainsKey(string group)
+            => _list.ContainsKey(group);
+
+        public bool Contains(ICalendarProperty item)
+            => _list.Contains(item);
+
+        public void Set(string group, object value)
+            => _list.Set(group, value);
+
+        public void Set(string group, IEnumerable<object> values)
+            => _list.Set(group, values);
+
+        public void Add(ICalendarProperty item)
+            => _list.Add(item);
+
+        public bool Remove(string @group)
+            => _list.Remove(group);
+
+        public ICalendarProperty this[string name] 
+            => _list.ContainsKey(name) ? _list.AllOf(name).FirstOrDefault() : null;
+
+        public IEnumerator<ICalendarProperty> GetEnumerator() 
+            => _list.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() 
+            => GetEnumerator();
     }
 }

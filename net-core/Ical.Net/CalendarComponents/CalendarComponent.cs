@@ -13,9 +13,9 @@ namespace Ical.Net.CalendarComponents
         /// <summary>
         /// Returns a list of properties that are associated with the iCalendar object.
         /// </summary>
-        public CalendarPropertyList Properties { get; protected set; }
+        public ICalendarPropertyList Properties { get; protected set; }
 
-        public CalendarComponent() : base()
+        public CalendarComponent()
         {
             Initialize();
         }

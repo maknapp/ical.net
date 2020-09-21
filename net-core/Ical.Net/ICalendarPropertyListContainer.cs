@@ -2,6 +2,6 @@
 {
     public interface ICalendarPropertyListContainer : ICalendarObject
     {
-        CalendarPropertyList Properties { get; }
+        ICalendarPropertyList Properties { get; }
     }
 }
