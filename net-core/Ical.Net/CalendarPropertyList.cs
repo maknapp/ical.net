@@ -8,8 +8,8 @@ namespace Ical.Net
 {
     public interface ICalendarPropertyList: IEnumerable<ICalendarProperty>
     {
-        TType Get<TType>(string group);
-        IList<TType> GetMany<TType>(string group);
+        T Get<T>(string group);
+        IList<T> GetMany<T>(string group);
         IEnumerable<ICalendarProperty> AllOf(string group);
         void Clear();
         bool ContainsKey(string group);
@@ -38,11 +38,11 @@ namespace Ical.Net
             e.Item.Parent = _parent;
         }
 
-        public TType Get<TType>(string group) 
-            => _list.Get<TType>(group);
+        public T Get<T>(string group) 
+            => _list.Get<T>(group);
 
-        public IList<TType> GetMany<TType>(string @group)
-            => _list.GetMany<TType>(group);
+        public IList<T> GetMany<T>(string group)
+            => _list.GetMany<T>(group);
 
         public IEnumerable<ICalendarProperty> AllOf(string group)
             => _list.AllOf(group);
@@ -65,7 +65,7 @@ namespace Ical.Net
         public void Add(ICalendarProperty item)
             => _list.Add(item);
 
-        public bool Remove(string @group)
+        public bool Remove(string group)
             => _list.Remove(group);
 
         public ICalendarProperty this[string name] 

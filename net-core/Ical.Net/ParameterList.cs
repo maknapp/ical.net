@@ -20,6 +20,6 @@ namespace Ical.Net
 
         public string Get(string name) => Get<string>(name);
 
-        public IList<string> GetMany(string name) => GetMany<string>(name);
+        public IEnumerable<string> GetMany(string name) => GetMany<string>(name);
     }
 }

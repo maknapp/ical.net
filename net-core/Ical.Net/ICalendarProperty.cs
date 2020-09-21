@@ -3,7 +3,7 @@ using Ical.Net.DataTypes;
 
 namespace Ical.Net
 {
-    public interface ICalendarProperty : IParameterContainer, ICalendarObject, IValueObject<object>
+    public interface ICalendarProperty : IParameterContainer, ICalendarObject, ICalendarValue<object>
     {
         object Value { get; set; }
     }

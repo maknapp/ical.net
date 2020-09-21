@@ -10,7 +10,7 @@ namespace Ical.Net.Collections.Proxies
     /// A proxy for a keyed list.
     /// </summary>
     public class GroupedValueListProxy<TGroup, TInterface, TItem, TOriginalValue, TNewValue> : IList<TNewValue>
-        where TInterface : class, IGroupedObject<TGroup>, IValueObject<TOriginalValue>
+        where TInterface : class, IGroupedObject<TGroup>, ICalendarValue<TOriginalValue>
         where TItem : new()        
     {
         private readonly GroupedValueList<TGroup, TInterface, TItem, TOriginalValue> _realObject;
@@ -50,7 +50,7 @@ namespace Ical.Net.Collections.Proxies
             return _container;
         }
 
-        private void IterateValues(Func<IValueObject<TOriginalValue>, int, int, bool> action)
+        private void IterateValues(Func<ICalendarValue<TOriginalValue>, int, int, bool> action)
         {
             var i = 0;
             foreach (var obj in _realObject)

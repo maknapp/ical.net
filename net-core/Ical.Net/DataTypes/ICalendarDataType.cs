@@ -2,8 +2,7 @@
 
 namespace Ical.Net.DataTypes
 {
-    public interface ICalendarDataType 
-        : IParameterContainer, ICopyable, IServiceProvider
+    public interface ICalendarDataType : IParameterContainer, ICopyable
     {
         Type GetValueType();
         void SetValueType(string type);

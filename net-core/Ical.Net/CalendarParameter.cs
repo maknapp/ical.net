@@ -8,9 +8,9 @@ using Ical.Net.Collections.Interfaces;
 namespace Ical.Net
 {
     [DebuggerDisplay("{Name}={string.Join(\",\", Values)}")]
-    public class CalendarParameter : CalendarObject, IValueObject<string>
+    public sealed class CalendarParameter : CalendarObject, ICalendarValue<string>
     {
-        private HashSet<string> _values;
+        private StringCalendarValue _value;
 
         public CalendarParameter()
         {
@@ -39,13 +39,12 @@ namespace Ical.Net
 
         private void Initialize()
         {
-            _values = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            _value = new StringCalendarValue();
         }
 
         protected override void OnDeserializing(StreamingContext context)
         {
             base.OnDeserializing(context);
-
             Initialize();
         }
 
@@ -59,47 +58,92 @@ namespace Ical.Net
                 return;
             }
 
-            _values = new HashSet<string>(p.Values.Where(IsValidValue), StringComparer.OrdinalIgnoreCase);
+            _value = new StringCalendarValue(p.Values);
         }
 
-        public IEnumerable<string> Values => _values;
+        public IEnumerable<string> Values
+            => _value.Values;
 
-        public bool ContainsValue(string value) => _values.Contains(value);
+        public int ValueCount
+            => _value.ValueCount;
 
-        public int ValueCount => _values?.Count ?? 0;
+        public bool ContainsValue(string value)
+            => _value.ContainsValue(value);
 
         public void SetValue(string value)
-        {
-            _values.Add(value);
-        }
+            => _value.SetValue(value);
 
         public void SetValue(IEnumerable<string> values)
-        {
-            // Remove all previous values
-            _values.Clear();
-            _values.UnionWith(values.Where(IsValidValue));
-        }
-
-        private static bool IsValidValue(string value) => !string.IsNullOrWhiteSpace(value);
+            => _value.SetValue(values);
 
         public void AddValue(string value)
-        {
-            if (!IsValidValue(value))
-            {
-                return;
-            }
-            _values.Add(value);
-        }
+            => _value.AddValue(value);
 
         public void RemoveValue(string value)
-        {
-            _values.Remove(value);
-        }
+            => _value.RemoveValue(value);
 
         public string Value
         {
-            get => Values?.FirstOrDefault();
+            get => _value?.Values.FirstOrDefault();
             set => SetValue(value);
+        }
+
+        private sealed class StringCalendarValue : ICalendarValue<string>
+        {
+            private readonly HashSet<string> _values;
+
+            public StringCalendarValue(IEnumerable<string> values)
+            {
+                if (values == null)
+                {
+                    throw new ArgumentNullException(nameof(values));
+                }
+
+                _values = new HashSet<string>(values.Where(IsValidValue), StringComparer.OrdinalIgnoreCase);
+            }
+
+            public StringCalendarValue()
+            {
+                _values = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            }
+
+            public IEnumerable<string> Values
+                => _values.ToArray();
+
+            public int ValueCount
+                => _values?.Count ?? 0;
+
+            public bool ContainsValue(string value)
+                => _values.Contains(value);
+
+            public void SetValue(string value)
+            {
+                _values.Add(value);
+            }
+
+            public void SetValue(IEnumerable<string> values)
+            {
+                // Remove all previous values
+                _values.Clear();
+                _values.UnionWith(values.Where(IsValidValue));
+            }
+
+            public void AddValue(string value)
+            {
+                if (!IsValidValue(value))
+                {
+                    return;
+                }
+                _values.Add(value);
+            }
+
+            public void RemoveValue(string value)
+            {
+                _values.Remove(value);
+            }
+
+            public static bool IsValidValue(string value)
+                => !string.IsNullOrWhiteSpace(value);
         }
     }
 }

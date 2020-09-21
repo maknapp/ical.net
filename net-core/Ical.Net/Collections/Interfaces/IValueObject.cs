@@ -2,7 +2,7 @@
 
 namespace Ical.Net.Collections.Interfaces
 {
-    public interface IValueObject<T>
+    public interface ICalendarValue<T>
     {
         IEnumerable<T> Values { get; }
 

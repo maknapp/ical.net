@@ -33,7 +33,7 @@ namespace Ical.Net.Proxies
             return parameter?.Value;
         }
 
-        public IList<string> GetMany(string name) => new GroupedValueListProxy<string, CalendarParameter, CalendarParameter, string, string>(Parameters, name);
+        public IEnumerable<string> GetMany(string name) => new GroupedValueListProxy<string, CalendarParameter, CalendarParameter, string, string>(Parameters, name);
 
         public void Set(string name, string value)
         {
