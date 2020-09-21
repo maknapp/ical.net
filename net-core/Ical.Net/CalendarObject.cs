@@ -9,7 +9,8 @@ namespace Ical.Net
     /// </summary>
     public class CalendarObject : CalendarObjectBase, ICalendarObject
     {
-        private ServiceProvider _serviceProvider;
+        private TypedServiceProvider _typedServices;
+        private NamedServiceProvider _namedServices;
 
         internal CalendarObject()
         {
@@ -29,11 +30,12 @@ namespace Ical.Net
 
         private void Initialize()
         {
+            _typedServices = new TypedServiceProvider();
+            _namedServices = new NamedServiceProvider();
+
             // TODO: I'm fairly certain this is ONLY used for null checking. If so, maybe it can just be a bool? CalendarObjectList is an empty object, and
             // TODO: its constructor parameter is ignored
             Children = new CalendarObjectList();
-            _serviceProvider = new ServiceProvider();
-
             Children.ItemAdded += Children_ItemAdded;
         }
 
@@ -114,30 +116,38 @@ namespace Ical.Net
             }
         }
 
-        public int Line { get; set; }
-
-        public int Column { get; set; }
-
-        public object GetService(Type serviceType) => _serviceProvider.GetService(serviceType);
-
-        public object GetService(string name) => _serviceProvider.GetService(name);
-
-        public T GetService<T>() => _serviceProvider.GetService<T>();
-
-        public T GetService<T>(string name) => _serviceProvider.GetService<T>(name);
-
-        public void SetService(string name, object obj) => _serviceProvider.SetService(name, obj);
-
-        public void SetService(object obj) => _serviceProvider.SetService(obj);
-
-        public void RemoveService(Type type) => _serviceProvider.RemoveService(type);
-
-        public void RemoveService(string name) => _serviceProvider.RemoveService(name);
-
         public string Group
         {
             get => Name;
             set => Name = value;
         }
+
+        public int Line { get; set; }
+
+        public int Column { get; set; }
+
+        public object GetService(Type serviceType)
+            => _typedServices.GetService(serviceType);
+
+        public T GetService<T>()
+            => _typedServices.GetService<T>();
+
+        public void SetService(object obj)
+            => _typedServices.SetService(obj);
+
+        public void RemoveService(Type serviceType)
+            => _typedServices.RemoveService(serviceType);
+
+        public object GetService(string name)
+            => _namedServices.GetService(name);
+
+        public T GetService<T>(string name)
+            => _namedServices.GetService<T>(name);
+
+        public void SetService(string name, object obj)
+            => _namedServices.SetService(name, obj);
+
+        public void RemoveService(string name)
+            => _namedServices.RemoveService(name);
     }
 }

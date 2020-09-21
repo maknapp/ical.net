@@ -2,10 +2,6 @@
 
 namespace Ical.Net
 {
-    public interface IServiceProvider : ITypedServiceProvider, INamedServiceProvider
-    {
-    }
-
     public interface ITypedServiceProvider
     {
         object GetService(Type type);
