@@ -25,13 +25,6 @@ namespace Ical.Net
             _loaded = true;
         }
 
-        public CalendarObject(int line, int col) : this()
-        {
-            Line = line;
-            Column = col;
-            _loaded = true;
-        }
-
         private void Initialize()
         {
             _typedServices = new TypedServiceProvider();
@@ -81,8 +74,6 @@ namespace Ical.Net
             // Copy the name and basic information
             Name = calendarObject.Name;
             Parent = calendarObject.Parent;
-            Line = calendarObject.Line;
-            Column = calendarObject.Column;
 
             // Add each child
             Children.Clear();
@@ -148,11 +139,7 @@ namespace Ical.Net
             get => Name;
             set => Name = value;
         }
-
-        public int Line { get; set; }
-
-        public int Column { get; set; }
-
+        
         public virtual bool IsLoaded => _loaded;
 
         public event EventHandler Loaded;
