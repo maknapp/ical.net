@@ -1,33 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace Ical.Net.Serialization
 {
     public sealed class CalendarSerializer : ComponentSerializer
     {
-        private readonly Calendar _calendar;
-
         public CalendarSerializer()
             :this(new SerializationContext()) { }
 
-        public CalendarSerializer(Calendar calendar)
-        {
-            _calendar = calendar;
-        }
-
         public CalendarSerializer(SerializationContext ctx) : base(ctx) {}
-
-        public string SerializeToString() => Serialize(_calendar);
 
         public override IComparer<ICalendarProperty> PropertySorter => new CalendarPropertySorter();
 
         public override string Serialize(object obj)
         {
-            if (obj is Calendar)
+            var calendar = obj as Calendar;
+            if (calendar != null)
             {
                 // If we're serializing a calendar, we should indicate that we're using ical.net to do the work
-                var calendar = (Calendar) obj;
                 calendar.Version = LibraryMetadata.Version;
                 calendar.ProductId = LibraryMetadata.ProdId;
 

@@ -1,43 +1,50 @@
-﻿using Ical.Net.CalendarComponents;
+﻿using System;
+using Ical.Net.CalendarComponents;
 
 namespace Ical.Net.Serialization
 {
-    public class CalendarComponentFactory
+    public sealed class CalendarComponentFactory
     {
-        public ICalendarComponent Build(string objectName)
+        public ICalendarComponent Build(string componentName)
         {
-            ICalendarComponent c;
-            var name = objectName.ToUpper();
+            if (string.IsNullOrWhiteSpace(componentName))
+            {
+                throw new ArgumentException($"{nameof(componentName)} cannot be null, empty or whitespace.", nameof(componentName));
+            }
+
+            ICalendarComponent component;
+            string name = componentName.ToUpper();
 
             switch (name)
             {
                 case Components.Alarm:
-                    c = new Alarm();
+                    component = new Alarm();
                     break;
                 case EventStatus.Name:
-                    c = new CalendarEvent();
+                    component = new CalendarEvent();
                     break;
                 case Components.Freebusy:
-                    c = new FreeBusy();
+                    component = new FreeBusy();
                     break;
                 case JournalStatus.Name:
-                    c = new Journal();
+                    component = new Journal();
                     break;
                 case Components.Timezone:
-                    c = new VTimeZone();
+                    component = new VTimeZone();
                     break;
                 case TodoStatus.Name:
-                    c = new Todo();
+                    component = new Todo();
                     break;
                 case Components.Calendar:
-                    c = new Calendar();
+                    component = new Calendar();
                     break;
                 default:
-                    c = new CalendarComponent();
+                    component = new CalendarComponent();
                     break;
             }
-            c.Name = name;
-            return c;
+
+            component.Name = name;
+            return component;
         }
     }
 }

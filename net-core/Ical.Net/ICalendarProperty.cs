@@ -5,6 +5,6 @@ namespace Ical.Net
 {
     public interface ICalendarProperty : IParameterContainer, ICalendarObject, ICalendarValue<object>
     {
-        object Value { get; set; }
+        object Value { get; }
     }
 }

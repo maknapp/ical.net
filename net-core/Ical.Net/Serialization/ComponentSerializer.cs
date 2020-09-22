@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using Ical.Net.CalendarComponents;
@@ -21,6 +20,7 @@ namespace Ical.Net.Serialization
 
         public virtual Type TargetType => typeof(CalendarComponent);
 
+        // TODO: Utilise PropertySorter
         public virtual IComparer<ICalendarProperty> PropertySorter => new PropertyAlphabetizer();
 
         public virtual string Serialize(object obj)
@@ -32,32 +32,52 @@ namespace Ical.Net.Serialization
 
             var sb = new StringBuilder();
             var upperName = c.Name.ToUpperInvariant();
-            sb.Append(TextUtil.FoldLines($"BEGIN:{upperName}"));
+            SerializeComponentStart(sb, upperName);
 
             // Get a serializer factory
             var sf = SerializationContext.GetService<ISerializerFactory>();
 
             // Sort the calendar properties in alphabetical order before serializing them!
-            var properties = c.Properties.OrderBy(p => p.Name).ToList();
+            var properties = c.Properties.OrderBy(p => p.Name);
 
-            // Serialize properties
-            foreach (var p in properties)
+            SerializeProperties(properties, sf, sb);
+            SerializeChildObjects(c, sf, sb);
+
+            SerializeComponentEnd(sb, upperName);
+
+            return sb.ToString();
+        }
+
+        private static void SerializeComponentStart(StringBuilder builder, string name)
+        {
+            builder.Append(TextUtil.FoldLines($"BEGIN:{name}"));
+        }
+
+        private static void SerializeComponentEnd(StringBuilder builder, string name)
+        {
+            builder.Append(TextUtil.FoldLines($"END:{name}"));
+        }
+
+        private void SerializeProperties(
+            IEnumerable<ICalendarProperty> properties, ISerializerFactory serializerFactory, StringBuilder builder)
+        {
+            foreach (var property in properties)
             {
                 // Get a serializer for each property.
-                var serializer = sf.Build(p.GetType(), SerializationContext) as IStringSerializer;
-                sb.Append(serializer.Serialize(p));
+                IStringSerializer serializer = serializerFactory.Build(property.GetType(), SerializationContext);
+                builder.Append(serializer.Serialize(property));
             }
+        }
 
-            // Serialize child objects
-            foreach (var child in c.Children)
+        private void SerializeChildObjects(
+            ICalendarComponent component, ISerializerFactory serializerFactory, StringBuilder builder)
+        {
+            foreach (var child in component.Children)
             {
                 // Get a serializer for each child object.
-                var serializer = sf.Build(child.GetType(), SerializationContext) as IStringSerializer;
-                sb.Append(serializer.Serialize(child));
+                IStringSerializer serializer = serializerFactory.Build(child.GetType(), SerializationContext);
+                builder.Append(serializer.Serialize(child));
             }
-
-            sb.Append(TextUtil.FoldLines($"END:{upperName}"));
-            return sb.ToString();
         }
 
         public virtual object Deserialize(string value) => null;
