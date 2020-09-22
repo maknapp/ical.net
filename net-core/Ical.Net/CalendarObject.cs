@@ -7,25 +7,29 @@ namespace Ical.Net
     /// <summary>
     /// The base class for all iCalendar objects and components.
     /// </summary>
-    public class CalendarObject : CalendarObjectBase, ICalendarObject
+    public abstract class CalendarObject : ICalendarObject, ICopyable, ILoadable
     {
         private TypedServiceProvider _typedServices;
         private NamedServiceProvider _namedServices;
+        private bool _loaded;
 
         internal CalendarObject()
         {
             Initialize();
+            _loaded = true;
         }
 
         public CalendarObject(string name) : this()
         {
             Name = name;
+            _loaded = true;
         }
 
         public CalendarObject(int line, int col) : this()
         {
             Line = line;
             Column = col;
+            _loaded = true;
         }
 
         private void Initialize()
@@ -38,7 +42,7 @@ namespace Ical.Net
             Children = new CalendarObjectList();
             Children.ItemAdded += Children_ItemAdded;
         }
-
+        
         [OnDeserializing]
         internal void DeserializingInternal(StreamingContext context) => OnDeserializing(context);
 
@@ -62,7 +66,11 @@ namespace Ical.Net
 
         public override int GetHashCode() => Name?.GetHashCode() ?? 0;
 
-        public override void CopyFrom(ICopyable copyable)
+        /// <summary>
+        /// Copies values from the target object to the
+        /// current object.
+        /// </summary>
+        public virtual void CopyFrom(ICopyable copyable)
         {
             var calendarObject = copyable as ICalendarObject;
             if (calendarObject == null)
@@ -83,6 +91,25 @@ namespace Ical.Net
                 Children.Add(child);
             }
         }
+
+        /// <summary>
+        /// Creates a copy of the object.
+        /// </summary>
+        /// <returns>The copy of the object.</returns>
+        public virtual T Copy<T>()
+        {
+            var type = GetType();
+            var obj = Activator.CreateInstance(type) as ICopyable;
+
+            // Duplicate our values
+            if (obj is T)
+            {
+                obj.CopyFrom(this);
+                return (T)obj;
+            }
+            return default;
+        }
+
 
         /// <summary>
         /// Returns the parent iCalObject that owns this one.
@@ -125,6 +152,16 @@ namespace Ical.Net
         public int Line { get; set; }
 
         public int Column { get; set; }
+
+        public virtual bool IsLoaded => _loaded;
+
+        public event EventHandler Loaded;
+
+        public virtual void OnLoaded()
+        {
+            _loaded = true;
+            Loaded?.Invoke(this, EventArgs.Empty);
+        }
 
         public object GetService(Type serviceType)
             => _typedServices.GetService(serviceType);
