@@ -2797,9 +2797,9 @@ namespace Ical.Net.CoreUnitTests
 
             var us = new CultureInfo("en-US");
 
-            var startDate = new CalDateTime(DateTime.Parse("3/30/08 11:59:40 PM", us));
-            var fromDate = new CalDateTime(DateTime.Parse("3/30/08 11:59:40 PM", us));
-            var toDate = new CalDateTime(DateTime.Parse("3/31/08 12:00:11 AM", us));
+            var startDate = new CalDateTime(DateTime.Parse("03/30/2008 11:59:40 PM", us));
+            var fromDate = new CalDateTime(DateTime.Parse("03/30/2008 11:59:40 PM", us));
+            var toDate = new CalDateTime(DateTime.Parse("03/31/2008 12:00:11 AM", us));
 
             var evaluator = pattern.GetService(typeof(IEvaluator)) as IEvaluator;
             Assert.IsNotNull(evaluator);
@@ -2812,10 +2812,10 @@ namespace Ical.Net.CoreUnitTests
                 .OrderBy(o => o.StartTime)
                 .ToList();
             Assert.AreEqual(4, occurrences.Count);
-            Assert.AreEqual(new CalDateTime(DateTime.Parse("03/30/08 11:59:40 PM", us)), occurrences[0].StartTime);
-            Assert.AreEqual(new CalDateTime(DateTime.Parse("03/30/08 11:59:50 PM", us)), occurrences[1].StartTime);
-            Assert.AreEqual(new CalDateTime(DateTime.Parse("03/31/08 12:00:00 AM", us)), occurrences[2].StartTime);
-            Assert.AreEqual(new CalDateTime(DateTime.Parse("03/31/08 12:00:10 AM", us)), occurrences[3].StartTime);
+            Assert.AreEqual(new CalDateTime(DateTime.Parse("03/30/2008 11:59:40 PM", us)), occurrences[0].StartTime);
+            Assert.AreEqual(new CalDateTime(DateTime.Parse("03/30/2008 11:59:50 PM", us)), occurrences[1].StartTime);
+            Assert.AreEqual(new CalDateTime(DateTime.Parse("03/31/2008 12:00:00 AM", us)), occurrences[2].StartTime);
+            Assert.AreEqual(new CalDateTime(DateTime.Parse("03/31/2008 12:00:10 AM", us)), occurrences[3].StartTime);
         }
 
         [Test, Category("Recurrence")]

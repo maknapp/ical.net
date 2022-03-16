@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Ical.Net.CalendarComponents;
 using Ical.Net.DataTypes;
 using NUnit.Framework;
@@ -37,6 +38,96 @@ namespace Ical.Net.CoreUnitTests
             var convertedAsUtc = convertedStart.AsUtc;
 
             Assert.AreEqual(startAsUtc, convertedAsUtc);
+        }
+
+        [Test]
+        public void RecurrenceOverDaylightSavingKeepsHour()
+        {
+            var x = new CalendarEvent()
+            {
+                Summary = string.Empty,
+                Description = string.Empty,
+                Start = new CalDateTime(new DateTime(2022, 3, 12, 2, 0, 0, DateTimeKind.Unspecified)) { HasTime = true },
+                End = new CalDateTime(new DateTime(2022, 3, 12, 5, 0, 0, DateTimeKind.Unspecified)) { HasTime = true },
+                RecurrenceRules = new[]
+                {
+                    new RecurrencePattern()
+                    {
+                        Frequency = FrequencyType.Daily
+                    }
+                }
+            };
+
+            var cal = new Calendar();
+            cal.Events.Add(x);
+
+            var start = new CalDateTime(new DateTime(2022, 3, 13, 0, 0, 0, DateTimeKind.Unspecified)) { HasTime = true };
+            var end = new CalDateTime(new DateTime(2022, 3, 14, 0, 0, 0, DateTimeKind.Unspecified)) { HasTime = true };
+
+            var items = cal.GetOccurrences(start, end);
+            Assert.AreEqual(1, items.Count);
+
+            var t = items.First().Period.StartTime.AsSystemLocal;
+            Assert.True(TimeZoneInfo.Local.IsInvalidTime(t));
+
+            Assert.AreEqual(2, items.First().Period.StartTime.AsSystemLocal.Hour);
+            Assert.AreEqual(5, items.First().Period.EndTime.AsSystemLocal.Hour);
+        }
+
+        [Test]
+        public void LocalTimeOverDaylightSaving()
+        {
+            var x = new CalendarEvent()
+            {
+                Summary = string.Empty,
+                Description = string.Empty,
+                Start = new CalDateTime(new DateTime(2022, 3, 13, 0, 0, 0, DateTimeKind.Unspecified)) { HasTime = true },
+                End = new CalDateTime(new DateTime(2022, 3, 13, 4, 0, 0, DateTimeKind.Unspecified)) { HasTime = true },
+            };
+
+            Assert.AreEqual(TimeSpan.FromHours(4), x.Duration);
+
+            var cal = new Calendar();
+            cal.Events.Add(x);
+
+            var start = new CalDateTime(new DateTime(2022, 3, 13, 0, 0, 0, DateTimeKind.Unspecified)) { HasTime = true };
+            var end = new CalDateTime(new DateTime(2022, 3, 14, 0, 0, 0, DateTimeKind.Unspecified)) { HasTime = true };
+
+            var items = cal.GetOccurrences(start, end);
+            Assert.AreEqual(1, items.Count);
+
+            Assert.AreEqual(4, items.First().Period.EndTime.Hour);
+            Assert.AreEqual(TimeSpan.FromHours(4), items.First().Period.Duration);
+        }
+
+        [Test]
+        public void DifferentTimeZoneIsStillEqual()
+        {
+            var x = new CalendarEvent()
+            {
+                Summary = " ",
+                Description = " ",
+                Start = new CalDateTime(new DateTime(2022, 3, 12, 0, 0, 0, DateTimeKind.Unspecified))
+                {
+                    HasTime = true
+                },
+                End = new CalDateTime(new DateTime(2022, 3, 12, 1, 0, 0, DateTimeKind.Unspecified)),
+                RecurrenceRules = new[]
+                {
+                    new RecurrencePattern(FrequencyType.Hourly, 1),
+                }
+            };
+
+            var cal = new Calendar();
+            cal.Events.Add(x);
+
+            var start = new DateTime(2022, 3, 13, 0, 0, 0, DateTimeKind.Unspecified);
+            var end = new DateTime(2022, 3, 14, 0, 0, 0, DateTimeKind.Unspecified);
+            var items = cal.GetOccurrences(start, end);
+
+            Assert.AreEqual(24, items.Count);
+
+            Assert.DoesNotThrow(() => items.OrderBy(x => x.Period.StartTime).ToList());
         }
 
         public static IEnumerable<ITestCaseData> ToTimeZoneTestCases()

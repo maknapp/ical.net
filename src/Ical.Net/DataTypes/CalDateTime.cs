@@ -180,7 +180,7 @@ namespace Ical.Net.DataTypes
 
         public static bool operator ==(CalDateTime left, IDateTime right)
         {
-            return ReferenceEquals(left, null) || ReferenceEquals(right, null)
+            return left is null || right is null
                 ? ReferenceEquals(left, right)
                 : right is CalDateTime
                     && left.Value.Equals(right.Value)
@@ -195,7 +195,7 @@ namespace Ical.Net.DataTypes
         public static TimeSpan operator -(CalDateTime left, IDateTime right)
         {
             left.AssociateWith(right);
-            return left.AsUtc - right.AsUtc;
+            return left.Value - right.Value;
         }
 
         public static IDateTime operator -(CalDateTime left, TimeSpan right)
@@ -502,19 +502,21 @@ namespace Ical.Net.DataTypes
 
         public int CompareTo(IDateTime dt)
         {
-            if (Equals(dt))
-            {
-                return 0;
-            }
-            if (this < dt)
-            {
-                return -1;
-            }
-            if (this > dt)
-            {
-                return 1;
-            }
-            throw new Exception("An error occurred while comparing two IDateTime values.");
+            return this.Value.CompareTo(dt.Value);
+
+            //if (Equals(dt))
+            //{
+            //    return 0;
+            //}
+            //if (this < dt)
+            //{
+            //    return -1;
+            //}
+            //if (this > dt)
+            //{
+            //    return 1;
+            //}
+            //throw new Exception("An error occurred while comparing two IDateTime values.");
         }
 
         public override string ToString() => ToString(null, null);
