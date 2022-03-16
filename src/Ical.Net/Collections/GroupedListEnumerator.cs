@@ -20,6 +20,7 @@ namespace Ical.Net.Collections
         public virtual void Dispose()
         {
             Reset();
+            System.GC.SuppressFinalize(this);
         }
 
         private void DisposeListEnumerator()
@@ -34,7 +35,7 @@ namespace Ical.Net.Collections
 
         object IEnumerator.Current
             => _listEnumerator == null
-                ? default(TType)
+                ? default
                 : _listEnumerator.Current;
 
         private bool MoveNextList()

@@ -116,7 +116,7 @@ namespace Ical.Net.Collections
 
         public virtual IEnumerable<TItem> AllOf(TGroup group) => _dictionary.ContainsKey(@group)
             ? (IEnumerable<TItem>) _dictionary[@group]
-            : new TItem[0];
+            : Array.Empty<TItem>();
 
         public virtual bool Remove(TItem obj)
         {
