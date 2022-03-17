@@ -2,11 +2,11 @@
   <PropertyGroup>
     <LangVersion>8</LangVersion>
     <PackageVersion>4.2.0</PackageVersion>
-    <Title>Ical.Net</Title>
-    <PackageProjectUrl>https://github.com/rianjs/ical.net</PackageProjectUrl>
+    <Title>LGX.Ical.Net</Title>
+    <PackageProjectUrl>https://github.com/maknapp/ical.net</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/rianjs/ical.net</RepositoryUrl>
-    <PackageReleaseNotes>hhttps://github.com/rianjs/ical.net/blob/master/release-notes.md</PackageReleaseNotes>
+    <RepositoryUrl>https://github.com/maknapp/ical.net</RepositoryUrl>
+    <PackageReleaseNotes>https://github.com/maknapp/ical.net/blob/master/release-notes.md</PackageReleaseNotes>
     <TargetFrameworks>netstandard2.0;net50</TargetFrameworks>
     <Authors>Rian Stockbower, Douglas Day, &amp; Contributors</Authors>
     <Company />
@@ -14,7 +14,7 @@
     <AssemblyOriginatorKeyFile>..\..\IcalNetStrongnameKey.snk</AssemblyOriginatorKeyFile>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <PackageId>Ical.Net</PackageId>
+    <PackageId>LGX.Ical.Net</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>An iCalendar (RFC 5545) library. See https://github.com/rianjs/ical.net for details.</Description>
   </PropertyGroup>
