@@ -78,6 +78,7 @@ namespace Ical.Net.CoreUnitTests
         {
             var outgoing = GetSimpleEvent();
             var expected = GetSimpleEvent();
+            expected.Uid = outgoing.Uid;
             yield return new TestCaseData(outgoing, expected).SetName("Events with start, end, and duration");
 
             var fiveA = GetSimpleRecurrencePattern();
@@ -85,6 +86,7 @@ namespace Ical.Net.CoreUnitTests
 
             outgoing = GetSimpleEvent();
             expected = GetSimpleEvent();
+            expected.Uid = outgoing.Uid;
             outgoing.RecurrenceRules = new List<RecurrencePattern> { fiveA };
             expected.RecurrenceRules = new List<RecurrencePattern> { fiveB };
             yield return new TestCaseData(outgoing, expected).SetName("Events with start, end, duration, and one recurrence rule");
@@ -116,16 +118,21 @@ namespace Ical.Net.CoreUnitTests
             };
 
             var expectedCalendar = new Calendar();
-            expectedCalendar.Events.Add(new CalendarEvent
+            var f = new CalendarEvent
             {
                 DtStart = new CalDateTime(_nowTime),
                 DtEnd = new CalDateTime(_later),
                 Duration = TimeSpan.FromHours(1),
                 RecurrenceRules = new List<RecurrencePattern> { rruleB },
-            });
+            };
+            expectedCalendar.Events.Add(f);
 
-            Assert.AreEqual(actualCalendar.GetHashCode(), expectedCalendar.GetHashCode());
-            Assert.IsTrue(actualCalendar.Equals(expectedCalendar));
+            // Events have different UIDs, so they are not equal.
+            Assert.AreNotEqual(e, f);
+            Assert.AreNotEqual(e.GetHashCode(), f.GetHashCode());
+
+            Assert.AreNotEqual(actualCalendar.GetHashCode(), expectedCalendar.GetHashCode());
+            Assert.IsFalse(actualCalendar.Equals(expectedCalendar));
         }
 
         [Test, TestCaseSource(nameof(VTimeZone_TestCases))]
@@ -286,16 +293,19 @@ namespace Ical.Net.CoreUnitTests
 
             var journalNoAttach = new Journal { Start = new CalDateTime(_nowTime), Summary = "A summary!", Class = "Some class!" };
             var journalWithAttach = new Journal { Start = new CalDateTime(_nowTime), Summary = "A summary!", Class = "Some class!" };
+            journalWithAttach.Uid = journalNoAttach.Uid;
             journalWithAttach.Attachments.Add(new Attachment(attachments.original));
             yield return new TestCaseData(journalNoAttach, journalWithAttach).SetName("Journal recurring component attachment");
 
             var todoNoAttach = new Todo { Start = new CalDateTime(_nowTime), Summary = "A summary!", Class = "Some class!" };
             var todoWithAttach = new Todo { Start = new CalDateTime(_nowTime), Summary = "A summary!", Class = "Some class!" };
+            todoWithAttach.Uid = todoNoAttach.Uid;
             todoWithAttach.Attachments.Add(new Attachment(attachments.original));
             yield return new TestCaseData(todoNoAttach, todoWithAttach).SetName("Todo recurring component attachment");
 
             var eventNoAttach = GetSimpleEvent();
             var eventWithAttach = GetSimpleEvent();
+            eventWithAttach.Uid = eventNoAttach.Uid;
             eventWithAttach.Attachments.Add(new Attachment(attachments.original));
             yield return new TestCaseData(eventNoAttach, eventWithAttach).SetName("Event recurring component attachment");
         }

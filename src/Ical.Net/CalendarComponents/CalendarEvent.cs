@@ -286,6 +286,11 @@ namespace Ical.Net.CalendarComponents
 
         protected bool Equals(CalendarEvent other)
         {
+            if (!Uid.Equals(other.Uid))
+            {
+                return false;
+            }
+
             var resourcesSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             resourcesSet.UnionWith(Resources);
 
@@ -350,7 +355,8 @@ namespace Ical.Net.CalendarComponents
         {
             unchecked
             {
-                var hashCode = DtStart?.GetHashCode() ?? 0;
+                var hashCode = Uid?.GetHashCode() ?? 0;
+                hashCode = (hashCode * 397) ^ (DtStart?.GetHashCode() ?? 0);
                 hashCode = (hashCode * 397) ^ (Summary?.GetHashCode() ?? 0);
                 hashCode = (hashCode * 397) ^ (Description?.GetHashCode() ?? 0);
                 hashCode = (hashCode * 397) ^ (DtEnd?.GetHashCode() ?? 0);

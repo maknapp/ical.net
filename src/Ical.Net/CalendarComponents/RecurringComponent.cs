@@ -194,7 +194,8 @@ namespace Ical.Net.CalendarComponents
 
         protected bool Equals(RecurringComponent other)
         {
-            var result = Equals(DtStart, other.DtStart)
+            var result = Uid.Equals(other.Uid)
+                && Equals(DtStart, other.DtStart)
                 && Equals(Priority, other.Priority)
                 && string.Equals(Summary, other.Summary, StringComparison.OrdinalIgnoreCase)
                 && string.Equals(Class, other.Class, StringComparison.OrdinalIgnoreCase)
@@ -222,7 +223,8 @@ namespace Ical.Net.CalendarComponents
         {
             unchecked
             {
-                var hashCode = DtStart?.GetHashCode() ?? 0;
+                var hashCode = Uid?.GetHashCode() ?? 0;
+                hashCode = (hashCode * 397) ^ (DtStart?.GetHashCode() ?? 0);
                 hashCode = (hashCode * 397) ^ Priority.GetHashCode();
                 hashCode = (hashCode * 397) ^ (Summary?.GetHashCode() ?? 0);
                 hashCode = (hashCode * 397) ^ (Class?.GetHashCode() ?? 0);

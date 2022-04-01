@@ -71,6 +71,28 @@ namespace Ical.Net.CoreUnitTests
             EventOccurrenceTest(cal, fromDate, toDate, dateTimes, timeZones, 0);
         }
 
+        [Test, Category("Recurrence")]
+        public void EventsWithTheSameNameAndTimeStillProduceOccurrences()
+        {
+            var cal = new Calendar();
+            cal.Events.Add(new CalendarEvent
+            {
+                Summary = "SameName",
+                Start = new CalDateTime(new DateTime(2022, 4, 1, 8, 0, 0)),
+                End = new CalDateTime(new DateTime(2022, 4, 1, 9, 0, 0))
+            });
+            cal.Events.Add(new CalendarEvent
+            {
+                Summary = "SameName",
+                Start = new CalDateTime(new DateTime(2022, 4, 1, 8, 0, 0)),
+                End = new CalDateTime(new DateTime(2022, 4, 1, 9, 0, 0))
+            });
+
+            var items = cal.GetOccurrences(new DateTime(2022, 4, 1));
+
+            Assert.AreEqual(2, items.Count);
+        }
+
         /// <summary>
         /// See Page 45 of RFC 2445 - RRULE:FREQ=YEARLY;INTERVAL=2;BYMONTH=1;BYDAY=SU;BYHOUR=8,9;BYMINUTE=30
         /// </summary>
@@ -3300,6 +3322,7 @@ END:VCALENDAR";
             eventA.RecurrenceRules.Add(ten);
 
             var eventB = GetSimpleEvent();
+            eventB.Uid = eventA.Uid;
             eventB.RecurrenceRules.Add(ten);
             eventB.RecurrenceRules.Add(five);
 
