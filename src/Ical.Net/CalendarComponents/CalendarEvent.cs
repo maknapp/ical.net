@@ -355,9 +355,9 @@ namespace Ical.Net.CalendarComponents
                 hashCode = (hashCode * 397) ^ (Description?.GetHashCode() ?? 0);
                 hashCode = (hashCode * 397) ^ (DtEnd?.GetHashCode() ?? 0);
                 hashCode = (hashCode * 397) ^ (Location?.GetHashCode() ?? 0);
-                hashCode = (hashCode * 397) ^ Status?.GetHashCode() ?? 0;
+                hashCode = (hashCode * 397) ^ (Status?.GetHashCode() ?? 0);
                 hashCode = (hashCode * 397) ^ IsActive.GetHashCode();
-                hashCode = (hashCode * 397) ^ Transparency?.GetHashCode() ?? 0;
+                hashCode = (hashCode * 397) ^ (Transparency?.GetHashCode() ?? 0);
                 hashCode = (hashCode * 397) ^ CollectionHelpers.GetHashCode(Attachments);
                 hashCode = (hashCode * 397) ^ CollectionHelpers.GetHashCode(Resources);
                 hashCode = (hashCode * 397) ^ CollectionHelpers.GetHashCodeForNestedCollection(ExceptionDates);
