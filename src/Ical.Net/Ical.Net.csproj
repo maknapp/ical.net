@@ -7,7 +7,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/maknapp/ical.net</RepositoryUrl>
     <PackageReleaseNotes>https://github.com/maknapp/ical.net/blob/master/release-notes.md</PackageReleaseNotes>
-    <TargetFrameworks>netstandard2.0;net50</TargetFrameworks>
+    <TargetFrameworks>net6.0</TargetFrameworks>
     <Authors>Rian Stockbower, Douglas Day, &amp; Contributors</Authors>
     <Company />
     <SignAssembly>true</SignAssembly>

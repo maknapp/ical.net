@@ -127,7 +127,7 @@ namespace Ical.Net.CoreUnitTests
 
             Assert.AreEqual(24, items.Count);
 
-            Assert.DoesNotThrow(() => items.OrderBy(x => x.Period.StartTime).ToList());
+            Assert.DoesNotThrow(() => items.OrderBy(xx => xx.Period.StartTime).ToList());
         }
 
         public static IEnumerable<ITestCaseData> ToTimeZoneTestCases()
