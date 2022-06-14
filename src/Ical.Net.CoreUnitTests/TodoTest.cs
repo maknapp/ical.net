@@ -195,7 +195,12 @@ namespace Ical.Net.CoreUnitTests
 
             var items = new List<CalDateTime>
             {
-                new CalDateTime(2006, 7, 28, 9, 0, 0, _tzid),
+                // This is the start date of the event and it is
+                // a Friday, but it is not a part of the recurrence
+                // rule because it is not the first Friday of the
+                // month, so it should be excluded.
+                // new CalDateTime(2006, 7, 28, 9, 0, 0, _tzid),
+
                 new CalDateTime(2006, 8, 4, 9, 0, 0, _tzid),
                 new CalDateTime(2006, 9, 1, 9, 0, 0, _tzid),
                 new CalDateTime(2006, 10, 6, 9, 0, 0, _tzid),
@@ -204,7 +209,8 @@ namespace Ical.Net.CoreUnitTests
                 new CalDateTime(2007, 1, 5, 9, 0, 0, _tzid),
                 new CalDateTime(2007, 2, 2, 9, 0, 0, _tzid),
                 new CalDateTime(2007, 3, 2, 9, 0, 0, _tzid),
-                new CalDateTime(2007, 4, 6, 9, 0, 0, _tzid)
+                new CalDateTime(2007, 4, 6, 9, 0, 0, _tzid),
+                new CalDateTime(2007, 5, 4, 9, 0, 0, _tzid)
             };
 
             var occurrences = todo[0].GetOccurrences(

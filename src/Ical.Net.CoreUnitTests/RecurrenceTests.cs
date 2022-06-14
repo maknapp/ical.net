@@ -72,6 +72,40 @@ namespace Ical.Net.CoreUnitTests
         }
 
         [Test, Category("Recurrence")]
+        [Ignore("Not expected to be correct yet")]
+        public void RecurringLocalDateTimeOverDaylightSavingSkipsEqual()
+        {
+            var cal = new Calendar();
+            cal.AddTimeZone("America/New_York");
+
+            var ev = new CalendarEvent
+            {
+                Summary = "Test",
+                Start = new CalDateTime(new DateTime(2022, 3, 13, 0, 0, 0, DateTimeKind.Local)) { HasTime = true, TzId = null },
+                End = new CalDateTime(new DateTime(2022, 3, 13, 0, 10, 0, DateTimeKind.Local)) { HasTime = true, TzId = null },
+                RecurrenceRules = new RecurrencePattern[]
+                {
+                    new RecurrencePattern()
+                    {
+                        Frequency = FrequencyType.Hourly,
+                        Interval = 1,
+                        Count = 7
+                    }
+                }
+            };
+
+            cal.Events.Add(ev);
+
+            var s = new DateTime(2022, 3, 13, 0, 0, 0);
+            var start = new CalDateTime(s) { HasTime = true, TzId = "America/New_York" };
+            var end = new CalDateTime(start.AddDays(1)) { HasTime = true, TzId = "America/New_York" };
+            var items = cal.GetOccurrences(start, end).ToArray();
+
+            Assert.AreEqual(7, items.Length);
+            Assert.AreEqual(3, items[2].Period.StartTime.Hour);
+        }
+
+        [Test, Category("Recurrence")]
         public void EventsWithTheSameNameAndTimeStillProduceOccurrences()
         {
             var cal = new Calendar();
@@ -419,6 +453,37 @@ namespace Ical.Net.CoreUnitTests
             );
         }
 
+        [Test, Category("Recurrence")]
+        public void WeeklyWithDifferentStartDate()
+        {
+            var pattern = new RecurrencePattern("FREQ=WEEKLY;INTERVAL=1;BYDAY=TU,TH"); 
+
+            var rpe = new RecurrencePatternEvaluator(pattern);
+
+            var recurringPeriods = rpe.Evaluate(
+                new CalDateTime(2022, 06, 13, 06, 00, 00),
+                new DateTime(2022, 06, 13, 00, 00, 00),
+                new DateTime(2022, 06, 14, 00, 00, 00), false);
+
+            Assert.Zero(recurringPeriods.Count);
+
+            var calEvent = new CalendarEvent
+            {
+                Summary = "",
+                Description = "",
+                // This is a Monday
+                Start = new CalDateTime(2022, 06, 13, 06, 00, 00),
+                End = new CalDateTime(2022, 06, 13, 06, 25, 00),
+                RecurrenceRules = new[] { pattern }
+            };
+
+            var output = calEvent.GetOccurrences(
+                new CalDateTime(2022, 06, 13, 00, 00, 00),
+                new CalDateTime(2022, 06, 14, 00, 00, 00));
+
+            Assert.Zero(output.Count);
+        }
+
         /// <summary>
         /// See Page 119 of RFC 2445 - RRULE:FREQ=WEEKLY;UNTIL=19971224T000000Z
         /// </summary>
@@ -578,7 +643,10 @@ namespace Ical.Net.CoreUnitTests
                 new CalDateTime(1999, 1, 1, _tzid),
                 new[]
                 {
-                    new CalDateTime(1997, 9, 2, 9, 0, 0, _tzid),
+                    // The start date of the event is a Tuesday and
+                    // is not a part of the rrule and should therefore
+                    // not be included.
+                    //new CalDateTime(1997, 9, 2, 9, 0, 0, _tzid),
                     new CalDateTime(1997, 9, 3, 9, 0, 0, _tzid),
                     new CalDateTime(1997, 9, 5, 9, 0, 0, _tzid),
                     new CalDateTime(1997, 9, 15, 9, 0, 0, _tzid),
@@ -2900,10 +2968,10 @@ namespace Ical.Net.CoreUnitTests
             evt.ClearEvaluation();
 
             occurrences = evt.GetOccurrences(previousDateAndTime, end);
-            Assert.AreEqual(11, occurrences.Count);
+            Assert.AreEqual(10, occurrences.Count);
 
             occurrences = evt.GetOccurrences(previousDateOnly, end);
-            Assert.AreEqual(11, occurrences.Count);
+            Assert.AreEqual(10, occurrences.Count);
 
             occurrences = evt.GetOccurrences(laterDateOnly, end);
             Assert.AreEqual(8, occurrences.Count);

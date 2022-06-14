@@ -49,10 +49,12 @@ namespace Ical.Net.Evaluation
             }
             var periods = evaluator.Evaluate(referenceDate, periodStart, periodEnd, includeReferenceDateInResults);
 
-            if (includeReferenceDateInResults)
+            if (includeReferenceDateInResults
+                && (Recurrable.RecurrenceRules == null || !Recurrable.RecurrenceRules.Any()))
             {
                 periods.UnionWith(new[] { new Period(referenceDate) });
             }
+
             return periods;
         }
 
@@ -114,7 +116,9 @@ namespace Ical.Net.Evaluation
             Periods.Clear();
 
             var rruleOccurrences = EvaluateRRule(referenceDate, periodStart, periodEnd, includeReferenceDateInResults);
-            if (includeReferenceDateInResults)
+
+            if (includeReferenceDateInResults
+                && (Recurrable.RecurrenceRules == null || !Recurrable.RecurrenceRules.Any()))
             {
                 rruleOccurrences.UnionWith(new[] { new Period(referenceDate), });
             }

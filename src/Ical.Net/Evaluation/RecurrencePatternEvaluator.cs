@@ -907,7 +907,7 @@ namespace Ical.Net.Evaluation
             EnforceEvaluationRestrictions(pattern);
             Periods.Clear();
 
-            var periodQuery = GetDates(referenceDate, periodStart, periodEnd, -1, pattern, includeReferenceDateInResults)
+            var periodQuery = GetDates(referenceDate, periodStart, periodEnd, -1, pattern, false)
                 .Select(dt => CreatePeriod(dt, referenceDate));
 
             Periods.UnionWith(periodQuery);
