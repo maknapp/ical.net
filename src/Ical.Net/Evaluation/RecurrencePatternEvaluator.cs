@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using Ical.Net.DataTypes;
+﻿using Ical.Net.DataTypes;
 using Ical.Net.Utility;
+using NodaTime.Calendars;
+using NodaTime.Extensions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Ical.Net.Evaluation
 {
@@ -120,7 +121,7 @@ namespace Ical.Net.Evaluation
             return r;
         }
 
-        private void EnforceEvaluationRestrictions(RecurrencePattern pattern)
+        private static void EnforceEvaluationRestrictions(RecurrencePattern pattern)
         {
             RecurrenceEvaluationModeType? evaluationMode = pattern.EvaluationMode;
             RecurrenceRestrictionType? evaluationRestriction = pattern.RestrictionType;
@@ -222,17 +223,23 @@ namespace Ical.Net.Evaluation
          * Wed, Mar 23, 12:19PM, but the recurrence is Mon - Fri, 9:00AM - 5:00PM, the start dates returned should all be at
          * 9:00AM, and not 12:19PM.
          */
-
-        private HashSet<DateTime> GetDates(IDateTime seed, DateTime periodStart, DateTime periodEnd, int maxCount, RecurrencePattern pattern,
+        private IEnumerable<DateTime> GetDates(
+            IDateTime seed,
+            DateTime periodStart,
+            DateTime periodEnd,
+            int maxCount,
+            RecurrencePattern pattern,
             bool includeReferenceDateInResults)
         {
-            var dates = new HashSet<DateTime>();
             var originalDate = DateUtil.GetSimpleDateTimeData(seed);
             var seedCopy = DateUtil.GetSimpleDateTimeData(seed);
 
+            int yieldCount = 0;
+
             if (includeReferenceDateInResults)
             {
-                dates.Add(seedCopy);
+                yield return seedCopy;
+                yieldCount++;
             }
 
             // optimize the start time for selecting candidates
@@ -252,7 +259,7 @@ namespace Ical.Net.Evaluation
 
             var noCandidateIncrementCount = 0;
             var candidate = DateTime.MinValue;
-            while (maxCount < 0 || dates.Count < maxCount)
+            while (maxCount < 0 || yieldCount < maxCount)
             {
                 if (pattern.Until != DateTime.MinValue && candidate != DateTime.MinValue && candidate > pattern.Until)
                 {
@@ -264,12 +271,13 @@ namespace Ical.Net.Evaluation
                     break;
                 }
                 
-                if (pattern.Count >= 1 && dates.Count >= pattern.Count)
+                if (pattern.Count >= 1 && yieldCount >= pattern.Count)
                 {
                     break;
                 }
 
                 var candidates = GetCandidates(seedCopy, pattern, expandBehavior);
+
                 if (candidates.Count > 0)
                 {
                     noCandidateIncrementCount = 0;
@@ -283,7 +291,7 @@ namespace Ical.Net.Evaluation
                         // from the previous year.
                         //
                         // candidates exclusive of periodEnd..
-                        if (pattern.Count >= 1 && dates.Count >= pattern.Count)
+                        if (pattern.Count >= 1 && yieldCount >= pattern.Count)
                         {
                             break;
                         }
@@ -295,7 +303,8 @@ namespace Ical.Net.Evaluation
 
                         if (pattern.Until == DateTime.MinValue || candidate <= pattern.Until)
                         {
-                            dates.Add(candidate);
+                            yield return candidate;
+                            yieldCount++;
                         }
                     }
                 }
@@ -311,7 +320,6 @@ namespace Ical.Net.Evaluation
                 IncrementDate(ref seedCopy, pattern, pattern.Interval);
             }
 
-            return dates;
         }
 
         /**
@@ -320,7 +328,6 @@ namespace Ical.Net.Evaluation
          * @param value the type of date list to return
          * @return a DateList
          */
-
         private List<DateTime> GetCandidates(DateTime date, RecurrencePattern pattern, bool?[] expandBehaviors)
         {
             var dates = new List<DateTime> {date};
@@ -341,7 +348,7 @@ namespace Ical.Net.Evaluation
          * positions are ignored.
          * @param dates
          */
-        private List<DateTime> ApplySetPosRules(List<DateTime> dates, RecurrencePattern pattern)
+        private static List<DateTime> ApplySetPosRules(List<DateTime> dates, RecurrencePattern pattern)
         {
             // return if no SETPOS rules specified..
             if (pattern.BySetPosition.Count == 0)
@@ -368,7 +375,7 @@ namespace Ical.Net.Evaluation
          * @param dates
          * @return
          */
-        private List<DateTime> GetMonthVariants(List<DateTime> dates, RecurrencePattern pattern, bool? expand)
+        private static List<DateTime> GetMonthVariants(List<DateTime> dates, RecurrencePattern pattern, bool? expand)
         {
             if (expand == null || pattern.ByMonth.Count == 0)
             {
@@ -395,7 +402,7 @@ namespace Ical.Net.Evaluation
          * @param dates
          * @return
          */
-        private List<DateTime> GetWeekNoVariants(List<DateTime> dates, RecurrencePattern pattern, bool? expand)
+        private static List<DateTime> GetWeekNoVariants(List<DateTime> dates, RecurrencePattern pattern, bool? expand)
         {
             if (expand == null || pattern.ByWeekNo.Count == 0)
             {
@@ -407,34 +414,47 @@ namespace Ical.Net.Evaluation
                 return new List<DateTime>();
             }
 
+            var weekYearRule = pattern.WeekYearRule;
+
             // Expand behavior
             var weekNoDates = new List<DateTime>();
             foreach (var t in dates)
             {
+                var localDateTime = t.ToLocalDateTime();
+                var weekYear = weekYearRule.GetWeekYear(localDateTime.Date);
+                var weeksInYear = weekYearRule.GetWeeksInWeekYear(weekYear, NodaTime.CalendarSystem.Iso);
+
                 foreach (var weekNo in pattern.ByWeekNo)
                 {
-                    var date = t;
-                    // Determine our current week number
-                    var currWeekNo = Calendar.GetIso8601WeekOfYear(date, CalendarWeekRule.FirstFourDayWeek, pattern.FirstDayOfWeek);
-                    while (currWeekNo > weekNo)
+                    // Normalize the week number
+                    int currentWeek;
+                    if (weekNo < 0)
                     {
-                        // If currWeekNo > weekNo, then we're likely at the start of a year
-                        // where currWeekNo could be 52 or 53.  If we simply step ahead 7 days
-                        // we should be back to week 1, where we can easily make the calculation
-                        // to move to weekNo.
-                        date = date.AddDays(7);
-                        currWeekNo = Calendar.GetIso8601WeekOfYear(date, CalendarWeekRule.FirstFourDayWeek, pattern.FirstDayOfWeek);
+                        // Figure out the week number for this year
+                        currentWeek = weeksInYear + weekNo + 1;
+                    }
+                    else
+                    {
+                        currentWeek = weekNo;
                     }
 
-                    // Move ahead to the correct week of the year
-                    date = date.AddDays((weekNo - currWeekNo) * 7);
-
-                    // Step backward single days until we're at the correct DayOfWeek
-                    while (date.DayOfWeek != pattern.FirstDayOfWeek)
+                    // Ignore invalid week numbers
+                    if (weekNo == 0 || weekNo > weeksInYear)
                     {
-                        date = date.AddDays(-1);
+                        continue;
                     }
 
+                    // Get the date at the start of the week
+                    // according to the pattern rules.
+                    var dateAtStartOfWeek = weekYearRule
+                        .GetLocalDate(weekYear, currentWeek, pattern.FirstIsoDayOfWeek, NodaTime.CalendarSystem.Iso);
+
+                    // Add the time of day
+                    var date = dateAtStartOfWeek
+                        .At(localDateTime.TimeOfDay)
+                        .ToDateTimeUnspecified();
+
+                    // Add all days for the given week
                     for (var k = 0; k < 7; k++)
                     {
                         weekNoDates.Add(date);
@@ -451,8 +471,7 @@ namespace Ical.Net.Evaluation
          * @param dates
          * @return
          */
-
-        private List<DateTime> GetYearDayVariants(List<DateTime> dates, RecurrencePattern pattern, bool? expand)
+        private static List<DateTime> GetYearDayVariants(List<DateTime> dates, RecurrencePattern pattern, bool? expand)
         {
             if (expand == null || pattern.ByYearDay.Count == 0)
             {
@@ -503,7 +522,6 @@ namespace Ical.Net.Evaluation
          * @param dates
          * @return
          */
-
         private List<DateTime> GetMonthDayVariants(List<DateTime> dates, RecurrencePattern pattern, bool? expand)
         {
             if (expand == null || pattern.ByMonthDay.Count == 0)
@@ -565,8 +583,7 @@ namespace Ical.Net.Evaluation
          * @param dates
          * @return
          */
-
-        private List<DateTime> GetDayVariants(List<DateTime> dates, RecurrencePattern pattern, bool? expand)
+        private static List<DateTime> GetDayVariants(List<DateTime> dates, RecurrencePattern pattern, bool? expand)
         {
             if (expand == null || pattern.ByDay.Count == 0)
             {
@@ -620,10 +637,11 @@ namespace Ical.Net.Evaluation
          * @param weekDay
          * @return
          */
-
-        private List<DateTime> GetAbsWeekDays(DateTime date, WeekDay weekDay, RecurrencePattern pattern)
+        private static List<DateTime> GetAbsWeekDays(DateTime date, WeekDay weekDay, RecurrencePattern pattern)
         {
             var days = new List<DateTime>();
+
+            var weekYearRule = pattern.WeekYearRule;
 
             var dayOfWeek = weekDay.DayOfWeek;
             if (pattern.Frequency == FrequencyType.Daily)
@@ -635,30 +653,38 @@ namespace Ical.Net.Evaluation
             }
             else if (pattern.Frequency == FrequencyType.Weekly || pattern.ByWeekNo.Count > 0)
             {
-                var weekNo = Calendar.GetIso8601WeekOfYear(date, CalendarWeekRule.FirstFourDayWeek, pattern.FirstDayOfWeek);
+                if (pattern.Frequency != FrequencyType.Weekly
+                    && date.DayOfWeek != dayOfWeek)
+                {
+                    // The other dates will already be covered by this, skip it
+                    return days;
+                }
+
+                var localDateTime = date.ToLocalDateTime();
+                var weekNo = weekYearRule.GetWeekOfWeekYear(localDateTime.Date);
+                int currentWeekNo = weekNo;
 
                 // construct a list of possible week days..
                 while (date.DayOfWeek != dayOfWeek)
                 {
                     date = date.AddDays(1);
+                    localDateTime = date.ToLocalDateTime();
+                    currentWeekNo = weekYearRule.GetWeekOfWeekYear(localDateTime.Date);
+
+                    // Do not let the date go beyond the current week
+                    if (weekNo != currentWeekNo)
+                    {
+                        return days;
+                    }
                 }
 
-                var nextWeekNo = Calendar.GetIso8601WeekOfYear(date, CalendarWeekRule.FirstFourDayWeek, pattern.FirstDayOfWeek);
-                var currentWeekNo = Calendar.GetIso8601WeekOfYear(date, CalendarWeekRule.FirstFourDayWeek, pattern.FirstDayOfWeek);
+                var weekYear = weekYearRule.GetWeekYear(localDateTime.Date);
+                var numberOfWeeks = weekYearRule.GetWeeksInWeekYear(weekYear);
 
-                //When we manage weekly recurring pattern and we have boundary case:
-                //Weekdays: Dec 31, Jan 1, Feb 1, Mar 1, Apr 1, May 1, June 1, Dec 31 - It's the 53th week of the year, but all another are 1st week number.
-                //So we need an EXRULE for this situation, but only for weekly events
-                while (currentWeekNo == weekNo || (nextWeekNo < weekNo && currentWeekNo == nextWeekNo && pattern.Frequency == FrequencyType.Weekly))
+                if ((pattern.ByWeekNo.Count == 0 || PatternIncludesWeek(pattern, currentWeekNo, numberOfWeeks))
+                    && (pattern.ByMonth.Count == 0 || pattern.ByMonth.Contains(date.Month)))
                 {
-                    if ((pattern.ByWeekNo.Count == 0 || pattern.ByWeekNo.Contains(currentWeekNo))
-                        && (pattern.ByMonth.Count == 0 || pattern.ByMonth.Contains(date.Month)))
-                    {
-                        days.Add(date);
-                    }
-
-                    date = date.AddDays(7);
-                    currentWeekNo = Calendar.GetIso8601WeekOfYear(date, CalendarWeekRule.FirstFourDayWeek,pattern.FirstDayOfWeek);
+                    days.Add(date);
                 }
             }
             else if (pattern.Frequency == FrequencyType.Monthly || pattern.ByMonth.Count > 0)
@@ -674,9 +700,12 @@ namespace Ical.Net.Evaluation
 
                 while (date.Month == month)
                 {
-                    var currentWeekNo = Calendar.GetIso8601WeekOfYear(date, CalendarWeekRule.FirstFourDayWeek, pattern.FirstDayOfWeek);
+                    var localDateTime = date.ToLocalDateTime();
+                    var weekYear = weekYearRule.GetWeekYear(localDateTime.Date);
+                    var numberOfWeeks = weekYearRule.GetWeeksInWeekYear(weekYear);
+                    var currentWeekNo = weekYearRule.GetWeekOfWeekYear(localDateTime.Date);
 
-                    if ((pattern.ByWeekNo.Count == 0 || pattern.ByWeekNo.Contains(currentWeekNo))
+                    if ((pattern.ByWeekNo.Count == 0 || PatternIncludesWeek(pattern, currentWeekNo, numberOfWeeks))
                         && (pattern.ByMonth.Count == 0 || pattern.ByMonth.Contains(date.Month)))
                     {
                         days.Add(date);
@@ -704,6 +733,41 @@ namespace Ical.Net.Evaluation
             return GetOffsetDates(days, weekDay.Offset);
         }
 
+        /// <summary>
+        /// Returns true if the pattern.ByWeekNo includes the week for the given week-year.
+        /// This handles negative weeks where the year may have 52 or 53 weeks.
+        /// </summary>
+        /// <param name="pattern"></param>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        private static bool PatternIncludesWeek(RecurrencePattern pattern, int week, int numberOfWeeks)
+        {
+            if (week < 1 || week > numberOfWeeks)
+            {
+                return false;
+            }
+
+            int realWeek;
+            foreach (var patternWeek in pattern.ByWeekNo)
+            {
+                if (patternWeek < 0)
+                {
+                    realWeek = numberOfWeeks + patternWeek + 1;
+                }
+                else
+                {
+                    realWeek = patternWeek;
+                }
+
+                if (realWeek == week)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         /**
          * Returns a single-element sublist containing the element of <code>list</code> at <code>offset</code>. Valid
          * offsets are from 1 to the size of the list. If an invalid offset is supplied, all elements from <code>list</code>
@@ -712,8 +776,7 @@ namespace Ical.Net.Evaluation
          * @param offset
          * @param sublist
          */
-
-        private List<DateTime> GetOffsetDates(List<DateTime> dates, int offset)
+        private static List<DateTime> GetOffsetDates(List<DateTime> dates, int offset)
         {
             if (offset == int.MinValue)
             {
@@ -739,8 +802,7 @@ namespace Ical.Net.Evaluation
          * @param dates
          * @return
          */
-
-        private List<DateTime> GetHourVariants(List<DateTime> dates, RecurrencePattern pattern, bool? expand)
+        private static List<DateTime> GetHourVariants(List<DateTime> dates, RecurrencePattern pattern, bool? expand)
         {
             if (expand == null || pattern.ByHour.Count == 0)
             {
@@ -789,8 +851,7 @@ namespace Ical.Net.Evaluation
          * @param dates
          * @return
          */
-
-        private List<DateTime> GetMinuteVariants(List<DateTime> dates, RecurrencePattern pattern, bool? expand)
+        private static List<DateTime> GetMinuteVariants(List<DateTime> dates, RecurrencePattern pattern, bool? expand)
         {
             if (expand == null || pattern.ByMinute.Count == 0)
             {
@@ -839,8 +900,7 @@ namespace Ical.Net.Evaluation
          * @param dates
          * @return
          */
-
-        private List<DateTime> GetSecondVariants(List<DateTime> dates, RecurrencePattern pattern, bool? expand)
+        private static List<DateTime> GetSecondVariants(List<DateTime> dates, RecurrencePattern pattern, bool? expand)
         {
             if (expand == null || pattern.BySecond.Count == 0)
             {
@@ -883,7 +943,7 @@ namespace Ical.Net.Evaluation
             return dates;
         }
 
-        private Period CreatePeriod(DateTime dt, IDateTime referenceDate)
+        private static Period CreatePeriod(DateTime dt, IDateTime referenceDate)
         {
             // Turn each resulting date/time into an IDateTime and associate it
             // with the reference date.

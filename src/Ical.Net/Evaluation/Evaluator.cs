@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Ical.Net.DataTypes;
 using Ical.Net.Utility;
+using NodaTime.Extensions;
 
 namespace Ical.Net.Evaluation
 {
@@ -48,7 +49,7 @@ namespace Ical.Net.Evaluation
             return newDt;
         }
 
-        protected void IncrementDate(ref DateTime dt, RecurrencePattern pattern, int interval)
+        protected static void IncrementDate(ref DateTime dt, RecurrencePattern pattern, int interval)
         {
             // FIXME: use a more specific exception.
             if (interval == 0)
@@ -78,7 +79,23 @@ namespace Ical.Net.Evaluation
                     dt = old.AddDays(-old.Day + 1).AddMonths(interval);
                     break;
                 case FrequencyType.Yearly:
-                    dt = old.AddDays(-old.DayOfYear + 1).AddYears(interval);
+                    // If selecting years by week number, increment by week-year instead
+                    // of years. This allows the date expansion/filtering process to not
+                    // have to look backwards (which would output overlapping ranges).
+                    if (pattern.ByWeekNo.Count > 0)
+                    {
+                        var dateTime = old.ToLocalDateTime();
+                        var weekYearRule = pattern.WeekYearRule;
+                        var weekYear = weekYearRule.GetWeekYear(dateTime.Date);
+                        var startOfWeek = weekYearRule.GetLocalDate(weekYear + interval, 1, pattern.FirstIsoDayOfWeek, NodaTime.CalendarSystem.Iso);
+                        dt = startOfWeek
+                            .At(dateTime.TimeOfDay)
+                            .ToDateTimeUnspecified();
+                    }
+                    else
+                    {
+                        dt = old.AddDays(-old.DayOfYear + 1).AddYears(interval);
+                    }
                     break;
                 // FIXME: use a more specific exception.
                 default:

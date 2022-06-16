@@ -5,6 +5,9 @@ using System.Linq;
 using Ical.Net.Evaluation;
 using Ical.Net.Serialization.DataTypes;
 using Ical.Net.Utility;
+using NodaTime;
+using NodaTime.Calendars;
+using NodaTime.Extensions;
 
 namespace Ical.Net.DataTypes
 {
@@ -83,6 +86,10 @@ namespace Ical.Net.DataTypes
         public List<int> BySetPosition { get; set; } = new List<int>();
 
         public DayOfWeek FirstDayOfWeek { get; set; } = DayOfWeek.Monday;
+
+        public IsoDayOfWeek FirstIsoDayOfWeek => FirstDayOfWeek.ToIsoDayOfWeek();
+
+        public IWeekYearRule WeekYearRule => WeekYearRules.ForMinDaysInFirstWeek(4, FirstIsoDayOfWeek);
 
         public RecurrenceRestrictionType RestrictionType
         {
