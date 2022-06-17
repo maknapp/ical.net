@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
+#nullable enable
+
 namespace Ical.Net.Collections
 {
     /// <summary>
@@ -11,15 +13,21 @@ namespace Ical.Net.Collections
     public class GroupedList<TGroup, TItem> :
         IGroupedList<TGroup, TItem>
         where TItem : class, IGroupedObject<TGroup>
+        where TGroup : notnull
     {
         private readonly List<IMultiLinkedList<TItem>> _lists = new List<IMultiLinkedList<TItem>>();
-        private readonly Dictionary<TGroup, IMultiLinkedList<TItem>> _dictionary = new Dictionary<TGroup, IMultiLinkedList<TItem>>();
+        private Dictionary<TGroup, IMultiLinkedList<TItem>>? _dictionary = null;
 
-        private IMultiLinkedList<TItem> EnsureList(TGroup group)
+        private IMultiLinkedList<TItem>? EnsureList(TGroup group)
         {
             if (group == null)
             {
                 return null;
+            }
+
+            if (_dictionary == null)
+            {
+                _dictionary = new Dictionary<TGroup, IMultiLinkedList<TItem>>();
             }
 
             if (_dictionary.ContainsKey(group))
@@ -34,7 +42,7 @@ namespace Ical.Net.Collections
             return list;
         }
 
-        private IMultiLinkedList<TItem> ListForIndex(int index, out int relativeIndex)
+        private IMultiLinkedList<TItem>? ListForIndex(int index, out int relativeIndex)
         {
             foreach (var list in _lists.Where(list => list.StartIndex <= index && list.ExclusiveEnd > index))
             {
@@ -45,7 +53,7 @@ namespace Ical.Net.Collections
             return null;
         }
 
-        public event EventHandler<ObjectEventArgs<TItem, int>> ItemAdded;
+        public event EventHandler<ObjectEventArgs<TItem, int>>? ItemAdded;
 
         protected void OnItemAdded(TItem obj, int index)
         {
@@ -62,13 +70,21 @@ namespace Ical.Net.Collections
             // Add a new list if necessary
             var group = item.Group;
             var list = EnsureList(group);
-            var index = list.Count;
-            list.Add(item);
-            OnItemAdded(item, list.StartIndex + index);
+            if (list != null)
+            {
+                var index = list.Count;
+                list.Add(item);
+                OnItemAdded(item, list.StartIndex + index);
+            }
         }
 
         public virtual int IndexOf(TItem item)
         {
+            if (_dictionary == null)
+            {
+                return -1;
+            }
+
             var group = item.Group;
             if (!_dictionary.ContainsKey(group))
             {
@@ -89,7 +105,7 @@ namespace Ical.Net.Collections
 
         public virtual void Clear(TGroup group)
         {
-            if (!_dictionary.ContainsKey(group))
+            if (_dictionary == null || !_dictionary.ContainsKey(group))
             {
                 return;
             }
@@ -100,26 +116,31 @@ namespace Ical.Net.Collections
 
         public virtual void Clear()
         {
-            _dictionary.Clear();
+            _dictionary?.Clear();
             _lists.Clear();
         }
 
-        public virtual bool ContainsKey(TGroup group) => _dictionary.ContainsKey(@group);
+        public virtual bool ContainsKey(TGroup group) => (_dictionary?.ContainsKey(@group) ?? false);
 
         public virtual int Count => _lists.Sum(list => list.Count);
 
-        public virtual int CountOf(TGroup group) => _dictionary.ContainsKey(group)
-            ? _dictionary[group].Count
+        public virtual int CountOf(TGroup group) => ContainsKey(group)
+            ? _dictionary![group].Count
             : 0;
 
-        public virtual IEnumerable<TItem> Values() => _dictionary.Values.SelectMany(i => i);
+        public virtual IEnumerable<TItem> Values() => _dictionary?.Values.SelectMany(i => i) ?? Enumerable.Empty<TItem>();
 
-        public virtual IEnumerable<TItem> AllOf(TGroup group) => _dictionary.ContainsKey(@group)
-            ? (IEnumerable<TItem>) _dictionary[@group]
-            : Array.Empty<TItem>();
+        public virtual IEnumerable<TItem> AllOf(TGroup group) => ContainsKey(@group)
+            ? _dictionary![@group]
+            : Enumerable.Empty<TItem>();
 
         public virtual bool Remove(TItem obj)
         {
+            if (_dictionary == null)
+            {
+                return false;
+            }
+
             var group = obj.Group;
             if (!_dictionary.ContainsKey(group))
             {
@@ -140,6 +161,11 @@ namespace Ical.Net.Collections
 
         public virtual bool Remove(TGroup group)
         {
+            if (_dictionary == null)
+            {
+                return false;
+            }
+
             if (!_dictionary.ContainsKey(group))
             {
                 return false;
@@ -156,12 +182,12 @@ namespace Ical.Net.Collections
         public virtual bool Contains(TItem item)
         {
             var group = item.Group;
-            return _dictionary.ContainsKey(group) && _dictionary[group].Contains(item);
+            return ContainsKey(group) && _dictionary![group].Contains(item);
         }
 
         public virtual void CopyTo(TItem[] array, int arrayIndex)
         {
-            _dictionary.SelectMany(kvp => kvp.Value).ToArray().CopyTo(array, arrayIndex);
+            _dictionary?.SelectMany(kvp => kvp.Value).ToArray().CopyTo(array, arrayIndex);
         }
 
         public virtual bool IsReadOnly => false;
@@ -191,7 +217,7 @@ namespace Ical.Net.Collections
             list.RemoveAt(relativeIndex);
         }
 
-        public virtual TItem this[int index]
+        public virtual TItem? this[int index]
         {
             get
             {

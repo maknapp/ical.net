@@ -1,6 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
-    <LangVersion>8</LangVersion>
     <PackageVersion>4.2.1</PackageVersion>
     <Title>LGX.Ical.Net</Title>
     <PackageProjectUrl>https://github.com/maknapp/ical.net</PackageProjectUrl>

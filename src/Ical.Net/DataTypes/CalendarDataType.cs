@@ -2,6 +2,8 @@ using System;
 using System.Runtime.Serialization;
 using Ical.Net.Proxies;
 
+#nullable enable
+
 namespace Ical.Net.DataTypes
 {
     /// <summary>
@@ -11,20 +13,14 @@ namespace Ical.Net.DataTypes
     {
         private IParameterCollection _parameters;
         private ParameterCollectionProxy _proxy;
-        private ServiceProvider _serviceProvider;
+        private ServiceProvider? _serviceProvider = null;
 
-        protected ICalendarObject _AssociatedObject;
+        protected ICalendarObject? _AssociatedObject;
 
         protected CalendarDataType()
         {
-            Initialize();
-        }
-
-        private void Initialize()
-        {
             _parameters = new ParameterList();
             _proxy = new ParameterCollectionProxy(_parameters);
-            _serviceProvider = new ServiceProvider();
         }
 
         [OnDeserializing]
@@ -41,7 +37,9 @@ namespace Ical.Net.DataTypes
 
         protected virtual void OnDeserializing(StreamingContext context)
         {
-            Initialize();
+            _parameters = new ParameterList();
+            _proxy = new ParameterCollectionProxy(_parameters);
+            _serviceProvider = null;
         }
 
         protected virtual void OnDeserialized(StreamingContext context) {}
@@ -94,7 +92,7 @@ namespace Ical.Net.DataTypes
             _proxy?.Set("VALUE", type ?? type.ToUpper());
         }
 
-        public virtual ICalendarObject AssociatedObject
+        public virtual ICalendarObject? AssociatedObject
         {
             get => _AssociatedObject;
             set
@@ -121,7 +119,7 @@ namespace Ical.Net.DataTypes
             }
         }
 
-        public virtual Calendar Calendar => _AssociatedObject?.Calendar;
+        public virtual Calendar? Calendar => _AssociatedObject?.Calendar;
 
         public virtual string Language
         {
@@ -150,7 +148,7 @@ namespace Ical.Net.DataTypes
         /// Creates a copy of the object.
         /// </summary>
         /// <returns>The copy of the object.</returns>
-        public virtual T Copy<T>()
+        public virtual T? Copy<T>() where T : class
         {
             var type = GetType();
             var obj = Activator.CreateInstance(type) as ICopyable;
@@ -166,20 +164,28 @@ namespace Ical.Net.DataTypes
 
         public virtual IParameterCollection Parameters => _proxy;
 
-        public virtual object GetService(Type serviceType) => _serviceProvider.GetService(serviceType);
+        public virtual object? GetService(Type serviceType) => _serviceProvider?.GetService(serviceType);
 
-        public object GetService(string name) => _serviceProvider.GetService(name);
+        public object? GetService(string name) => _serviceProvider?.GetService(name);
 
-        public T GetService<T>() => _serviceProvider.GetService<T>();
+        public T? GetService<T>() where T : class => _serviceProvider?.GetService<T>();
 
-        public T GetService<T>(string name) => _serviceProvider.GetService<T>(name);
+        public T? GetService<T>(string name) where T : class => _serviceProvider?.GetService<T>(name);
 
-        public void SetService(string name, object obj) => _serviceProvider.SetService(name, obj);
+        public void SetService(string name, object obj)
+        {
+            _serviceProvider ??= new ServiceProvider();
+            _serviceProvider.SetService(name, obj);
+        }
 
-        public void SetService(object obj) => _serviceProvider.SetService(obj);
+        public void SetService(object obj)
+        {
+            _serviceProvider ??= new ServiceProvider();
+            _serviceProvider.SetService(obj);
+        }
 
-        public void RemoveService(Type type) => _serviceProvider.RemoveService(type);
+        public void RemoveService(Type type) => _serviceProvider?.RemoveService(type);
 
-        public void RemoveService(string name) => _serviceProvider.RemoveService(name);
+        public void RemoveService(string name) => _serviceProvider?.RemoveService(name);
     }
 }

@@ -2,6 +2,8 @@ using System;
 using System.Runtime.Serialization;
 using Ical.Net.Collections;
 
+#nullable enable
+
 namespace Ical.Net
 {
     /// <summary>
@@ -10,11 +12,16 @@ namespace Ical.Net
     public class CalendarObject : CalendarObjectBase, ICalendarObject
     {
         private ICalendarObjectList<ICalendarObject> _children;
-        private ServiceProvider _serviceProvider;
+        private ServiceProvider? _serviceProvider = null;
 
         internal CalendarObject()
         {
-            Initialize();
+            //ToDo: I'm fairly certain this is ONLY used for null checking. If so, maybe it can just be a bool? CalendarObjectList is an empty object, and
+            //ToDo: its constructor parameter is ignored
+            _children = new CalendarObjectList(this);
+            _children.ItemAdded += Children_ItemAdded;
+
+            _serviceProvider = null;
         }
 
         public CalendarObject(string name) : this()
@@ -28,31 +35,27 @@ namespace Ical.Net
             Column = col;
         }
 
-        private void Initialize()
-        {
-            //ToDo: I'm fairly certain this is ONLY used for null checking. If so, maybe it can just be a bool? CalendarObjectList is an empty object, and
-            //ToDo: its constructor parameter is ignored
-            _children = new CalendarObjectList(this);
-            _serviceProvider = new ServiceProvider();
-
-            _children.ItemAdded += Children_ItemAdded;
-        }
-
         [OnDeserializing]
         internal void DeserializingInternal(StreamingContext context) => OnDeserializing(context);
 
         [OnDeserialized]
         internal void DeserializedInternal(StreamingContext context) => OnDeserialized(context);
 
-        protected virtual void OnDeserializing(StreamingContext context) => Initialize();
+        protected virtual void OnDeserializing(StreamingContext context)
+        {
+            _children = new CalendarObjectList(this);
+            _children.ItemAdded += Children_ItemAdded;
+
+            _serviceProvider = null;
+        }
 
         protected virtual void OnDeserialized(StreamingContext context) {}
 
-        private void Children_ItemAdded(object sender, ObjectEventArgs<ICalendarObject, int> e) => e.First.Parent = this;
+        private void Children_ItemAdded(object? sender, ObjectEventArgs<ICalendarObject, int> e) => e.First.Parent = this;
 
         protected bool Equals(CalendarObject other) => string.Equals(Name, other.Name, StringComparison.OrdinalIgnoreCase);
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
@@ -86,7 +89,7 @@ namespace Ical.Net
         /// <summary>
         /// Returns the parent iCalObject that owns this one.
         /// </summary>
-        public virtual ICalendarObject Parent { get; set; }
+        public virtual ICalendarObject? Parent { get; set; }
 
         /// <summary>
         /// A collection of iCalObjects that are children of the current object.
@@ -96,12 +99,12 @@ namespace Ical.Net
         /// <summary>
         /// Gets or sets the name of the iCalObject.  For iCalendar components, this is the RFC 5545 name of the component.
         /// </summary>        
-        public virtual string Name { get; set; }
+        public virtual string? Name { get; set; }
 
         /// <summary>
         /// Returns the <see cref="Calendar"/> that this DDayiCalObject belongs to.
         /// </summary>
-        public virtual Calendar Calendar
+        public virtual Calendar? Calendar
         {
             get
             {
@@ -120,23 +123,31 @@ namespace Ical.Net
 
         public virtual int Column { get; set; }
 
-        public virtual object GetService(Type serviceType) => _serviceProvider.GetService(serviceType);
+        public virtual object? GetService(Type serviceType) => _serviceProvider?.GetService(serviceType);
 
-        public virtual object GetService(string name) => _serviceProvider.GetService(name);
+        public virtual object? GetService(string name) => _serviceProvider?.GetService(name);
 
-        public virtual T GetService<T>() => _serviceProvider.GetService<T>();
+        public virtual T? GetService<T>() where T : class => _serviceProvider?.GetService<T>();
 
-        public virtual T GetService<T>(string name) => _serviceProvider.GetService<T>(name);
+        public virtual T? GetService<T>(string name) where T : class => _serviceProvider?.GetService<T>(name);
 
-        public virtual void SetService(string name, object obj) => _serviceProvider.SetService(name, obj);
+        public virtual void SetService(string name, object obj)
+        {
+            _serviceProvider ??= new ServiceProvider();
+            _serviceProvider.SetService(name, obj);
+        }
 
-        public virtual void SetService(object obj) => _serviceProvider.SetService(obj);
+        public virtual void SetService(object obj)
+        {
+            _serviceProvider ??= new ServiceProvider();
+            _serviceProvider.SetService(obj);
+        }
 
-        public virtual void RemoveService(Type type) => _serviceProvider.RemoveService(type);
+        public virtual void RemoveService(Type type) => _serviceProvider?.RemoveService(type);
 
-        public virtual void RemoveService(string name) => _serviceProvider.RemoveService(name);
+        public virtual void RemoveService(string name) => _serviceProvider?.RemoveService(name);
 
-        public virtual string Group
+        public virtual string? Group
         {
             get => Name;
             set => Name = value;

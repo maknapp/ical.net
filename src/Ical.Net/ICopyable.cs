@@ -14,6 +14,6 @@
         /// or not is whether arithmetic operations mutate fields or properties. iCalDateTime is a good example where + and - would otherwise
         /// change the Value of the underlying DateTime.
         /// </summary>
-        T Copy<T>();
+        T Copy<T>() where T : class;
     }
 }

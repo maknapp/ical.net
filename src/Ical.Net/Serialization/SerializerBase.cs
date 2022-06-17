@@ -71,7 +71,7 @@ namespace Ical.Net.Serialization
 
         public virtual object GetService(string name) => SerializationContext?.GetService(name);
 
-        public virtual T GetService<T>()
+        public virtual T GetService<T>() where T : class
         {
             if (SerializationContext != null)
             {
@@ -80,7 +80,7 @@ namespace Ical.Net.Serialization
             return default(T);
         }
 
-        public virtual T GetService<T>(string name)
+        public virtual T GetService<T>(string name) where T : class
         {
             if (SerializationContext != null)
             {

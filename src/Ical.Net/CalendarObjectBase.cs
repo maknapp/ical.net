@@ -21,7 +21,7 @@ namespace Ical.Net
         /// Creates a copy of the object.
         /// </summary>
         /// <returns>The copy of the object.</returns>
-        public virtual T Copy<T>()
+        public virtual T Copy<T>() where T : class
         {
             var type = GetType();
             var obj = Activator.CreateInstance(type) as ICopyable;
