@@ -1,9 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using BenchmarkDotNet.Running;
-using BenchmarkDotNet.Toolchains.InProcess;
+﻿using BenchmarkDotNet.Running;
 
 namespace PerfTests
 {
@@ -11,13 +6,11 @@ namespace PerfTests
     {
         static void Main(string[] args)
         {
-            BenchmarkRunner.Run(BenchmarkConverter.TypeToBenchmarks(typeof(ApplicationWorkflows)));
-
-
-            BenchmarkRunner.Run(BenchmarkConverter.TypeToBenchmarks(typeof(OccurencePerfTests)));
-            //BenchmarkRunnerCore.Run(BenchmarkConverter.TypeToBenchmarks(typeof(CalDateTimePerfTests)), t => InProcessToolchain.Instance);
-            //BenchmarkRunnerCore.Run(BenchmarkConverter.TypeToBenchmarks(typeof(SerializationPerfTests)), t => InProcessToolchain.Instance);
-            //BenchmarkRunnerCore.Run(BenchmarkConverter.TypeToBenchmarks(typeof(ThroughputTests)), t => InProcessToolchain.Instance);
+            BenchmarkRunner.Run<ApplicationWorkflows>();
+            BenchmarkRunner.Run<OccurencePerfTests>();
+            BenchmarkRunner.Run<CalDateTimePerfTests>();
+            BenchmarkRunner.Run<SerializationPerfTests>();
+            BenchmarkRunner.Run<ThroughputTests>();
         }
     }
 }

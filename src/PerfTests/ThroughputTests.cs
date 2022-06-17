@@ -5,6 +5,7 @@ using Ical.Net;
 
 namespace PerfTests
 {
+    [MemoryDiagnoser]
     public class ThroughputTests
     {
         [Benchmark]

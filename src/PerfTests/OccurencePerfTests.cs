@@ -8,6 +8,7 @@ using Ical.Net.DataTypes;
 
 namespace PerfTests
 {
+    [MemoryDiagnoser]
     public class OccurencePerfTests
     {
         [Benchmark]

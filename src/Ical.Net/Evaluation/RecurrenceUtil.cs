@@ -31,16 +31,24 @@ namespace Ical.Net.Evaluation
 
             // Change the time zone of periodStart/periodEnd as needed 
             // so they can be used during the evaluation process.
+            // But they need to be cloned so that the original is not modified
+            var periodStartCopy = new CalDateTime(periodStart)
+            {
+                HasTime = periodStart.HasTime,
+                TzId = start.TzId
+            };
+            var periodEndCopy = new CalDateTime(periodEnd)
+            {
+                HasTime = periodEnd.HasTime,
+                TzId = start.TzId
+            };
 
-            periodStart.TzId = start.TzId;
-            periodEnd.TzId = start.TzId;
-
-            var periods = evaluator.Evaluate(start, DateUtil.GetSimpleDateTimeData(periodStart), DateUtil.GetSimpleDateTimeData(periodEnd),
+            var periods = evaluator.Evaluate(start, DateUtil.GetSimpleDateTimeData(periodStartCopy), DateUtil.GetSimpleDateTimeData(periodEndCopy),
                 includeReferenceDateInResults);
 
             var otherOccurrences = from p in periods
                 let endTime = p.EndTime ?? p.StartTime
-                where endTime.GreaterThan(periodStart) && p.StartTime.LessThanOrEqual(periodEnd)
+                where endTime.GreaterThan(periodStartCopy) && p.StartTime.LessThanOrEqual(periodEndCopy)
                 select new Occurrence(recurrable, p);
 
             var occurrences = new HashSet<Occurrence>(otherOccurrences);

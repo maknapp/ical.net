@@ -9,6 +9,7 @@ using Ical.Net.Serialization;
 
 namespace PerfTests
 {
+    [MemoryDiagnoser]
     public class SerializationPerfTests
     {
         private const string _sampleEvent = @"BEGIN:VCALENDAR
