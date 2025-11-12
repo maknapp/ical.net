@@ -528,4 +528,35 @@ public class RecurrenceTests_From_Issues
         var expected = new LocalDate(2026, 05, 01).AtStartOfDayInZone(start.Zone);
         Assert.That(result, Is.EqualTo(expected));
     }
+
+    [Test]
+    public void Yearly_ByMonth_ByDay_MonthIsCorrect()
+    {
+        // Bug #791
+        var rp = new RecurrencePattern("FREQ=YEARLY;BYMONTHDAY=8,9;BYDAY=WE,TH;UNTIL=20280101");
+        var referenceDate = new CalDateTime(2025, 4, 8, 0, 0, 0, "Central Standard Time");
+        var start = referenceDate.ToZonedDateTime();
+
+        var vEvent = new CalendarEvent
+        {
+            DtStart = referenceDate,
+            RecurrenceRules = [rp],
+        };
+
+        var calendar = new Calendar();
+        calendar.Events.Add(vEvent);
+
+        var recurringPeriods = calendar.GetOccurrences(start).ToList();
+
+        var expected = new List<LocalDate>
+        {
+            new(2025, 4, 9),
+            new(2026, 4, 8),
+            new(2026, 4, 9),
+            new(2027, 4, 8),
+        }.Select(x => x.AtStartOfDayInZone(start.Zone)).ToList();
+
+        Assert.That(recurringPeriods.Select(x => x.Start), Is.EqualTo(expected));
+    }
+
 }

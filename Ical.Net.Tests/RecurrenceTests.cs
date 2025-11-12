@@ -1711,12 +1711,16 @@ public class RecurrenceTests
         var iCal = Calendar.Load(IcsFiles.YearlyInterval1)!;
         EventOccurrenceTest(
             iCal,
-            new CalDateTime(2006, 1, 1, 7, 0, 0, _tzid),
-            new CalDateTime(2007, 1, 31, 7, 0, 0, _tzid),
+            new CalDateTime(2005, 1, 1, 7, 0, 0, _tzid),
+            new CalDateTime(2010, 1, 31, 7, 0, 0, _tzid),
             new[]
             {
-                new Period(new CalDateTime(2007, 1, 8, 7, 0, 0, _tzid), Duration.FromHours(24)),
-                new Period(new CalDateTime(2007, 1, 9, 7, 0, 0, _tzid), Duration.FromHours(24))
+                new Period(new CalDateTime(2005, 4, 11, 7, 0, 0, _tzid), Duration.FromHours(24)),
+                new Period(new CalDateTime(2005, 4, 12, 7, 0, 0, _tzid), Duration.FromHours(24)),
+                new Period(new CalDateTime(2007, 4, 09, 7, 0, 0, _tzid), Duration.FromHours(24)),
+                new Period(new CalDateTime(2007, 4, 10, 7, 0, 0, _tzid), Duration.FromHours(24)),
+                new Period(new CalDateTime(2009, 4, 13, 7, 0, 0, _tzid), Duration.FromHours(24)),
+                new Period(new CalDateTime(2009, 4, 14, 7, 0, 0, _tzid), Duration.FromHours(24)),
             }
         );
     }
