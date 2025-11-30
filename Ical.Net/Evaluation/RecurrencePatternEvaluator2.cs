@@ -14,6 +14,7 @@ using NodaTime.Calendars;
 using NodaTime.Extensions;
 
 namespace Ical.Net.Evaluation;
+
 internal class RecurrencePatternEvaluator2
 {
     private readonly RecurrencePattern rule;
@@ -162,7 +163,7 @@ internal class RecurrencePatternEvaluator2
         }
     }
 
-    public IEnumerable<ZonedDateTime> Expand(ZonedDateTime seed)
+    private IEnumerable<ZonedDateTime> Expand(ZonedDateTime seed)
     {
         switch (rule.Frequency)
         {
@@ -219,7 +220,7 @@ internal class RecurrencePatternEvaluator2
         }
     }
 
-    public IEnumerable<ZonedDateTime> BySetPosition(ZonedDateTime seed)
+    private IEnumerable<ZonedDateTime> BySetPosition(ZonedDateTime seed)
     {
         if (rule.BySetPosition.Count == 0)
         {
@@ -231,7 +232,7 @@ internal class RecurrencePatternEvaluator2
         }
     }
 
-    public IEnumerable<ZonedDateTime> LimitSetPosition(ZonedDateTime seed)
+    private IEnumerable<ZonedDateTime> LimitSetPosition(ZonedDateTime seed)
     {
         var hasNegativeOffset = rule.BySetPosition.Any(static p => p < 0);
 
@@ -304,7 +305,7 @@ internal class RecurrencePatternEvaluator2
         }
     }
 
-    public IEnumerable<ZonedDateTime> StartByRules(IEnumerable<ZonedDateTime> seed)
+    private IEnumerable<ZonedDateTime> StartByRules(IEnumerable<ZonedDateTime> seed)
     {
         if (referenceDate.HasTime)
         {
@@ -316,7 +317,7 @@ internal class RecurrencePatternEvaluator2
         }
     }
 
-    public IEnumerable<ZonedDateTime> BySecond(IEnumerable<ZonedDateTime> seed)
+    private IEnumerable<ZonedDateTime> BySecond(IEnumerable<ZonedDateTime> seed)
     {
         if (rule.BySecond.Count == 0)
         {
@@ -333,7 +334,7 @@ internal class RecurrencePatternEvaluator2
         }
     }
 
-    public IEnumerable<ZonedDateTime> LimitSecond(IEnumerable<ZonedDateTime> seed)
+    private IEnumerable<ZonedDateTime> LimitSecond(IEnumerable<ZonedDateTime> seed)
     {
         foreach (var value in ByMinute(seed))
         {
@@ -344,7 +345,7 @@ internal class RecurrencePatternEvaluator2
         }
     }
 
-    public IEnumerable<ZonedDateTime> ExpandSecond(IEnumerable<ZonedDateTime> seed)
+    private IEnumerable<ZonedDateTime> ExpandSecond(IEnumerable<ZonedDateTime> seed)
     {
         var bySecond = rule.BySecond.ToArray();
         Array.Sort(bySecond);
@@ -360,7 +361,7 @@ internal class RecurrencePatternEvaluator2
         }
     }
 
-    public IEnumerable<ZonedDateTime> ByMinute(IEnumerable<ZonedDateTime> seed)
+    private IEnumerable<ZonedDateTime> ByMinute(IEnumerable<ZonedDateTime> seed)
     {
         if (rule.ByMinute.Count == 0)
         {
@@ -376,7 +377,7 @@ internal class RecurrencePatternEvaluator2
         }
     }
 
-    public IEnumerable<ZonedDateTime> LimitMinute(IEnumerable<ZonedDateTime> seed)
+    private IEnumerable<ZonedDateTime> LimitMinute(IEnumerable<ZonedDateTime> seed)
     {
         foreach (var value in ByHour(seed))
         {
@@ -387,7 +388,7 @@ internal class RecurrencePatternEvaluator2
         }
     }
 
-    public IEnumerable<ZonedDateTime> ExpandMinute(IEnumerable<ZonedDateTime> seed)
+    private IEnumerable<ZonedDateTime> ExpandMinute(IEnumerable<ZonedDateTime> seed)
     {
         var byMinute = rule.ByMinute.ToArray();
         Array.Sort(byMinute);
@@ -403,7 +404,7 @@ internal class RecurrencePatternEvaluator2
         }
     }
 
-    public IEnumerable<ZonedDateTime> ByHour(IEnumerable<ZonedDateTime> seed)
+    private IEnumerable<ZonedDateTime> ByHour(IEnumerable<ZonedDateTime> seed)
     {
         if (rule.ByHour.Count == 0)
         {
@@ -420,7 +421,7 @@ internal class RecurrencePatternEvaluator2
     }
 
 
-    public IEnumerable<ZonedDateTime> LimitHour(IEnumerable<ZonedDateTime> seed)
+    private IEnumerable<ZonedDateTime> LimitHour(IEnumerable<ZonedDateTime> seed)
     {
         foreach (var value in ByDay(seed))
         {
@@ -431,7 +432,7 @@ internal class RecurrencePatternEvaluator2
         }
     }
 
-    public IEnumerable<ZonedDateTime> ExpandHour(IEnumerable<ZonedDateTime> seed)
+    private IEnumerable<ZonedDateTime> ExpandHour(IEnumerable<ZonedDateTime> seed)
     {
         var byHour = rule.ByHour.ToArray();
         Array.Sort(byHour);
@@ -452,7 +453,7 @@ internal class RecurrencePatternEvaluator2
     /// </summary>
     /// <param name="seed"></param>
     /// <returns></returns>
-    public IEnumerable<ZonedDateTime> ByDay(IEnumerable<ZonedDateTime> seed)
+    private IEnumerable<ZonedDateTime> ByDay(IEnumerable<ZonedDateTime> seed)
     {
         if (rule.ByDay.Count == 0)
         {
@@ -702,7 +703,7 @@ internal class RecurrencePatternEvaluator2
         }
     }
 
-    public IEnumerable<ZonedDateTime> ExpandDay(IEnumerable<ZonedDateTime> seed)
+    private IEnumerable<ZonedDateTime> ExpandDay(IEnumerable<ZonedDateTime> seed)
     {
         var normalizedDays = NormalizeDays();
 
