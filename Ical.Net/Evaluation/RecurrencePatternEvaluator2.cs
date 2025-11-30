@@ -233,31 +233,71 @@ internal class RecurrencePatternEvaluator2
     {
         var hasNegativeOffset = rule.BySetPosition.Any(static p => p < 0);
 
-        foreach (var setSeed in Expand(seed))
+        if (hasNegativeOffset)
         {
-            var recurrenceSet = StartByRules([setSeed]);
-
-            HashSet<int> bySetPos;
-
-            if (hasNegativeOffset)
+            foreach (var setSeed in Expand(seed))
             {
-                var tmp = recurrenceSet.ToList();
-                var count = tmp.Count;
-                recurrenceSet = tmp;
-                bySetPos = [.. rule.BySetPosition.Select(p => (p < 0) ? count + p + 1 : p)];
+                var recurrenceSet = StartByRules([setSeed]);
+
+                // Evaluate the entire set so that negative offsets can be handled
+                var setValues = recurrenceSet.ToList();
+
+                // Normalize BYSETPOS values based on the evaluated set of values.
+                // Note that this produces a list of zero-based INDEX values, not
+                // the actual BYSETPOS values.
+                var count = setValues.Count;
+                var orderedSetPos = rule.BySetPosition
+                    .Select(p => (p < 0) ? count + p : p - 1)
+                    .ToArray();
+
+                Array.Sort(orderedSetPos);
+
+                // Yield the values from each set position
+                for (var i = 0; i < orderedSetPos.Length && orderedSetPos[i] < setValues.Count; i++)
+                {
+                    yield return setValues[orderedSetPos[i]];
+                }
             }
-            else
-            {
-                bySetPos = [.. rule.BySetPosition];
-            }
+        }
+        else
+        {
+            // The normalized BYSETPOS values are all positive and
+            // will not change, so prepare them once before expanding.
+            var orderedSetPos = rule.BySetPosition.ToArray();
+            Array.Sort(orderedSetPos);
 
-            var i = 0;
-            foreach (var value in recurrenceSet)
+            foreach (var setSeed in Expand(seed))
             {
-                if (bySetPos.Contains(++i))
+                var recurrenceSet = StartByRules([setSeed]);
+
+                foreach (var value in FilterByIndex(recurrenceSet, orderedSetPos))
                 {
                     yield return value;
                 }
+            }
+        }
+
+        static IEnumerable<ZonedDateTime> FilterByIndex(IEnumerable<ZonedDateTime> values, int[] bySetPosOrdered)
+        {
+            var x = 0;
+            int setPos;
+            var valueEnumerator = values.GetEnumerator();
+
+            for (var i = 0; i < bySetPosOrdered.Length; i++)
+            {
+                setPos = bySetPosOrdered[i];
+
+                // Move to the next position in the set
+                do
+                {
+                    if (!valueEnumerator.MoveNext())
+                    {
+                        yield break;
+                    }
+                } while (++x < setPos);
+
+                // Set position reached
+                yield return valueEnumerator.Current;
             }
         }
     }
