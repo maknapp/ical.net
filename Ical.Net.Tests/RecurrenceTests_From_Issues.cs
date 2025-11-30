@@ -620,4 +620,118 @@ public class RecurrenceTests_From_Issues
         Assert.That(recurringPeriods.Select(x => x.Start), Is.EqualTo(expected));
     }
 
+    [Test]
+    public void ByDayLimitingByMonthDayMonthly()
+    {
+        var rp = new RecurrencePattern("FREQ=MONTHLY;BYMONTHDAY=1,8;BYDAY=1MO,2TU;COUNT=3");
+        var referenceDate = new CalDateTime(2026, 6, 1, 0, 0, 0, "Central Standard Time");
+        var start = referenceDate.ToZonedDateTime();
+
+        var vEvent = new CalendarEvent
+        {
+            DtStart = referenceDate,
+            RecurrenceRules = [rp],
+        };
+
+        var calendar = new Calendar();
+        calendar.Events.Add(vEvent);
+
+        var recurringPeriods = calendar.GetOccurrences(start).Take(3).ToList();
+
+        var expected = new List<LocalDateTime>
+        {
+            new(2026, 6, 1, 0, 0, 0),
+            new(2026, 9, 8, 0, 0, 0),
+            new(2026, 12, 8, 0, 0, 0),
+        }.Select(x => x.InZoneLeniently(start.Zone)).ToList();
+
+        Assert.That(recurringPeriods.Select(x => x.Start), Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void ByDayLimitingByMonthDayYearly()
+    {
+        var rp = new RecurrencePattern("FREQ=YEARLY;BYMONTHDAY=1,8;BYDAY=22MO,23TU,25MO,36TU;COUNT=3");
+        var referenceDate = new CalDateTime(2026, 6, 1, 0, 0, 0, "Central Standard Time");
+        var start = referenceDate.ToZonedDateTime();
+
+        var vEvent = new CalendarEvent
+        {
+            DtStart = referenceDate,
+            RecurrenceRules = [rp],
+        };
+
+        var calendar = new Calendar();
+        calendar.Events.Add(vEvent);
+
+        var recurringPeriods = calendar.GetOccurrences(start).Take(3).ToList();
+
+        var expected = new List<LocalDateTime>
+        {
+            new(2026, 6, 1, 0, 0, 0),
+            new(2027, 6, 8, 0, 0, 0),
+            new(2032, 6, 8, 0, 0, 0),
+        }.Select(x => x.InZoneLeniently(start.Zone)).ToList();
+
+        Assert.That(recurringPeriods.Select(x => x.Start), Is.EqualTo(expected));
+    }
+
+
+    [Test]
+    public void ByDayLimitingByMonthDayByMonthYearly()
+    {
+        var rp = new RecurrencePattern("FREQ=YEARLY;BYMONTH=6,7,8,9,10,11,12;BYMONTHDAY=1,8;BYDAY=1MO,2TU;COUNT=3");
+        var referenceDate = new CalDateTime(2026, 6, 1, 0, 0, 0, "Central Standard Time");
+        var start = referenceDate.ToZonedDateTime();
+
+        var vEvent = new CalendarEvent
+        {
+            DtStart = referenceDate,
+            RecurrenceRules = [rp],
+        };
+
+        var calendar = new Calendar();
+        calendar.Events.Add(vEvent);
+
+        var recurringPeriods = calendar.GetOccurrences(start).Take(3).ToList();
+
+        var expected = new List<LocalDateTime>
+        {
+            new(2026, 6, 1, 0, 0, 0),
+            new(2026, 9, 8, 0, 0, 0),
+            new(2026, 12, 8, 0, 0, 0),
+        }.Select(x => x.InZoneLeniently(start.Zone)).ToList();
+
+        Assert.That(recurringPeriods.Select(x => x.Start), Is.EqualTo(expected));
+    }
+
+
+    [Test]
+    public void ByDayLimitingByYearDayYearly()
+    {
+        var rp = new RecurrencePattern("FREQ=YEARLY;BYYEARDAY=152,173,251,272,321,342;BYDAY=22MO,26MO,36TU,37TU,49TU;COUNT=3");
+        var referenceDate = new CalDateTime(2026, 6, 1, 0, 0, 0, "Central Standard Time");
+        var start = referenceDate.ToZonedDateTime();
+
+        var vEvent = new CalendarEvent
+        {
+            DtStart = referenceDate,
+            RecurrenceRules = [rp],
+        };
+
+        var calendar = new Calendar();
+        calendar.Events.Add(vEvent);
+
+        var recurringPeriods = calendar.GetOccurrences(start).Take(3).ToList();
+
+        var expected = new List<LocalDateTime>
+        {
+            new(2026, 6, 1, 0, 0, 0),
+            new(2026, 9, 8, 0, 0, 0),
+            new(2026, 12, 8, 0, 0, 0),
+        }.Select(x => x.InZoneLeniently(start.Zone)).ToList();
+
+        Assert.That(recurringPeriods.Select(x => x.Start), Is.EqualTo(expected));
+    }
+
 }

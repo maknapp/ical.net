@@ -64,18 +64,19 @@ internal class RecurrencePatternEvaluator2
             seed = SkipToByInterval(seed, periodStart.Value.InZone(seed.Zone));
         }
 
-        // Instant that all results must be >= to
+        // Instant that all results must be greater or equal to
         var startInstant = zonedReferenceDate.ToInstant();
 
         var until = rule.Until?.ToZonedDateTime(timeZone).ToInstant();
         foreach (var value in BySetPosition(seed))
         {
-            if (value.ToInstant() > until)
+            var valueInstant = value.ToInstant();
+            if (valueInstant > until)
             {
                 break;
             }
 
-            if (value.ToInstant() < startInstant)
+            if (valueInstant < startInstant)
             {
                 continue;
             }
@@ -91,7 +92,8 @@ internal class RecurrencePatternEvaluator2
 
 
     /// <summary>
-    /// Return value closest to 
+    /// Get the datetime before or equal to the limit datetime
+    /// using the recurrence interval.
     /// </summary>
     /// <param name="seed"></param>
     /// <param name="limit"></param>
@@ -477,7 +479,7 @@ internal class RecurrencePatternEvaluator2
         {
             if (rule.ByMonthDay.Count > 0)
             {
-                return LimitDayOfWeek(seed);
+                return LimitDayWithMonthOffset(seed);
             }
             else
             {
@@ -488,7 +490,14 @@ internal class RecurrencePatternEvaluator2
         {
             if (rule.ByYearDay.Count > 0 || rule.ByMonthDay.Count > 0)
             {
-                return LimitDayOfWeek(seed);
+                if (rule.ByMonth.Count > 0)
+                {
+                    return LimitDayWithMonthOffset(seed);
+                }
+                else
+                {
+                    return LimitDayWithYearOffset(seed);
+                }
             }
             else if (rule.ByWeekNo.Count > 0)
             {
@@ -539,13 +548,127 @@ internal class RecurrencePatternEvaluator2
             throw new EvaluateException($"BYDAY offsets are not supported in {rule.Frequency}");
         }
 
-        var byDay = rule.ByDay.Select(x => x.DayOfWeek.ToIsoDayOfWeek());
+        var byDay = rule.ByDay.Select(x => x.DayOfWeek.ToIsoDayOfWeek()).ToList();
 
         foreach (var value in ByMonthDay(seed))
         {
             if (byDay.Any(weekDay => weekDay == value.DayOfWeek))
             {
                 yield return value;
+            }
+        }
+    }
+
+    private IEnumerable<ZonedDateTime> LimitDayWithMonthOffset(IEnumerable<ZonedDateTime> seed)
+    {
+        foreach (var value in ByMonthDay(seed))
+        {
+            for (var i = 0; i < rule.ByDay.Count; i++)
+            {
+                if (MatchesWeekDay(rule.ByDay[i], value.Date))
+                {
+                    yield return value;
+                    break;
+                }
+            }
+        }
+
+        static bool MatchesWeekDay(WeekDay weekDay, LocalDate value)
+        {
+            var dayOfWeek = weekDay.DayOfWeek.ToIsoDayOfWeek();
+
+            if (dayOfWeek != value.DayOfWeek)
+            {
+                return false;
+            }
+
+            if (weekDay.Offset == null)
+            {
+                return true;
+            }
+
+            // Check if offset matches
+            if (weekDay.Offset > 0)
+            {
+                var offsetDate = new LocalDate(value.Year, value.Month, 1);
+                if (offsetDate.DayOfWeek != dayOfWeek)
+                {
+                    offsetDate = offsetDate.Next(dayOfWeek);
+                }
+
+                offsetDate = offsetDate.PlusWeeks(weekDay.Offset.Value - 1);
+
+                return offsetDate == value;
+            }
+            else if (weekDay.Offset < 0)
+            {
+                var offsetDate = new LocalDate(value.Year, value.Month, 1)
+                    .PlusMonths(1)
+                    .Previous(dayOfWeek)
+                    .PlusWeeks(weekDay.Offset.Value + 1);
+
+                return offsetDate == value;
+            }
+            else
+            {
+                throw new EvaluateException("Encountered a day offset of 0 which is not allowed.");
+            }
+        }
+    }
+
+    private IEnumerable<ZonedDateTime> LimitDayWithYearOffset(IEnumerable<ZonedDateTime> seed)
+    {
+        foreach (var value in ByMonthDay(seed))
+        {
+            for (var i = 0; i < rule.ByDay.Count; i++)
+            {
+                if (MatchesWeekDay(rule.ByDay[i], value.Date))
+                {
+                    yield return value;
+                    break;
+                }
+            }
+        }
+
+        static bool MatchesWeekDay(WeekDay weekDay, LocalDate value)
+        {
+            var dayOfWeek = weekDay.DayOfWeek.ToIsoDayOfWeek();
+
+            if (dayOfWeek != value.DayOfWeek)
+            {
+                return false;
+            }
+
+            if (weekDay.Offset == null)
+            {
+                return true;
+            }
+
+            // Check if offset matches
+            if (weekDay.Offset > 0)
+            {
+                var offsetDate = new LocalDate(value.Year, 1, 1);
+                if (offsetDate.DayOfWeek != dayOfWeek)
+                {
+                    offsetDate = offsetDate.Next(dayOfWeek);
+                }
+
+                offsetDate = offsetDate.PlusWeeks(weekDay.Offset.Value - 1);
+
+                return offsetDate == value;
+            }
+            else if (weekDay.Offset < 0)
+            {
+                var offsetDate = new LocalDate(value.Year, 1, 1)
+                    .PlusYears(1)
+                    .Previous(dayOfWeek)
+                    .PlusWeeks(weekDay.Offset.Value + 1);
+
+                return offsetDate == value;
+            }
+            else
+            {
+                throw new EvaluateException("Encountered a day offset of 0 which is not allowed.");
             }
         }
     }
