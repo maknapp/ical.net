@@ -734,4 +734,33 @@ public class RecurrenceTests_From_Issues
         Assert.That(recurringPeriods.Select(x => x.Start), Is.EqualTo(expected));
     }
 
+    [Test]
+    public void ByYearDayByMonthDayWithNegativeOffsets()
+    {
+        var rp = new RecurrencePattern("FREQ=YEARLY;BYYEARDAY=-1,1;BYMONTHDAY=-1,1;COUNT=4");
+        var referenceDate = new CalDateTime(2025, 1, 1, 0, 0, 0, "Central Standard Time");
+        var start = referenceDate.ToZonedDateTime();
+
+        var vEvent = new CalendarEvent
+        {
+            DtStart = referenceDate,
+            RecurrenceRules = [rp],
+        };
+
+        var calendar = new Calendar();
+        calendar.Events.Add(vEvent);
+
+        var recurringPeriods = calendar.GetOccurrences(start).Take(4).ToList();
+
+        var expected = new List<LocalDateTime>
+        {
+            new(2025, 1, 1, 0, 0, 0),
+            new(2025, 12, 31, 0, 0, 0),
+            new(2026, 1, 1, 0, 0, 0),
+            new(2026, 12, 31, 0, 0, 0),
+        }.Select(x => x.InZoneLeniently(start.Zone)).ToList();
+
+        Assert.That(recurringPeriods.Select(x => x.Start), Is.EqualTo(expected));
+    }
+
 }
