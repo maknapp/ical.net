@@ -34,6 +34,7 @@ internal class RecurrencePatternEvaluator2
     private readonly int referenceWeekNo;
 
     private ZonedDateTime seed;
+    private int unmatchedIncrementCount = 0;
 
     public RecurrencePatternEvaluator2(
         RecurrencePattern pattern,
@@ -100,6 +101,8 @@ internal class RecurrencePatternEvaluator2
             {
                 yield break;
             }
+
+            unmatchedIncrementCount = 0;
         }
     }
 
@@ -1003,6 +1006,11 @@ internal class RecurrencePatternEvaluator2
 
     private ZonedDateTime IncrementByFrequency(ZonedDateTime seed)
     {
+        if (unmatchedIncrementCount++ > options?.MaxUnmatchedIncrementsLimit)
+        {
+            throw new EvaluationLimitExceededException();
+        }
+
         return frequency switch
         {
             FrequencyType.Secondly => seed.PlusSeconds(interval),
