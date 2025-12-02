@@ -894,4 +894,71 @@ public class RecurrenceTests_From_Issues
         Assert.That(recurringPeriods.Select(x => x.Start), Is.EqualTo(expected));
     }
 
+
+    [Test]
+    public void MinutelyByMinute()
+    {
+        var rp = new RecurrencePattern("FREQ=MINUTELY;BYMINUTE=4,23");
+        var referenceDate = new CalDateTime(2025, 1, 1, 0, 0, 0, "Central Standard Time");
+        var start = referenceDate.ToZonedDateTime();
+
+        var vEvent = new CalendarEvent
+        {
+            DtStart = referenceDate,
+            RecurrenceRules = [rp],
+        };
+
+        var calendar = new Calendar();
+        calendar.Events.Add(vEvent);
+
+        var expected = new List<LocalDateTime>
+        {
+            new(2025, 1, 1, 0, 4, 0),
+            new(2025, 1, 1, 0, 23, 0),
+            new(2025, 1, 1, 1, 4, 0),
+            new(2025, 1, 1, 1, 23, 0),
+            new(2025, 1, 1, 2, 4, 0),
+            new(2025, 1, 1, 2, 23, 0),
+        }.Select(x => x.InZoneLeniently(start.Zone)).ToList();
+
+        var recurringPeriods = calendar.GetOccurrences(start).Take(expected.Count).ToList();
+
+        Assert.That(recurringPeriods.Select(x => x.Start), Is.EqualTo(expected));
+    }
+
+
+    [Test]
+    public void MinutelyByMinuteLargeInterval()
+    {
+        var rp = new RecurrencePattern("FREQ=MINUTELY;BYMINUTE=5,25;INTERVAL=61");
+        var referenceDate = new CalDateTime(2025, 1, 1, 0, 0, 0, "Central Standard Time");
+        var start = referenceDate.ToZonedDateTime();
+
+        var vEvent = new CalendarEvent
+        {
+            DtStart = referenceDate,
+            RecurrenceRules = [rp],
+        };
+
+        var calendar = new Calendar();
+        calendar.Events.Add(vEvent);
+
+        var t = new LocalDateTime(2025, 1, 1, 5, 5, 0);
+        var x = t.PlusMinutes(305);
+
+        var expected = new List<LocalDateTime>
+        {
+            new(2025, 1, 1, 5, 5, 0),
+            new(2025, 1, 2, 1, 25, 0),
+            new(2025, 1, 3, 18, 5, 0),
+            new(2025, 1, 4, 14, 25, 0),
+            new(2025, 1, 6, 7, 5, 0),
+            new(2025, 1, 7, 3, 25, 0),
+        }.Select(x => x.InZoneLeniently(start.Zone)).ToList();
+
+        var recurringPeriods = calendar.GetOccurrences(start).Take(expected.Count).ToList();
+
+        Assert.That(recurringPeriods.Select(x => x.Start), Is.EqualTo(expected));
+    }
+
 }

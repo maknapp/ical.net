@@ -51,7 +51,7 @@ internal class RecurrencePatternEvaluator2
         frequency = pattern.Frequency;
         until = pattern.Until?.ToZonedDateTime(timeZone).ToInstant();
         count = pattern.Count;
-        interval = pattern.Interval;
+        interval = Math.Max(1, pattern.Interval);
         rule = new(pattern);
 
         firstDayOfWeek = pattern.FirstDayOfWeek.ToIsoDayOfWeek();
@@ -126,13 +126,13 @@ internal class RecurrencePatternEvaluator2
         switch (frequency)
         {
             case FrequencyType.Secondly:
-                time = NodaTime.Duration.FromSeconds(FromInterval((long) diff.TotalSeconds, interval));
+                time = NodaTime.Duration.FromSeconds(FromInterval((long) diff.TotalSeconds));
                 return seed.Plus(time);
             case FrequencyType.Minutely:
-                time = NodaTime.Duration.FromMinutes(FromInterval((long) diff.TotalMinutes, interval));
+                time = NodaTime.Duration.FromMinutes(FromInterval((long) diff.TotalMinutes));
                 return seed.Plus(time);
             case FrequencyType.Hourly:
-                time = NodaTime.Duration.FromHours(FromInterval((long) diff.TotalHours, interval));
+                time = NodaTime.Duration.FromHours(FromInterval((long) diff.TotalHours));
                 return seed.Plus(time);
         }
 
@@ -143,24 +143,24 @@ internal class RecurrencePatternEvaluator2
         {
             case FrequencyType.Daily:
                 nominalDiff = NodaTime.Period.Between(seed.Date, limit.Date, PeriodUnits.Days);
-                nominalByInterval = nominalDiff.Days - (nominalDiff.Days % interval);
+                nominalByInterval = FromIntervalInt(nominalDiff.Days);
                 return seed.LocalDateTime.PlusDays(nominalByInterval)
                     .InZoneLeniently(seed.Zone);
             case FrequencyType.Weekly:
                 nominalDiff = NodaTime.Period.Between(seed.Date, limit.Date, PeriodUnits.Weeks);
-                nominalByInterval = nominalDiff.Weeks - (nominalDiff.Weeks % interval);
+                nominalByInterval = FromIntervalInt(nominalDiff.Weeks);
                 return seed.LocalDateTime.PlusWeeks(nominalByInterval)
                     .InZoneLeniently(seed.Zone);
             case FrequencyType.Monthly:
                 nominalDiff = NodaTime.Period.Between(seed.Date, limit.Date, PeriodUnits.Months);
-                var months = nominalDiff.Months - (nominalDiff.Months % interval);
-                return seed.Date.PlusMonths(months)
+                nominalByInterval = FromIntervalInt(nominalDiff.Months);
+                return seed.Date.PlusMonths(nominalByInterval)
                     .AtNearestDayOfMonth(zonedReferenceDate.Day)
                     .At(seed.TimeOfDay)
                     .InZoneLeniently(seed.Zone);
             case FrequencyType.Yearly:
                 nominalDiff = NodaTime.Period.Between(seed.Date, limit.Date, PeriodUnits.Years);
-                nominalByInterval = nominalDiff.Years - (nominalDiff.Years % interval);
+                nominalByInterval = FromIntervalInt(nominalDiff.Years);
                 return seed.Date.PlusYears(nominalByInterval)
                     .AtNearestDayOfMonth(zonedReferenceDate.Day)
                     .At(seed.TimeOfDay)
@@ -169,10 +169,9 @@ internal class RecurrencePatternEvaluator2
 
         throw new EvaluationException("Invalid frequency type");
 
-        static long FromInterval(long value, int interval)
-        {
-            return value - (value % interval);
-        }
+        long FromInterval(long value) => interval * (value / interval);
+
+        int FromIntervalInt(int value) => interval * (value / interval);
     }
 
     private IEnumerable<ZonedDateTime> BySetPosition()
