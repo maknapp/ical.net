@@ -13,7 +13,10 @@ using NodaTime.Extensions;
 
 namespace Ical.Net.Evaluation;
 
-internal class ByRuleValues
+/// <summary>
+/// Handles normalizing all BY rules of a recurrence rule.
+/// </summary>
+internal sealed class ByRuleValues
 {
     private readonly IsoDayOfWeek firstDayOfWeek;
     private DayOfWeekComparer? dayOfWeekComparer;
@@ -376,7 +379,7 @@ internal class ByRuleValues
         Array.Sort(normalizedSetPos);
     }
 
-    private class NormalValues<T, R> where T: struct, IComparable<T> where R : struct
+    private sealed class NormalValues<T, R> where T: struct, IComparable<T> where R : struct
     {
         public T Key { get; set; }
 
@@ -390,7 +393,7 @@ internal class ByRuleValues
     /// specified first day of the week.
     /// </summary>
     /// <param name="firstDayOfWeek"></param>
-    private class DayOfWeekComparer(IsoDayOfWeek firstDayOfWeek) : IComparer<IsoDayOfWeek>
+    private sealed class DayOfWeekComparer(IsoDayOfWeek firstDayOfWeek) : IComparer<IsoDayOfWeek>
     {
         private const int max = (int)IsoDayOfWeek.Sunday;
 

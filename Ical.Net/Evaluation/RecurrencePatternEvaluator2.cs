@@ -19,7 +19,6 @@ internal class RecurrencePatternEvaluator2
 {
     private readonly ByRuleValues rule;
     private readonly CalDateTime referenceDate;
-    private readonly DateTimeZone timeZone;
     private readonly Instant? periodStart;
     private readonly EvaluationOptions? options;
 
@@ -44,7 +43,6 @@ internal class RecurrencePatternEvaluator2
         EvaluationOptions? options)
     {
         this.referenceDate = referenceDate;
-        this.timeZone = timeZone;
         this.periodStart = periodStart;
         this.options = options;
 
@@ -62,11 +60,11 @@ internal class RecurrencePatternEvaluator2
     }
 
     public RecurrencePatternEvaluator2(
-        RecurrencePattern rule,
+        RecurrencePattern pattern,
         CalDateTime referenceDate,
         ZonedDateTime periodStart,
         EvaluationOptions? options)
-        : this(rule, referenceDate, periodStart.Zone, periodStart.ToInstant(), options) { }
+        : this(pattern, referenceDate, periodStart.Zone, periodStart.ToInstant(), options) { }
 
     public IEnumerable<EvaluationPeriod> Evaluate()
     {
