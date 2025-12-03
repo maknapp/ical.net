@@ -4,6 +4,7 @@
 //
 
 using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
@@ -32,20 +33,20 @@ public class Runner
                 .WithOptions(ConfigOptions.DisableOptimizationsValidator)
                 .AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance));
 
-            Console.WriteLine("Running ApplicationWorkflows benchmarks...");
-            BenchmarkRunner.Run<ApplicationWorkflows>(config);
+            //Console.WriteLine("Running ApplicationWorkflows benchmarks...");
+            //BenchmarkRunner.Run<ApplicationWorkflows>(config);
 
             Console.WriteLine("Running OccurencePerfTests benchmarks...");
             BenchmarkRunner.Run<OccurencePerfTests>(config);
 
-            Console.WriteLine("Running CalDateTimePerfTests benchmarks...");
-            BenchmarkRunner.Run<CalDateTimePerfTests>(config);
+            //Console.WriteLine("Running CalDateTimePerfTests benchmarks...");
+            //BenchmarkRunner.Run<CalDateTimePerfTests>(config);
 
-            Console.WriteLine("Running SerializationPerfTests benchmarks...");
-            BenchmarkRunner.Run<SerializationPerfTests>(config);
+            //Console.WriteLine("Running SerializationPerfTests benchmarks...");
+            //BenchmarkRunner.Run<SerializationPerfTests>(config);
 
-            Console.WriteLine("Running ThroughputTests benchmarks...");
-            BenchmarkRunner.Run<ThroughputTests>(config);
+            //Console.WriteLine("Running ThroughputTests benchmarks...");
+            //BenchmarkRunner.Run<ThroughputTests>(config);
         }
     }
 
