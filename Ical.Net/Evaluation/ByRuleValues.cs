@@ -5,7 +5,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using Ical.Net.DataTypes;
 using NodaTime;
@@ -43,17 +42,22 @@ internal sealed class ByRuleValues
     private readonly int[] bySetPos;
     private readonly NormalValues<int, int> setPos;
 
-    public ByRuleValues(RecurrencePattern rule)
+    /// <summary>
+    /// Normalizes BY rules for evaluation. BY rule values that change
+    /// based on the date are cached for repeated use.
+    /// </summary>
+    /// <param name="pattern"></param>
+    public ByRuleValues(RecurrencePattern pattern)
     {
-        firstDayOfWeek = rule.FirstDayOfWeek.ToIsoDayOfWeek();
+        firstDayOfWeek = pattern.FirstDayOfWeek.ToIsoDayOfWeek();
 
-        normalMonths = SortValues(rule.ByMonth);
+        normalMonths = SortValues(pattern.ByMonth);
 
-        normalHours = SortValues(rule.ByHour);
-        normalMinutes = SortValues(rule.ByMinute);
-        normalSeconds = SortValues(rule.BySecond);
+        normalHours = SortValues(pattern.ByHour);
+        normalMinutes = SortValues(pattern.ByMinute);
+        normalSeconds = SortValues(pattern.BySecond);
 
-        byWeekNo = [.. rule.ByWeekNo];
+        byWeekNo = [.. pattern.ByWeekNo];
         weeks = new();
 
         // If all values are non-negative, just copy and sort once
@@ -62,7 +66,7 @@ internal sealed class ByRuleValues
             var values = new int[byWeekNo.Length];
             for (var i = 0; i < values.Length; i++)
             {
-                values[i] = rule.ByWeekNo[i];
+                values[i] = pattern.ByWeekNo[i];
             }
             Array.Sort(values);
             weeks.Values = values;
@@ -70,7 +74,7 @@ internal sealed class ByRuleValues
         }
 
 
-        byYearDay = [.. rule.ByYearDay];
+        byYearDay = [.. pattern.ByYearDay];
         yearDays = new();
 
         // If all values are positive, just copy and sort once
@@ -79,43 +83,56 @@ internal sealed class ByRuleValues
             var values = new int[byYearDay.Length];
             for (var i = 0; i < values.Length; i++)
             {
-                values[i] = rule.ByYearDay[i];
+                values[i] = pattern.ByYearDay[i];
             }
             Array.Sort(values);
             yearDays.Values = values;
             yearDays.AlwaysNormal = true;
         }
 
-        byMonthDay = [.. rule.ByMonthDay];
+        byMonthDay = [.. pattern.ByMonthDay];
         monthDays = new();
 
-        byDay = [.. rule.ByDay.Select(static x => new WeekDayValue(x))];
+        byDay = [.. pattern.ByDay.Select(static x => new WeekDayValue(x))];
         HasByDayOffsets = byDay.Any(static x => x.Offset != null);
 
-        bySetPos = [.. rule.BySetPosition];
+        bySetPos = [.. pattern.BySetPosition];
         setPos = new();
 
         // If all values are positive, just copy and sort once
         HasNegativeSetPos = bySetPos.Any(static x => x < 0);
         if (!HasNegativeSetPos)
         {
-            setPos.Values = SortValues(rule.BySetPosition);
+            setPos.Values = SortValues(pattern.BySetPosition);
             setPos.AlwaysNormal = true;
         }
     }
 
+    /// <summary>
+    /// Normalized BYMONTH values.
+    /// </summary>
     public int[] Months => normalMonths;
 
+    /// <summary>
+    /// Normalized BYHOUR values.
+    /// </summary>
     public int[] Hours => normalHours;
 
+    /// <summary>
+    /// Normalized BYMINUTE values.
+    /// </summary>
     public int[] Minutes => normalMinutes;
 
+    /// <summary>
+    /// Normalized BYSECOND values.
+    /// </summary>
     public int[] Seconds => normalSeconds;
 
     public bool HasByDayOffsets { get; }
 
     public bool HasNegativeSetPos { get; }
 
+    #region BY rule exists
     public bool ByMonth => normalMonths.Length > 0;
 
     public bool ByWeekNo => byWeekNo.Length > 0;
@@ -133,9 +150,12 @@ internal sealed class ByRuleValues
     public bool BySecond => normalSeconds.Length > 0;
 
     public bool BySetPosition => bySetPos.Length > 0;
+    #endregion
+
+    public WeekDayValue[] DaysOfWeek => byDay;
 
     /// <summary>
-    /// Normalized days of the week that did not have an offset value.
+    /// Normalized days of the week that do not have an offset.
     /// </summary>
     public IsoDayOfWeek[] DaysOfWeekWithoutOffset
     {
@@ -147,12 +167,16 @@ internal sealed class ByRuleValues
         }
     }
 
+    /// <summary>
+    /// Days of the week with offsets. Values are NOT sorted
+    /// and can have both positive and negative offsets.
+    /// </summary>
     public WeekDayValue[] DaysOfWeekWithOffset
     {
         get
         {
-            // The purpose of ordering is to get the resulting
-            // dates more ordered. This is not normalized.
+            // Sorting by offset once here makes evaluated dates
+            // more likely to sort faster.
             daysOfWeekWithOffset ??= byDay
                 .Where(x => x.Offset != null)
                 .OrderBy(x => x.Offset)
@@ -162,6 +186,12 @@ internal sealed class ByRuleValues
         }
     }
 
+    /// <summary>
+    /// Get normalized weeks based on the number of weeks in
+    /// a week year.
+    /// </summary>
+    /// <param name="weeksInWeekYear"></param>
+    /// <returns></returns>
     public int[] GetWeeks(int weeksInWeekYear)
     {
         if (weeks.Values is null || (!weeks.AlwaysNormal && weeks.Key != weeksInWeekYear))
@@ -174,6 +204,11 @@ internal sealed class ByRuleValues
         return weeks.Values;
     }
 
+    /// <summary>
+    /// Get normalized yeardays based on the year.
+    /// </summary>
+    /// <param name="year"></param>
+    /// <returns></returns>
     public int[] GetYearDays(int year)
     {
         if (yearDays.Values is null || (!yearDays.AlwaysNormal && yearDays.Key != year))
@@ -186,6 +221,12 @@ internal sealed class ByRuleValues
         return yearDays.Values;
     }
 
+    /// <summary>
+    /// Get normalized monthdays based on year and month.
+    /// </summary>
+    /// <param name="year"></param>
+    /// <param name="month"></param>
+    /// <returns></returns>
     public int[] GetMonthDays(int year, int month)
     {
         if (monthDays.Values is null || (!monthDays.AlwaysNormal && monthDays.Key != (year, month)))
@@ -197,7 +238,12 @@ internal sealed class ByRuleValues
         return monthDays.Values;
     }
 
-    public int[] GetSetPos(int count = 0)
+    /// <summary>
+    /// Get normalized set positions based on set count.
+    /// </summary>
+    /// <param name="count"></param>
+    /// <returns></returns>
+    public int[] GetSetPositions(int count = 0)
     {
         if (setPos.Values is null || (!setPos.AlwaysNormal && setPos.Key != count))
         {
@@ -207,112 +253,6 @@ internal sealed class ByRuleValues
         }
 
         return setPos.Values;
-    }
-
-    public bool MatchesByDayOfMonth(LocalDate value)
-    {
-        foreach (var weekDay in byDay)
-        {
-            if (MatchesWeekDay(weekDay, value))
-            {
-                return true;
-            }
-        }
-
-        return false;
-
-        static bool MatchesWeekDay(WeekDayValue weekDay, LocalDate value)
-        {
-            if (weekDay.DayOfWeek != value.DayOfWeek)
-            {
-                return false;
-            }
-
-            if (weekDay.Offset == null)
-            {
-                return true;
-            }
-
-            // Check if offset matches
-            if (weekDay.Offset > 0)
-            {
-                var offsetDate = new LocalDate(value.Year, value.Month, 1);
-                if (offsetDate.DayOfWeek != weekDay.DayOfWeek)
-                {
-                    offsetDate = offsetDate.Next(weekDay.DayOfWeek);
-                }
-
-                offsetDate = offsetDate.PlusWeeks(weekDay.Offset.Value - 1);
-
-                return offsetDate == value;
-            }
-            else if (weekDay.Offset < 0)
-            {
-                var offsetDate = new LocalDate(value.Year, value.Month, 1)
-                    .PlusMonths(1)
-                    .Previous(weekDay.DayOfWeek)
-                    .PlusWeeks(weekDay.Offset.Value + 1);
-
-                return offsetDate == value;
-            }
-            else
-            {
-                throw new EvaluateException("Encountered a day offset of 0 which is not allowed.");
-            }
-        }
-    }
-
-    public bool MatchesByDayOfYear(LocalDate value)
-    {
-        foreach (var weekDay in byDay)
-        {
-            if (MatchesWeekDay(weekDay, value))
-            {
-                return true;
-            }
-        }
-
-        return false;
-
-        static bool MatchesWeekDay(WeekDayValue weekDay, LocalDate value)
-        {
-            if (weekDay.DayOfWeek != value.DayOfWeek)
-            {
-                return false;
-            }
-
-            if (weekDay.Offset == null)
-            {
-                return true;
-            }
-
-            // Check if offset matches
-            if (weekDay.Offset > 0)
-            {
-                var offsetDate = new LocalDate(value.Year, 1, 1);
-                if (offsetDate.DayOfWeek != weekDay.DayOfWeek)
-                {
-                    offsetDate = offsetDate.Next(weekDay.DayOfWeek);
-                }
-
-                offsetDate = offsetDate.PlusWeeks(weekDay.Offset.Value - 1);
-
-                return offsetDate == value;
-            }
-            else if (weekDay.Offset < 0)
-            {
-                var offsetDate = new LocalDate(value.Year, 1, 1)
-                    .PlusYears(1)
-                    .Previous(weekDay.DayOfWeek)
-                    .PlusWeeks(weekDay.Offset.Value + 1);
-
-                return offsetDate == value;
-            }
-            else
-            {
-                throw new EvaluateException("Encountered a day offset of 0 which is not allowed.");
-            }
-        }
     }
 
     private static int[] SortValues(List<int> byRule)
@@ -379,12 +319,30 @@ internal sealed class ByRuleValues
         Array.Sort(normalizedSetPos);
     }
 
+    /// <summary>
+    /// Holds normalized values and a cache key.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="R"></typeparam>
     private sealed class NormalValues<T, R> where T: struct, IComparable<T> where R : struct
     {
+        /// <summary>
+        /// Cache key used to normalize the values.
+        /// </summary>
         public T Key { get; set; }
 
+        /// <summary>
+        /// The normalized values.
+        /// </summary>
         public R[]? Values { get; set; }
 
+        /// <summary>
+        /// When true, the values should not need to be changed again.
+        /// This is for BY rules that might only need to be normalized
+        /// once based on the values. For example, BYSETPOS with all
+        /// positive values should only need to be sorted once and
+        /// never need to change again.
+        /// </summary>
         public bool AlwaysNormal { get; set; }
     }
 

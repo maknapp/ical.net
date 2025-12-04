@@ -15,7 +15,7 @@ using NodaTime.Extensions;
 
 namespace Ical.Net.Evaluation;
 
-internal class RecurrencePatternEvaluator2
+internal sealed class RecurrencePatternEvaluator2
 {
     private readonly ByRuleValues rule;
     private readonly CalDateTime referenceDate;
@@ -68,7 +68,7 @@ internal class RecurrencePatternEvaluator2
 
     public IEnumerable<EvaluationPeriod> Evaluate()
     {
-        var count = 0L;
+        var count = 0;
 
         // Determine where to start evaluation
         seed = zonedReferenceDate;
@@ -103,7 +103,6 @@ internal class RecurrencePatternEvaluator2
             unmatchedIncrementCount = 0;
         }
     }
-
 
     /// <summary>
     /// Get the datetime before or equal to the limit datetime
@@ -189,54 +188,65 @@ internal class RecurrencePatternEvaluator2
 
     private IEnumerable<ZonedDateTime> LimitSetPosition()
     {
+        var recurrenceSet = StartByRules();
+
         if (rule.HasNegativeSetPos)
         {
+            int i;
+
             while (true)
             {
                 // Evaluate the entire set so that negative offsets can be handled
-                var recurrenceSet = StartByRules().ToList();
+                var values = recurrenceSet.ToList();
 
-                var setPos = rule.GetSetPos(recurrenceSet.Count);
+                // Generate the set positions based on the number of items in the set
+                var setPositions = rule.GetSetPositions(values.Count);
 
                 // Yield the values from each set position
-                foreach (var pos in setPos)
+                foreach (var pos in setPositions)
                 {
-                    var setIndex = pos - 1;
+                    i = pos - 1;
 
-                    if (setIndex >= recurrenceSet.Count)
+                    if (i >= values.Count)
                     {
                         break;
                     }
 
-                    yield return recurrenceSet[setIndex];
+                    yield return values[i];
                 }
 
-                seed = IncrementByFrequency(seed);
+                // Increment before enumerating the next set
+                seed = GetNextSeed(seed);
             }
         }
         else
         {
-            var setPos = rule.GetSetPos();
+            // Set positions are all positive, so the set positions do
+            // not changed based on the size of the set. This allows
+            // the set to yield one at a time.
+            var setPositions = rule.GetSetPositions();
 
             while (true)
             {
-                var recurrenceSet = StartByRules();
-
-                foreach (var value in FilterByIndex(recurrenceSet, setPos))
+                foreach (var value in FilterBySetPosition(recurrenceSet, setPositions))
                 {
                     yield return value;
                 }
 
-                seed = IncrementByFrequency(seed);
+                // Increment before enumerating the next set
+                seed = GetNextSeed(seed);
             }
         }
 
-        static IEnumerable<ZonedDateTime> FilterByIndex(IEnumerable<ZonedDateTime> values, int[] setPos)
+        // Enumerates values and yields only when set position matches,
+        // ending early if there are no more set positions. Only positive
+        // set positions are supported.
+        static IEnumerable<ZonedDateTime> FilterBySetPosition(IEnumerable<ZonedDateTime> values, int[] setPositions)
         {
             var x = 0;
             var valueEnumerator = values.GetEnumerator();
 
-            foreach (var pos in setPos)
+            foreach (var pos in setPositions)
             {
                 // Move to the next position in the set
                 do
@@ -277,7 +287,6 @@ internal class RecurrencePatternEvaluator2
         }
         else
         {
-            // BySecond always limits
             return LimitSecond();
         }
     }
@@ -362,7 +371,6 @@ internal class RecurrencePatternEvaluator2
         }
     }
 
-
     private IEnumerable<ZonedDateTime> LimitHour()
     {
         foreach (var value in ByDay())
@@ -390,7 +398,6 @@ internal class RecurrencePatternEvaluator2
     /// <summary>
     /// All values generated from here MUST represent a day (not weeks, months, or years).
     /// </summary>
-    /// <param name="seed"></param>
     /// <returns></returns>
     private IEnumerable<ZonedDateTime> ByDay()
     {
@@ -458,20 +465,21 @@ internal class RecurrencePatternEvaluator2
         }
     }
 
+    /// <summary>
+    /// Limits years or months by reference day.
+    /// </summary>
+    /// <returns></returns>
     private IEnumerable<ZonedDateTime> LimitDayByReferenceDay()
     {
         var referenceDay = zonedReferenceDate.Day;
         foreach (var value in ByMonthDay())
         {
-            // Make sure day matches reference day
-            if (value.Day != referenceDay
-                && referenceDay > value.Calendar.GetDaysInMonth(value.Year, value.Month))
+            // Filter if value's month does not contain the reference day
+            if (value.Day == referenceDay
+                || referenceDay <= value.Calendar.GetDaysInMonth(value.Year, value.Month))
             {
-                // Day does not exist, skip
-                continue;
+                yield return value;
             }
-
-            yield return value;
         }
     }
 
@@ -479,7 +487,6 @@ internal class RecurrencePatternEvaluator2
     /// Limit by day of week. Offsets are not supported.
     /// Only used for DAILY or smaller.
     /// </summary>
-    /// <param name="seed"></param>
     /// <returns></returns>
     private IEnumerable<ZonedDateTime> LimitDayOfWeek()
     {
@@ -499,24 +506,112 @@ internal class RecurrencePatternEvaluator2
         }
     }
 
+    /// <summary>
+    /// Limit by day of month.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="EvaluateException"></exception>
     private IEnumerable<ZonedDateTime> LimitDayOfMonth()
     {
         foreach (var value in ByMonthDay())
         {
-            if (rule.MatchesByDayOfMonth(value.Date))
+            foreach (var weekDay in rule.DaysOfWeek)
             {
-                yield return value;
+                if (MatchesByDayOfMonth(weekDay, value.Date))
+                {
+                    yield return value;
+                }
+            }
+        }
+
+        static bool MatchesByDayOfMonth(WeekDayValue weekDay, LocalDate value)
+        {
+            if (weekDay.DayOfWeek != value.DayOfWeek)
+            {
+                return false;
+            }
+
+            if (weekDay.Offset == null)
+            {
+                return true;
+            }
+
+            // Check if offset matches
+            if (weekDay.Offset > 0)
+            {
+                var offsetDate = new LocalDate(value.Year, value.Month, 1)
+                    .CurrentOrNext(weekDay.DayOfWeek)
+                    .PlusWeeks(weekDay.Offset.Value - 1);
+
+                return offsetDate == value;
+            }
+            else if (weekDay.Offset < 0)
+            {
+                var offsetDate = new LocalDate(value.Year, value.Month, 1)
+                    .PlusMonths(1)
+                    .Previous(weekDay.DayOfWeek)
+                    .PlusWeeks(weekDay.Offset.Value + 1);
+
+                return offsetDate == value;
+            }
+            else
+            {
+                throw new EvaluateException("Encountered a day offset of 0 which is not allowed.");
             }
         }
     }
 
+    /// <summary>
+    /// Limit by day of year.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="EvaluateException"></exception>
     private IEnumerable<ZonedDateTime> LimitDayOfYear()
     {
         foreach (var value in ByMonthDay())
         {
-            if (rule.MatchesByDayOfYear(value.Date))
+            foreach (var weekDay in rule.DaysOfWeek)
             {
-                yield return value;
+                if (MatchesByDayOfYear(weekDay, value.Date))
+                {
+                    yield return value;
+                }
+            }
+        }
+
+        static bool MatchesByDayOfYear(WeekDayValue weekDay, LocalDate value)
+        {
+            if (weekDay.DayOfWeek != value.DayOfWeek)
+            {
+                return false;
+            }
+
+            if (weekDay.Offset == null)
+            {
+                return true;
+            }
+
+            // Check if offset matches
+            if (weekDay.Offset > 0)
+            {
+                var offsetDate = new LocalDate(value.Year, 1, 1)
+                    .CurrentOrNext(weekDay.DayOfWeek)
+                    .PlusWeeks(weekDay.Offset.Value - 1);
+
+                return offsetDate == value;
+            }
+            else if (weekDay.Offset < 0)
+            {
+                var offsetDate = new LocalDate(value.Year, 1, 1)
+                    .PlusYears(1)
+                    .Previous(weekDay.DayOfWeek)
+                    .PlusWeeks(weekDay.Offset.Value + 1);
+
+                return offsetDate == value;
+            }
+            else
+            {
+                throw new EvaluateException("Encountered a day offset of 0 which is not allowed.");
             }
         }
     }
@@ -525,7 +620,6 @@ internal class RecurrencePatternEvaluator2
     /// Expand by day of week. Offsets are not supported.
     /// Only used for WEEKLY.
     /// </summary>
-    /// <param name="seed"></param>
     /// <returns></returns>
     private IEnumerable<ZonedDateTime> ExpandDayFromWeek()
     {
@@ -537,23 +631,32 @@ internal class RecurrencePatternEvaluator2
 
             foreach (var day in rule.DaysOfWeekWithoutOffset)
             {
-                var date = weekYearRule.GetLocalDate(weekYear, week, day);
+                var result = weekYearRule.GetLocalDate(weekYear, week, day);
 
-                // Only produce date within the same month, if required
-                if (!rule.ByMonth || date.Month == value.Month)
+                // Limit by month if specified
+                if (rule.ByMonth && result.Month != value.Month)
                 {
-                    yield return date.At(value.TimeOfDay).InZoneLeniently(value.Zone);
+                    continue;
                 }
+
+                yield return result.At(value.TimeOfDay).InZoneLeniently(value.Zone);
             }
         }
     }
 
+    /// <summary>
+    /// Special expand by day based on the given range.
+    /// </summary>
+    /// <param name="expandFrequency">Represents the range allowed to expand.</param>
+    /// <returns></returns>
+    /// <exception cref="EvaluateException"></exception>
     private IEnumerable<ZonedDateTime> ExpandDayFromContext(FrequencyType expandFrequency)
     {
         var daysWithoutOffset = rule.DaysOfWeekWithoutOffset;
 
         foreach (var value in ByWeekNo())
         {
+            // Determine the [start, end) expand range
             LocalDate start, end;
             if (expandFrequency == FrequencyType.Weekly)
             {
@@ -562,14 +665,18 @@ internal class RecurrencePatternEvaluator2
                 start = weekYearRule.GetLocalDate(weekYear, weekNo, firstDayOfWeek);
                 end = start.PlusWeeks(1);
 
+                // If BYMONTH, limit the week within the month
                 if (rule.ByMonth)
                 {
                     if (start.Month != value.Month)
                     {
+                        // Week starts before the month and ends within the month.
+                        // Constrict start to the start of the month.
                         start = new LocalDate(value.Year, value.Month, 1);
                     }
                     else if (end.Month != value.Month && end.Day != 1)
                     {
+                        // Week starts within the month and ends after the month.
                         // End is exclusive, so just make sure it is 1 day outside the month
                         end = new LocalDate(value.Year, end.Month, 1);
                     }
@@ -590,39 +697,51 @@ internal class RecurrencePatternEvaluator2
                 throw new EvaluateException("Invalid expand of BYDAY");
             }
 
+            // Expanding with and without offsets is done separately
+            // because offsets require extra work that can be skipped
+            // if there are no offsets.
             var results = ExpandDayOfWeekWithoutOffset(start, end, daysWithoutOffset);
 
             if (rule.HasByDayOffsets)
             {
                 // Offsets list specific days, so it is more efficient
                 // to just calculate all of the days and then sort instead
-                // of sorting the offsets by year or month.
+                // of sorting the offsets for every year or month.
                 var offsetResults = GetDayOfWeekWithOffset(start, end, rule.DaysOfWeekWithOffset)
                     .ToArray();
 
                 Array.Sort(offsetResults);
 
-                if (daysWithoutOffset.Length == 0)
+                if (daysWithoutOffset.Length > 0)
                 {
-                    results = offsetResults;
-                }
-                else
-                {
-                    // Days with offsets need to be merged together
+                    // There are days with and without offsets,
+                    // so they need to be merged together.
                     results = offsetResults
                         .OrderedMerge(results)
                         .OrderedDistinct();
+                }
+                else
+                {
+                    // There are only days with offsets,
+                    // so skip merging.
+                    results = offsetResults;
                 }
             }
 
             foreach (var result in results)
             {
-                yield return result.At(value.TimeOfDay)
-                        .InZoneLeniently(value.Zone);
+                yield return result.At(value.TimeOfDay).InZoneLeniently(value.Zone);
             }
         }
     }
 
+    /// <summary>
+    /// Expands by day of week within the given range.
+    /// </summary>
+    /// <param name="start">Inclusive start of the range</param>
+    /// <param name="end">Exclusive end of the range</param>
+    /// <param name="weekDays">Days of the week. Values MUST be sorted by first day of week.</param>
+    /// <returns></returns>
     private static IEnumerable<LocalDate> ExpandDayOfWeekWithoutOffset(
         LocalDate start,
         LocalDate end,
@@ -657,6 +776,15 @@ internal class RecurrencePatternEvaluator2
         }
     }
 
+    /// <summary>
+    /// Expands by day of week and offset within the given range.
+    /// Results are not sorted.
+    /// </summary>
+    /// <param name="start">Inclusive start of the range</param>
+    /// <param name="end">Exclusive end of the range</param>
+    /// <param name="weekDays">Days of the week. Values MUST be sorted by first day of week.</param>
+    /// <returns>An unsorted list of days within the range</returns>
+    /// <exception cref="EvaluationException"></exception>
     private static IEnumerable<LocalDate> GetDayOfWeekWithOffset(
         LocalDate start,
         LocalDate end,
@@ -666,13 +794,9 @@ internal class RecurrencePatternEvaluator2
         {
             if (weekDay.Offset > 0)
             {
-                var result = start;
-                if (result.DayOfWeek != weekDay.DayOfWeek)
-                {
-                    result = result.Next(weekDay.DayOfWeek);
-                }
-
-                result = result.PlusWeeks(weekDay.Offset.Value - 1);
+                var result = start
+                    .CurrentOrNext(weekDay.DayOfWeek)
+                    .PlusWeeks(weekDay.Offset.Value - 1);
 
                 if (result < end)
                 {
@@ -744,10 +868,8 @@ internal class RecurrencePatternEvaluator2
     }
 
     /// <summary>
-    /// Expand by day of month from months.
-    /// Supports MONTHLY, YEARLY, and YEARLY+ByMonth.
+    /// Expand by day of month from month.
     /// </summary>
-    /// <param name="seed"></param>
     /// <returns></returns>
     private IEnumerable<ZonedDateTime> ExpandMonthDayFromMonth()
     {
@@ -764,9 +886,7 @@ internal class RecurrencePatternEvaluator2
 
     /// <summary>
     /// Expand by day of month from week.
-    /// Supports YEARLY+BYWEEKNO and YEARLY+BYMONTH+BYWEEKNO.
     /// </summary>
-    /// <param name="seed"></param>
     /// <returns></returns>
     private IEnumerable<ZonedDateTime> ExpandMonthDayFromWeek()
     {
@@ -783,11 +903,12 @@ internal class RecurrencePatternEvaluator2
             do
             {
                 if (monthDays.Contains(result.Day)
-                    && (rule.Months.Length == 0 || rule.Months.Contains(result.Month)))
+                    // If BYMONTH, limit the month
+                    && (!rule.ByMonth || rule.Months.Contains(result.Month)))
                 {
                     yield return result.At(value.TimeOfDay).InZoneLeniently(value.Zone);
                 }
-            } while ((result = result.PlusDays(1)) < end);
+            } while ((result = result.PlusDays(1)) != end);
         }
     }
 
@@ -822,15 +943,19 @@ internal class RecurrencePatternEvaluator2
         }
     }
 
+    /// <summary>
+    /// Expand by year day.
+    /// </summary>
+    /// <returns></returns>
     private IEnumerable<ZonedDateTime> ExpandYearDay()
     {
         foreach (var value in ByWeekNo())
         {
-            var valueWeekNo = weekYearRule.GetWeekOfWeekYear(value.Date);
+            var startOfYear = new LocalDate(value.Year, 1, 1);
 
             foreach (var day in rule.GetYearDays(value.Year))
             {
-                var result = new LocalDate(value.Year, 1, 1).PlusDays(day - 1);
+                var result = startOfYear.PlusDays(day - 1);
 
                 // Ignore values outside of the calendar year
                 if (result.Year != value.Year)
@@ -838,18 +963,19 @@ internal class RecurrencePatternEvaluator2
                     continue;
                 }
 
-                // Limit by month if specified
+                // If BYMONTH, limit year day to month
                 if (rule.ByMonth && result.Month != value.Month)
                 {
                     continue;
                 }
 
-                // Limit by weekNo is specified
+                // If BYWEEKNO, limit year day to week number
                 if (rule.ByWeekNo)
                 {
-                    var weekNo = weekYearRule.GetWeekOfWeekYear(result);
+                    var resultWeekNo = weekYearRule.GetWeekOfWeekYear(result);
+                    var valueWeekNo = weekYearRule.GetWeekOfWeekYear(value.Date);
 
-                    if (valueWeekNo != weekNo)
+                    if (resultWeekNo != valueWeekNo)
                     {
                         continue;
                     }
@@ -877,9 +1003,8 @@ internal class RecurrencePatternEvaluator2
     }
 
     /// <summary>
-    /// Expands yearly week
+    /// Expand by week number.
     /// </summary>
-    /// <param name="seed"></param>
     /// <returns></returns>
     private IEnumerable<ZonedDateTime> ExpandWeekNo()
     {
@@ -909,6 +1034,12 @@ internal class RecurrencePatternEvaluator2
         }
     }
 
+    /// <summary>
+    /// Determines the week year of the date relative to the
+    /// reference date's week year.
+    /// </summary>
+    /// <param name="date"></param>
+    /// <returns></returns>
     private int GetWeekYearBasedOnReferenceWeekYear(LocalDate date)
     {
         // Make sure the month and day is as close as possible
@@ -925,7 +1056,9 @@ internal class RecurrencePatternEvaluator2
 
         // Adjust week year to match reference week. Reference dates
         // in the first and last week of a year may result in different
-        // week years than what YEARLY intends.
+        // week years than what YEARLY intends. Week numbers should have
+        // an absolute difference greater than 1 only when one week
+        // number is 1 and the other is 52 or 53.
         var weekNoDiff = valueWeekNo - referenceWeekNo;
         if (weekNoDiff > 1)
         {
@@ -975,15 +1108,18 @@ internal class RecurrencePatternEvaluator2
                 var daysInMonth = value.Calendar.GetDaysInMonth(value.Year, month);
                 var day = Math.Min(daysInMonth, value.Day);
 
-                var result = new LocalDate(value.Year, month, day)
+                yield return new LocalDate(value.Year, month, day)
                     .At(value.TimeOfDay)
                     .InZoneLeniently(value.Zone);
-
-                yield return result;
             }
         }
     }
 
+    /// <summary>
+    /// Expands the seed value by frequency and interval.
+    /// If BYSETPOS, only the current seed value is returned.
+    /// </summary>
+    /// <returns></returns>
     private IEnumerable<ZonedDateTime> Expand()
     {
         if (rule.BySetPosition)
@@ -997,12 +1133,20 @@ internal class RecurrencePatternEvaluator2
             while (true)
             {
                 yield return seed;
-                seed = IncrementByFrequency(seed);
+                seed = GetNextSeed(seed);
             }
         }
     }
 
-    private ZonedDateTime IncrementByFrequency(ZonedDateTime seed)
+    /// <summary>
+    /// Gets the next seed value based on the recurrence frequency
+    /// and interval.
+    /// </summary>
+    /// <param name="seed"></param>
+    /// <returns></returns>
+    /// <exception cref="EvaluationLimitExceededException"></exception>
+    /// <exception cref="EvaluateException"></exception>
+    private ZonedDateTime GetNextSeed(ZonedDateTime seed)
     {
         if (unmatchedIncrementCount++ > options?.MaxUnmatchedIncrementsLimit)
         {
