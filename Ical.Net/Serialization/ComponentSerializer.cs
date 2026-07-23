@@ -25,41 +25,12 @@ public class ComponentSerializer : SerializerBase
 
     public override string? SerializeToString(object? obj)
     {
-        if (obj is not ICalendarComponent c)
+        if (obj is not CalendarComponent c)
         {
             return null;
         }
 
-        var sb = new StringBuilder();
-        var upperName = c.Name.ToUpperInvariant();
-        sb.FoldLines($"BEGIN:{upperName}");
-
-        // Get a serializer factory
-        var sf = GetService<ISerializerFactory>();
-
-        // Sort the calendar properties in alphabetical order before serializing them!
-        var properties = c.Properties.OrderBy(p => p.Name).ToList();
-
-        // Serialize properties
-        foreach (var p in properties)
-        {
-            // Get a serializer for each property.
-            var serializer = sf.Build(p.GetType(), SerializationContext) as IStringSerializer;
-            var val = serializer?.SerializeToString(p);
-            if (val != null) sb.Append(val);
-        }
-
-        // Serialize child objects
-        foreach (var child in c.Children)
-        {
-            // Get a serializer for each child object.
-            var serializer = sf?.Build(child.GetType(), SerializationContext) as IStringSerializer;
-            var val = serializer?.SerializeToString(child);
-            if (val != null) sb.Append(val);
-        }
-
-        sb.FoldLines($"END:{upperName}");
-        return sb.ToString();
+        return Serialization2.CalendarSerializer.Serialize(c);
     }
 
     public override object? Deserialize(TextReader tr) => null;

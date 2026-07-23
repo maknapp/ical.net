@@ -4,6 +4,7 @@
 //
 
 using System.Runtime.Serialization;
+using Ical.Net.CalendarComponents;
 using NUnit.Framework;
 
 namespace Ical.Net.Tests;
@@ -17,9 +18,9 @@ public class SimpleDeserializerExceptionTests
         VERSION:2.0
         PRODID:Test
         END:VCALENDAR
-        BEGIN:VEVENT
+        BEGIN:VCALENDAR
         """, 
-        TestName = "Unclosed_VEVENT")]
+        TestName = "UnclosedSecondVCALENDAR")]
     [TestCase("""
         BEGIN:VCALENDAR
         VERSION:2.0
@@ -29,11 +30,34 @@ public class SimpleDeserializerExceptionTests
         END:VEVENT
         """,
         TestName = "UnclosedCalendar")]
+    [TestCase("""
+        BEGIN:VCALENDAR
+        VERSION:2.0
+        PRODID:Test
+        END:VCALENDAR
+        BEGIN:VEVENT
+        """,
+        TestName = "UnexpectedType_VEVENT")]
     public void UnclosedComponent_Tests(string ics)
     {
-        Assert.That(() => Calendar.Load(ics), 
+        Assert.That(() => Serialization2.CalendarSerializer.DeserializeCollection<CalendarComponent>(ics), 
             Throws.Exception.TypeOf<SerializationException>()
-                .With.Message.Contains("Unclosed component"));
+                .With.Message.StartsWith("Missing end of component"));
+    }
+
+    [TestCase("""
+        BEGIN:VCALENDAR
+        VERSION:2.0
+        PRODID:Test
+        END:VCALENDAR
+        BEGIN:VEVENT
+        """,
+        TestName = "UnexpectedType_VEVENT")]
+    public void UnexpectedComponent_Tests(string ics)
+    {
+        Assert.That(() => Serialization2.CalendarSerializer.DeserializeCollection<Calendar>(ics),
+            Throws.Exception.TypeOf<SerializationException>()
+                .With.Message.StartsWith("Unexpected component type"));
     }
 
     [Test, Category("Deserialization")]
@@ -56,7 +80,7 @@ public class SimpleDeserializerExceptionTests
     {
         Assert.That(() => Calendar.Load(ics),
             Throws.Exception.TypeOf<SerializationException>()
-                .With.Message.Contains("Expected 'BEGIN'"));
+                .With.Message.Contains("Expected start of component"));
     }
 
     [Test, Category("Deserialization")]
@@ -77,17 +101,8 @@ public class SimpleDeserializerExceptionTests
         END:VCALENDAR
         """,
         TestName = "WrongComponentEndTag")]
-    [TestCase("""
-        BEGIN:
-        END:VCALENDAR
-        """,
-        TestName = "BeginWithEmptyValue")]
-    [TestCase("""
-        BEGIN:VCALENDAR
-        BEGIN:
-        END:VCALENDAR
-        """,
-        TestName = "NestedBeginWithEmptyValue")]
+    
+    
     [TestCase("""
         BEGIN:VCALENDAR
         BEGIN:VEVENT
@@ -104,7 +119,25 @@ public class SimpleDeserializerExceptionTests
     {
         Assert.That(() => Calendar.Load(ics),
             Throws.Exception.TypeOf<SerializationException>()
-                .With.Message.StartsWith("Expected 'END:"));
+                .With.Message.StartsWith("Unmatched END"));
+    }
+
+    [TestCase("""
+        BEGIN:VCALENDAR
+        BEGIN:
+        END:VCALENDAR
+        """,
+        TestName = "NestedBeginWithEmptyValue")]
+    [TestCase("""
+        BEGIN:
+        END:VCALENDAR
+        """,
+        TestName = "BeginWithEmptyValue")]
+    public void MissingComponentName_Tests(string ics)
+    {
+        Assert.That(() => Calendar.Load(ics),
+            Throws.Exception.TypeOf<SerializationException>()
+                .With.Message.StartsWith("Missing component name"));
     }
 
     [Test, Category("Deserialization")]
@@ -147,7 +180,7 @@ public class SimpleDeserializerExceptionTests
     {
         Assert.That(() => Calendar.Load(ics),
             Throws.Exception.TypeOf<SerializationException>()
-                .With.Message.Contains("missing name"));
+                .With.Message.Contains("name missing"));
     }
 
     [TestCase("""
@@ -163,7 +196,7 @@ public class SimpleDeserializerExceptionTests
     {
         Assert.That(() => Calendar.Load(ics),
             Throws.Exception.TypeOf<SerializationException>()
-                .With.Message.Contains("missing colon"));
+                .With.Message.Contains("Failed to parse"));
     }
 
     [Test, Category("Deserialization")]
@@ -196,7 +229,7 @@ public class SimpleDeserializerExceptionTests
     {
         Assert.That(() => Calendar.Load(ics),
             Throws.Exception.TypeOf<SerializationException>()
-                .With.Message.Contains("Unclosed component"));
+                .With.Message.StartsWith("Missing end of component"));
     }
 
     [Test, Category("Deserialization")]
@@ -243,6 +276,6 @@ public class SimpleDeserializerExceptionTests
         TestName = "UnbalancedQuotes")]
     public void Unbalanced_Quotes_ShouldThrow(string ics)
         => Assert.That(() => Calendar.Load(ics), Throws.Exception.TypeOf<SerializationException>()
-            .With.Message.Contains("Unbalanced quotes in line 'ATTENDEE;CN"));
+            .With.Message.StartsWith("Unbalanced quotes"));
 }
 

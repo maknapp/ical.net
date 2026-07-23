@@ -401,7 +401,7 @@ public class SerializationTests
            STATUS:CONFIRMED
            END:VEVENT
            """;
-        var deserializedEvent = Calendar.Load<CalendarEvent>(ics).Single();
+        var deserializedEvent = Serialization2.CalendarSerializer.Deserialize<CalendarEvent>(ics);
 
         using (Assert.EnterMultipleScope())
         {
@@ -433,7 +433,7 @@ public class SerializationTests
            END:DAYLIGHT
            END:VTIMEZONE
            """;
-        var timeZone = Calendar.Load<VTimeZone>(ics).Single();
+        var timeZone = Serialization2.CalendarSerializer.Deserialize<VTimeZone>(ics);
         Assert.That(timeZone, Is.Not.Null, "Expected the TimeZone to be successfully deserialized");
         var timeZoneInfos = timeZone.TimeZoneInfos;
         using (Assert.EnterMultipleScope())
@@ -657,6 +657,20 @@ public class SerializationTests
 
         var resultCal = Calendar.Load(result)!;
         Assert.That(resultCal.Events[0]!.Description, Is.EqualTo(deserializedText ?? originalText));
+    }
+
+    [Test]
+    public void ListItemsAreEscaped()
+    {
+        var ev = new CalendarEvent
+        {
+            Name = "Test event",
+            Resources = ["A \\ B", "", "Nothing", "1,2,3"]
+        };
+
+        var eventStr = new EventSerializer().SerializeToString(ev);
+
+        Assert.That(eventStr!, Does.Contain(@"A \\ B,,Nothing,1\,2\,3"));
     }
 
     private static readonly object[] MultiValueSeparatorCases =

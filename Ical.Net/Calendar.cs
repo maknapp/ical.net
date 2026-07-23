@@ -13,7 +13,6 @@ using Ical.Net.CalendarComponents;
 using Ical.Net.DataTypes;
 using Ical.Net.Evaluation;
 using Ical.Net.Proxies;
-using Ical.Net.Serialization;
 using Ical.Net.Utility;
 using NodaTime;
 using NodaTime.TimeZones;
@@ -22,28 +21,57 @@ namespace Ical.Net;
 
 public class Calendar : CalendarComponent, IGetOccurrencesTyped, IGetFreeBusy, IMergeable
 {
+    [Obsolete("Use CalendarSerializer.Deserialize")]
     public static Calendar? Load(string iCalendarString)
-        => CalendarCollection.Load(new StringReader(iCalendarString)).SingleOrDefault();
+        => Serialization2.CalendarSerializer.Deserialize<Calendar>(iCalendarString);
 
     /// <summary>
     /// Loads an <see cref="Calendar"/> from an open stream.
     /// </summary>
     /// <param name="s">The stream from which to load the <see cref="Calendar"/> object</param>
     /// <returns>An <see cref="Calendar"/> object</returns>
+    [Obsolete("Use CalendarSerializer.DeserializeAsync")]
     public static Calendar? Load(Stream s)
-        => CalendarCollection.Load(new StreamReader(s, Encoding.UTF8)).SingleOrDefault();
+    {
+        return Serialization2.CalendarSerializer.Deserialize<Calendar>(s);
+    }
 
-    public static Calendar? Load(TextReader tr)
-        => CalendarCollection.Load(tr).SingleOrDefault();
+    [Obsolete("Use CalendarSerializer.Deserialize")]
+    public static Calendar? Load(TextReader tr) => Load(tr.ReadToEnd());
 
+    [Obsolete("Use CalendarSerializer.DeserializeCollectionAsync")]
     public static IList<T> Load<T>(Stream s, Encoding e)
-        => Load<T>(new StreamReader(s, e));
+    {
+        if (!e.Equals(Encoding.UTF8))
+        {
+            throw new InvalidOperationException("Only UTF8 encoding is supported");
+        }
 
+        // There are no constraints on T, so deserialize any component
+        // and then cast to T.
+        return Serialization2.CalendarSerializer
+            .DeserializeCollectionAsync<CalendarComponent>(s)
+            .GetAwaiter().GetResult()
+            .Where(x => x is T)
+            .Cast<T>()
+            .ToList();
+    }
+
+    [Obsolete("Use CalendarSerializer.DeserializeCollection")]
     public static IList<T> Load<T>(TextReader tr)
-        => SimpleDeserializer.Default.Deserialize(tr).OfType<T>().ToList();
+        => Load<T>(tr.ReadToEnd());
 
+    [Obsolete("Use CalendarSerializer.DeserializeCollection")]
     public static IList<T> Load<T>(string ical)
-        => Load<T>(new StringReader(ical));
+    {
+        // There are no constraints on T, so deserialize any component
+        // and then cast to T.
+        return Serialization2.CalendarSerializer
+            .DeserializeCollection<CalendarComponent>(ical)
+            .Where(x => x is T)
+            .Cast<T>()
+            .ToList();
+    }
 
     private IUniqueComponentList<IUniqueComponent> _mUniqueComponents;
     private IUniqueComponentList<CalendarEvent> _mEvents;

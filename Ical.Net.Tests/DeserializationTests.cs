@@ -486,7 +486,7 @@ public class DeserializationTests
         Assert.That(() =>
         {
             _ = Calendar.Load(IcsFiles.DateTime1);
-        }, Throws.Exception.TypeOf<ArgumentOutOfRangeException>());
+        }, Throws.Exception.TypeOf<SerializationException>());
     }
 
     [Test]

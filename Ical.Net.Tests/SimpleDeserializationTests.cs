@@ -401,7 +401,7 @@ END:VCALENDAR
             _ = SimpleDeserializer.Default.Deserialize(new StringReader(IcsFiles.DateTime1))
                 .Cast<Calendar>()
                 .Single();
-        }, Throws.Exception.TypeOf<ArgumentOutOfRangeException>());
+        }, Throws.Exception.TypeOf<SerializationException>());
     }
 
     [Test, Category("Deserialization")]

@@ -29,7 +29,7 @@ internal class RecurrenceIdentifierTests
 
         var serializer = new EventSerializer();
         var serialized = serializer.SerializeToString(evt)!;
-        var expected = $"RECURRENCE-ID;TZID=America/New_York{rangeString}:20250701T100000";
+        var expected = $"RECURRENCE-ID{rangeString};TZID=America/New_York:20250701T100000";
 
         Assert.That(serialized, Does.Contain(expected));
     }

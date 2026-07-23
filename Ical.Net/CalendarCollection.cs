@@ -1,4 +1,4 @@
-﻿//
+//
 // Copyright ical.net project maintainers and contributors.
 // Licensed under the MIT license.
 //
@@ -7,11 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Ical.Net.CalendarComponents;
 using Ical.Net.DataTypes;
 using Ical.Net.Evaluation;
-using Ical.Net.Serialization;
 using Ical.Net.Utility;
 using NodaTime;
 
@@ -22,24 +20,33 @@ namespace Ical.Net;
 /// </summary>
 public class CalendarCollection : List<Calendar>
 {
+    [Obsolete("Use CalendarSerializer.DeserializeCollection")]
     public static CalendarCollection Load(string iCalendarString)
-        => Load(new StringReader(iCalendarString));
+    {
+        var calendars = Serialization2.CalendarSerializer.DeserializeCollection<Calendar>(iCalendarString);
+        var collection = new CalendarCollection();
+        collection.AddRange(calendars);
+        return collection;
+    }
 
     /// <summary>
     /// Loads an <see cref="Calendar"/> from an open stream.
     /// </summary>
     /// <param name="s">The stream from which to load the <see cref="Calendar"/> object</param>
     /// <returns>An <see cref="Calendar"/> object</returns>
+    /// 
+    [Obsolete("Use CalendarSerializer.DeserializeCollection")]
     public static CalendarCollection Load(Stream s)
-        => Load(new StreamReader(s, Encoding.UTF8));
-
-    public static CalendarCollection Load(TextReader tr)
     {
-        var calendars = SimpleDeserializer.Default.Deserialize(tr).OfType<Calendar>();
+        var calendars = Serialization2.CalendarSerializer.DeserializeCollection<Calendar>(s);
         var collection = new CalendarCollection();
         collection.AddRange(calendars);
         return collection;
     }
+
+    [Obsolete("Use CalendarSerializer.DeserializeCollection")]
+    public static CalendarCollection Load(TextReader tr)
+        => Load(tr.ReadToEnd());
 
     private IEnumerable<Occurrence> GetOccurrences(Func<Calendar, IEnumerable<Occurrence>> f)
         =>
