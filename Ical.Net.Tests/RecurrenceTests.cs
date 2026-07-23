@@ -80,9 +80,8 @@ public class RecurrenceTests
         var cal = Calendar.Load(calendarIcalStr)!;
         var tzid = cal.Events.Single().Start!.TzId;
 
-        var periodSerializer = new PeriodSerializer();
         var periods = expectedPeriods
-            .Select(p => (Period) periodSerializer.Deserialize(new StringReader(p))!)
+            .Select(p => Period.TryParse(p, null, out var period) ? period! : null!)
             .Select(p =>
                 p.Duration is null
                     ? new Period(p.StartTime.ToLocalDateTime().ToCalDateTime(tzid), p.EndTime)
@@ -2262,11 +2261,10 @@ public class RecurrenceTests
 
         var start = iCal.Events.First().Start;
 
-        var periodSerializer = new PeriodSerializer();
         var expectedPeriods =
             new[] { d1, d2, d3 }
                 .Where(x => x != null)
-                .Select(x => (Period) periodSerializer.Deserialize(new StringReader(x!))!)
+                .Select(x => Period.TryParse(x, null, out var period) ? period! : null!)
                 .ToArray();
 
         for (var index = 0; index < expectedPeriods.Length; index++)
