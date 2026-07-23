@@ -5,13 +5,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
 using Ical.Net.DataTypes;
 using Ical.Net.Utility;
-using NodaTime;
 
 namespace Ical.Net.Serialization.DataTypes;
 
@@ -46,25 +42,8 @@ public class DateTimeSerializer : SerializerBase, IParameterProvider
         // the time value. The "TZID" property parameter MUST NOT be applied to DATE-TIME
         // properties whose time values are specified in UTC.
 
-        var value = new StringBuilder(512);
-        // NOSONAR: netstandard2.x does not support string.Create(CultureInfo.InvariantCulture, $"{...}");
-        value.Append(FormattableString.Invariant($"{dt.Year:0000}{dt.Month:00}{dt.Day:00}")); // NOSONAR
-        if (dt.Time is { } time)
-        {
-            value.Append(FormattableString.Invariant($"T{time.Hour:00}{time.Minute:00}{time.Second:00}")); // NOSONAR
-            if (dt.IsUtc)
-            {
-                value.Append('Z');
-            }
-        }
-
-        // Encode the value as necessary
-        return value.ToString();
+        return dt.ToBasicIso();
     }
-
-    private const RegexOptions Options = RegexOptions.Compiled | RegexOptions.IgnoreCase;
-    internal static readonly Regex DateOnlyMatch = new Regex(@"^((\d{4})(\d{2})(\d{2}))?$", Options, RegexDefaults.Timeout);
-    internal static readonly Regex FullDateTimePatternMatch = new Regex(@"^((\d{4})(\d{2})(\d{2}))T((\d{2})(\d{2})(\d{2})(Z)?)$", Options, RegexDefaults.Timeout);
 
     public override object? Deserialize(TextReader tr)
     {
@@ -77,48 +56,12 @@ public class DateTimeSerializer : SerializerBase, IParameterProvider
         // that contains any timezone ("TZID" property) deserialized in a prior step
         var timeZoneId = (parent as ICalendarParameterCollectionContainer)?.Parameters.Get("TZID");
 
-        var match = FullDateTimePatternMatch.Match(value);
-        if (!match.Success)
+        if (CalDateTime.TryParse(value, timeZoneId, out var result))
         {
-            match = DateOnlyMatch.Match(value);
+            return result;
         }
 
-        if (!match.Success)
-        {
-            return null;
-        }
-
-        var datePart = new LocalDate(); // Initialize. At this point, we know that the date part is present
-        LocalTime? timePart = null;
-
-        if (match.Groups[1].Success)
-        {
-            datePart = new LocalDate(Convert.ToInt32(match.Groups[2].Value, CultureInfo.InvariantCulture),
-                Convert.ToInt32(match.Groups[3].Value, CultureInfo.InvariantCulture),
-                Convert.ToInt32(match.Groups[4].Value, CultureInfo.InvariantCulture));
-
-            // NodaTime supports year values <1 (BCE). Make sure these
-            // years are considered invalid.
-            if (datePart.Year < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(tr), "Year must be a positive value");
-            }
-        }
-        if (match.Groups.Count >= 6 && match.Groups[5].Success)
-        {
-            timePart = new LocalTime(Convert.ToInt32(match.Groups[6].Value, CultureInfo.InvariantCulture),
-                Convert.ToInt32(match.Groups[7].Value, CultureInfo.InvariantCulture),
-                Convert.ToInt32(match.Groups[8].Value, CultureInfo.InvariantCulture));
-        }
-
-        var isUtc = match.Groups[9].Success;
-        if (isUtc) timeZoneId = "UTC";
-
-        var res = timePart.HasValue
-            ? new CalDateTime(datePart.At(timePart.Value), timeZoneId)
-            : new CalDateTime(datePart);
-
-        return res;
+        return null;
     }
 
     public IReadOnlyList<CalendarParameter> GetParameters(object? value)

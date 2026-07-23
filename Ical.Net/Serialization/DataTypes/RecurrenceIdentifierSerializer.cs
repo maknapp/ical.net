@@ -1,4 +1,4 @@
-﻿//
+//
 // Copyright ical.net project maintainers and contributors.
 // Licensed under the MIT license.
 //
@@ -50,10 +50,7 @@ public class RecurrenceIdentifierSerializer : SerializerBase, IParameterProvider
             _logger.LogWarning("Ignored invalid RANGE parameter '{Range}' for RECURRENCE-ID", rid.Range);
         }
 
-        var factory = GetService<ISerializerFactory>();
-        var dtSerializer = factory.Build(typeof(CalDateTime), SerializationContext) as DateTimeSerializer;
-        
-        return dtSerializer!.SerializeToString(rid.StartTime);
+        return rid.StartTime.ToBasicIso();
     }
 
     public override object? Deserialize(TextReader tr)
@@ -81,14 +78,13 @@ public class RecurrenceIdentifierSerializer : SerializerBase, IParameterProvider
                 _logger.LogWarning("Ignored invalid RANGE parameter '{Range}' for RECURRENCE-ID", rangeString);
                 break;
         }
-        
-        var factory = GetService<ISerializerFactory>();
 
-        var dtSerializer = factory.Build(typeof(CalDateTime), SerializationContext) as IStringSerializer;
+        if (!CalDateTime.TryParse(value, out var start))
+        {
+            return null;
+        }
 
-        return dtSerializer!.Deserialize(new StringReader(value)) is not CalDateTime start
-            ? null
-            : new RecurrenceIdentifier(start, recurrenceRange);
+        return new RecurrenceIdentifier(start, recurrenceRange);
     }
 
     public IReadOnlyList<CalendarParameter> GetParameters(object? value)
