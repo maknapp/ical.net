@@ -643,8 +643,7 @@ public class DeserializationTests
     [TestCase("-PT1000H", null, null, -1000, null, null)]
     public void DurationSerializer_ShouldReturn_ExpectedDuration(string text, int? weeks = null, int? days = null, int? hours = null, int? minutes = null, int? seconds = null)
     {
-        var s = new DurationSerializer();
-        Assert.That((DataTypes.Duration?) s.Deserialize(new StringReader(text)), Is.EqualTo(new DataTypes.Duration(weeks, days, hours, minutes, seconds)));
+        Assert.That(DataTypes.Duration.Parse(text), Is.EqualTo(new DataTypes.Duration(weeks, days, hours, minutes, seconds)));
     }
 
     [Test, Category("DurationSerializer")]
@@ -654,7 +653,6 @@ public class DeserializationTests
     {
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(new DurationSerializer().Deserialize(new StringReader(text)), Is.Null);
             Assert.That(DataTypes.Duration.Parse(text), Is.Null);
         }
     }

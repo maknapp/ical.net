@@ -300,7 +300,7 @@ public class SerializationTests
     [Test]
     public void ZeroDuration_Test()
     {
-        var result = new DurationSerializer().SerializeToString(Duration.Zero);
+        var result = Duration.Zero.ToBasicIso();
         Assert.That(result, Is.EqualTo("P0D"));
     }
 
@@ -584,7 +584,7 @@ public class SerializationTests
                     """), Throws.Nothing);
 
                 // Serialize
-                Assert.That(() => new DurationSerializer().SerializeToString(new Duration(null, -1)), Is.EqualTo("-P1D"));
+                Assert.That(() => new Duration(null, -1).ToBasicIso(), Is.EqualTo("-P1D"));
                 Assert.That(() => new RecurrenceRuleSerializer().SerializeToString(new RecurrenceRule { Frequency = FrequencyType.Daily, Until = new CalDateTime(2026, 6, 22) })?.Contains("UNTIL=20260622"), Is.True);
             };
         }    
