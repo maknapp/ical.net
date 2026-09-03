@@ -3,13 +3,9 @@
 // Licensed under the MIT license.
 //
 
-using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.Jobs;
-using BenchmarkDotNet.Running;
-using BenchmarkDotNet.Toolchains.InProcess.NoEmit;
-using System;
 using System.Diagnostics;
 using System.IO;
+using BenchmarkDotNet.Running;
 
 namespace Ical.Net.Benchmarks;
 
@@ -28,27 +24,7 @@ public class Runner
         }
         else
         {
-            var config = ManualConfig.Create(DefaultConfig.Instance)
-                .WithOptions(ConfigOptions.DisableOptimizationsValidator)
-                .AddJob(Job.Default.WithToolchain(InProcessNoEmitToolchain.Instance));
-
-            Console.WriteLine("Running ApplicationWorkflows benchmarks...");
-            BenchmarkRunner.Run<ApplicationWorkflows>(config);
-
-            Console.WriteLine("Running OccurencePerfTests benchmarks...");
-            BenchmarkRunner.Run<OccurencePerfTests>(config);
-
-            Console.WriteLine("Running CalDateTimePerfTests benchmarks...");
-            BenchmarkRunner.Run<CalDateTimePerfTests>(config);
-
-            Console.WriteLine("Running SerializationPerfTests benchmarks...");
-            BenchmarkRunner.Run<SerializationPerfTests>(config);
-
-            Console.WriteLine("Running ThroughputTests benchmarks...");
-            BenchmarkRunner.Run<ThroughputTests>(config);
-
-            Console.WriteLine("Running StringSerializerBenchmarks...");
-            BenchmarkRunner.Run<StringSerializerBenchmarks>(config);
+            BenchmarkSwitcher.FromAssembly(typeof(Runner).Assembly).Run(args);
         }
     }
 
