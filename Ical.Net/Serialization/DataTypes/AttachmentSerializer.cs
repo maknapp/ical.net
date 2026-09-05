@@ -1,4 +1,4 @@
-﻿//
+//
 // Copyright ical.net project maintainers and contributors.
 // Licensed under the MIT license.
 //
@@ -61,7 +61,6 @@ public class AttachmentSerializer : EncodableDataTypeSerializer
 
             // Get the currently-used encoding off the encoding stack.
             var encodingStack = GetService<EncodingStack>();
-            a.ValueEncoding = encodingStack.Current;
 
             // Get the format of the attachment
             var valueType = a.GetValueType();
@@ -71,7 +70,6 @@ public class AttachmentSerializer : EncodableDataTypeSerializer
                 // then set the Data property instead.
                 return new Attachment(data)
                 {
-                    ValueEncoding = a.ValueEncoding,
                     AssociatedObject = a.AssociatedObject,
                 };
             }

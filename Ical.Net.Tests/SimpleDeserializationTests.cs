@@ -202,7 +202,7 @@ public class SimpleDeserializationTests
         var evt = iCal.Events.First();
 
         Assert.That(
-evt.Attachments[0].ToString(),
+            Encoding.UTF8.GetString(evt.Attachments[0].Data!),
             Is.EqualTo("This is a test to try out base64 encoding without being too large.\r\n" +
 "This is a test to try out base64 encoding without being too large.\r\n" +
 "This is a test to try out base64 encoding without being too large.\r\n" +

@@ -1,11 +1,9 @@
-﻿//
+//
 // Copyright ical.net project maintainers and contributors.
 // Licensed under the MIT license.
 //
 
 using System;
-using System.Text;
-using Ical.Net.Serialization.DataTypes;
 
 namespace Ical.Net.DataTypes;
 
@@ -18,13 +16,6 @@ public class Attachment : EncodableDataType
 {
     public virtual Uri? Uri { get; set; }
     public virtual byte[]? Data { get; private set; } // private set for CopyFrom
-
-    private Encoding _valueEncoding = System.Text.Encoding.UTF8;
-    public virtual Encoding ValueEncoding //NOSONAR
-    {
-        get => _valueEncoding;
-        set => _valueEncoding = value;
-    }
 
     public virtual string? FormatType
     {
@@ -42,30 +33,10 @@ public class Attachment : EncodableDataType
         }
     }
 
-    public Attachment(string? value) : this()
+    public Attachment(Uri? uri) : this()
     {
-        if (string.IsNullOrEmpty(value))
-        {
-            return;
-        }
-
-        var serializer = new AttachmentSerializer();
-        var a = serializer.Deserialize(value);
-        if (a == null)
-        {
-            throw new ArgumentException($"{value} is not a valid ATTACH component");
-        }
-
-        _valueEncoding = a.ValueEncoding;
-
-        Data = a.Data;
-        Uri = a.Uri;
+        Uri = uri;
     }
-
-    public override string ToString()
-        => Data == null
-            ? string.Empty
-            : ValueEncoding.GetString(Data);
 
     /// <inheritdoc/>
     public override void CopyFrom(ICopyable obj)
@@ -80,7 +51,6 @@ public class Attachment : EncodableDataType
             Array.Copy(att.Data, Data, att.Data.Length);
         }
 
-        ValueEncoding = att.ValueEncoding;
         FormatType = att.FormatType;
     }
 }
