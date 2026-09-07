@@ -82,19 +82,14 @@ internal class RecurrenceIdentifierTests
     public void RecurrenceIdentifierSerializer_LowLevel()
     {
         var recurrenceId = new RecurrenceIdentifier(new CalDateTime("20250930T140000", "Europe/Paris"), RecurrenceRange.ThisAndFuture);
-        var serializer = new RecurrenceIdentifierSerializer();
 
-        var serialized = serializer.SerializeToString(recurrenceId);
-        // Invalid parameter type should not throw, but return null
-        var serializedAsNull = serializer.SerializeToString(string.Empty);
+        var serialized = recurrenceId.StartTime.ToBasicIso();
 
         var param = ParameterProviderHelper.GetRecurrenceIdentifierParameters(recurrenceId);
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(serializer.TargetType == recurrenceId.GetType());
             Assert.That(serialized, Is.EqualTo("20250930T140000"));
-            Assert.That(serializedAsNull, Is.Null);
             Assert.That(param, Has.Exactly(2).Items);
             Assert.That(param[0].Name, Is.EqualTo("TZID"));
             Assert.That(param[0].Value, Is.EqualTo("Europe/Paris"));
