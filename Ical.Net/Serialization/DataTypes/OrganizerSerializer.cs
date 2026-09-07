@@ -1,4 +1,4 @@
-﻿//
+//
 // Copyright ical.net project maintainers and contributors.
 // Licensed under the MIT license.
 //
@@ -17,20 +17,7 @@ public class OrganizerSerializer : StringSerializer
 
     public override Type TargetType => typeof(Organizer);
 
-    public override string? SerializeToString(object? obj)
-    {
-        try
-        {
-            var o = obj as Organizer;
-            return o?.Value == null
-                ? null
-                : Encode(o, Escape(o.Value.OriginalString));
-        }
-        catch
-        {
-            return null;
-        }
-    }
+    public override string? SerializeToString(object? obj) => (obj as Organizer)?.Value?.OriginalString;
 
     public override object? Deserialize(TextReader? tr)
     {
@@ -38,32 +25,11 @@ public class OrganizerSerializer : StringSerializer
 
         var value = tr.ReadToEnd();
 
-        Organizer? organizer = null;
-        try
+        if (Organizer.TryParse(value, out var organizer))
         {
-            organizer = CreateAndAssociate() as Organizer;
-            if (organizer != null)
-            {
-                var uriString = Unescape(Decode(organizer, value));
-                if (uriString == null)
-                {
-                    return null;
-                }
-
-                // Prepend "mailto:" if necessary
-                if (!uriString.StartsWith("mailto:", StringComparison.OrdinalIgnoreCase))
-                {
-                    uriString = "mailto:" + uriString;
-                }
-
-                organizer.Value = new Uri(uriString);
-            }
-        }
-        catch
-        {
-            // Return null instead of throwing an exception
+            return organizer;
         }
 
-        return organizer;
+        return null;
     }
 }
