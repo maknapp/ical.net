@@ -1,10 +1,9 @@
-﻿//
+//
 // Copyright ical.net project maintainers and contributors.
 // Licensed under the MIT license.
 //
 
 using System;
-using System.Globalization;
 using System.IO;
 using Ical.Net.DataTypes;
 
@@ -25,39 +24,17 @@ public class GeographicLocationSerializer : EncodableDataTypeSerializer
             return null;
         }
 
-        var value = location.Latitude.ToString("0.000000", CultureInfo.InvariantCulture.NumberFormat) + ";"
-            + location.Longitude.ToString("0.000000", CultureInfo.InvariantCulture.NumberFormat);
-        return Encode(location, value);
+        return location.ToString();
     }
 
     public GeographicLocation? Deserialize(string value)
     {
-        if (string.IsNullOrWhiteSpace(value))
+        if (GeographicLocation.TryParse(value, out var geo))
         {
-            return null;
+            return geo;
         }
 
-        if (CreateAndAssociate() is not GeographicLocation location)
-        {
-            return null;
-        }
-
-        // Decode the value, if necessary!
-        var decoded = Decode(location, value);
-        if (decoded == null) return null;
-
-        var values = decoded.Split([';'], StringSplitOptions.RemoveEmptyEntries);
-        if (values.Length != 2)
-        {
-            return null;
-        }
-
-        double.TryParse(values[0], NumberStyles.Any, CultureInfo.InvariantCulture, out var lat);
-        double.TryParse(values[1], NumberStyles.Any, CultureInfo.InvariantCulture, out var lon);
-        location.Latitude = lat;
-        location.Longitude = lon;
-
-        return location;
+        return null;
     }
 
     public override object? Deserialize(TextReader tr) => Deserialize(tr.ReadToEnd());
